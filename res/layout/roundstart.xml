@@ -5,74 +5,222 @@
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/startRoundPlayerBar"
         android:layout_width="fill_parent"
-        android:layout_height="35dp" android:id="@+id/startRoundPlayerBar" android:gravity="center" android:background="#44AA44">
+        android:layout_height="25dp"
+        android:background="@drawable/topbackgroundcombat"
+        android:gravity="center_vertical" >
 
         <TextView
             android:id="@+id/startRoundPlayerNameLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
             android:text="PlayerName"
-            android:textAppearance="?android:attr/textAppearanceLarge" android:textSize="19sp" android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/startRoundPlayerHpLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30/30 HP"
-            android:textAppearance="?android:attr/textAppearanceLarge" android:textSize="19sp" android:layout_marginRight="10dp"/>
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/startRoundPlayerApLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
             android:text="5/5 AP"
-            android:textAppearance="?android:attr/textAppearanceLarge" android:textSize="19sp"/>
+            android:textColor="#427BFE"
+            android:textSize="16sp" />
 
+        <TextView
+            android:id="@+id/startRoundPlayerHpLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:text="30/30 HP"
+            android:textColor="#FF0000"
+            android:textSize="16sp" />
     </LinearLayout>
-
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" android:layout_weight="1" android:gravity="center" android:layout_margin="30dp">
+        android:layout_gravity="center"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/startRoundRoundLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:text="Round 1"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColorHint="#FFFFFF"
+            android:textSize="19sp" />
 
         <TextView
             android:id="@+id/startRoundInfoLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fight 5 monsters to continue OR 5 Monsters + Boss"
-            android:textAppearance="?android:attr/textAppearanceLarge" android:gravity="center" android:layout_marginTop="40dp"/>
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Fight 5 monsters to continue"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/startRoundInfoText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium" android:layout_marginTop="20dp" android:textColor="#FFFFAA" android:gravity="center" android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#FFFFAA"
+            android:textSize="14sp" />
 
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/startRoundNoButton"
-            android:layout_width="100dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="NO" android:layout_alignParentLeft="true"/>
+            android:layout_gravity="center"
+            android:background="@drawable/background1"
+            android:orientation="vertical"
+            android:padding="5dp" >
+
+            <TextView
+                android:id="@+id/startrounditemsequipped"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_marginTop="5dp"
+                android:text="Items Equipped: 0"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1" >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/roundstartitem1info"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="TextView" />
+
+                        <TextView
+                            android:id="@+id/roundstartitem1cost"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="TextView" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/roundstartrechargeitem1"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="90dp"
+                        android:layout_height="45dp"
+                        android:background="@drawable/buttonrechargedisabled" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1" >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/roundstartitem2info"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="TextView" />
+
+                        <TextView
+                            android:id="@+id/roundstartitem2cost"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="TextView" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/roundstartrechargeitem2"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="90dp"
+                        android:layout_height="45dp"
+                        android:background="@drawable/buttonrechargedisabled" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/roundstartcurrentgold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginTop="5dp"
+                android:text="Gold: "
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="#333333"
+            android:padding="5dp"
+            android:text="Once you begin a Round you cannot quit without being penalized! Progress is saved after completing each Round."
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#FFFF00"
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/startRoundGoButton"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="Go" android:layout_alignParentRight="true"/>
-    </RelativeLayout>
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@drawable/buttonright" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -42,34 +42,63 @@ public class Helper
 		}
 		return r;
 	}
-	
+
+	public static int getWeaponCost(int weaponID)
+	{
+		/*
+		int baseCost =
+			(DefinitionGlobal.WEAPON_COST_CRIT_MULT * DefinitionWeapons.WEAPON_CRIT_CHANCE[weaponID])
+				+ (DefinitionGlobal.WEAPON_COST_HIT_MULT * DefinitionWeapons.WEAPON_HIT_CHANCE[weaponID])
+				+ (DefinitionGlobal.WEAPON_COST_STUN_MULT * DefinitionWeapons.WEAPON_STUN_CHANCE[weaponID])
+				+ (DefinitionGlobal.WEAPON_COST_MIN_DMG_MULT * DefinitionWeapons.WEAPON_MIN_DAMAGE[weaponID])
+				+ (DefinitionGlobal.WEAPON_COST_MAX_DMG_MULT * DefinitionWeapons.WEAPON_MAX_DAMAGE[weaponID]);
+
+		int attackCost = 0;
+		for (int a = 0; a < DefinitionWeapons.WEAPON_ATTACK_TYPES[weaponID].length; a++)
+		{
+			attackCost +=
+				(DefinitionGlobal.WEAPON_COST_ATT_TYPE_BLOCK_MULT * DefinitionAttackTypes.ATTACK_TYPE_BLOCK_NEXT_DAMAGE_PERCENT[DefinitionWeapons.WEAPON_ATTACK_TYPES[weaponID][a]])
+					+ (DefinitionGlobal.WEAPON_COST_ATT_TYPE_CRIT_MULT * DefinitionAttackTypes.ATTACK_TYPE_CRIT_CHANCE[DefinitionWeapons.WEAPON_ATTACK_TYPES[weaponID][a]])
+					+ (DefinitionGlobal.WEAPON_COST_ATT_TYPE_HIT_MULT * DefinitionAttackTypes.ATTACK_TYPE_HIT_CHANCE[DefinitionWeapons.WEAPON_ATTACK_TYPES[weaponID][a]])
+					+ (DefinitionGlobal.WEAPON_COST_ATT_TYPE_STUN_MULT * DefinitionAttackTypes.ATTACK_TYPE_STUN_CHANCE[DefinitionWeapons.WEAPON_ATTACK_TYPES[weaponID][a]]);
+		}
+
+		attackCost = Math.round(attackCost / DefinitionWeapons.WEAPON_ATTACK_TYPES[weaponID].length);
+
+		return DefinitionWeapons.WEAPON_MIN_LEVEL_TO_USE[weaponID] * (baseCost + attackCost);
+		
+		*/
+		return DefinitionWeapons.WEAPON_GOLD_VALUE[weaponID];
+
+	}
+
 	public static int getStatMod(int statDiff, int amt)
 	{
-		
-		if (statDiff != 0)
+
+		if (statDiff != 0 && amt > 0)
 		{
 			double mult = statDiff / amt;
 			int multAmt = (int) (mult * 100);
-			if(multAmt < -50)
+			if (multAmt < -50)
 			{
 				multAmt = -50;
 			}
-			if(multAmt > 50)
+			if (multAmt > 50)
 			{
 				multAmt = 50;
 			}
-			
-			Log.d("statmod", "a stat offset modified "+amt+" by " + multAmt + "%");
+
+			Log.d("statmod", "a stat offset modified " + amt + " by " + multAmt + "%");
 
 			int number = Helper.getPercentFromInt((multAmt), amt);
 
 			Log.d("statmod", multAmt + "% of " + amt + " is " + number);
 
-			amt  = amt + number;
+			amt = amt + number;
 
 			Log.d("statmod", "new amt is " + amt);
 		}
-		
+
 		return amt;
 	}
 
@@ -108,17 +137,17 @@ public class Helper
 		if (flagID == 0)
 		{
 			// determine damage based on target's stats
-			amt = (int) ((0.5 * target.rank()) * (target.strength() + target.knowledge() + target.reaction()));
+			amt = (int) ((0.5 * target.rank()) * (target.exec() + target.knowledge() + target.reaction()));
 		}
 		else if (flagID == 1)
 		{
 			// deal wpn dmg * (source strength / 5)
-			amt = (int) (wpnDmg * (source.strength() / 5));
+			amt = (int) (wpnDmg * (source.exec() / 5));
 		}
 		else if (flagID == 2)
 		{
 			// deal 0.5x (target str * target level)
-			amt = (int) ((0.5 * (source.strength() * source.rank())));
+			amt = (int) ((0.5 * (source.exec() * source.rank())));
 		}
 		else if (flagID == 3)
 		{
@@ -215,82 +244,141 @@ public class Helper
 		return Math.round(amtFloat);
 	}
 
-	public static SpannableString getSpanString(String newLog)
+	public static SpannableString getSpanString(String newLog, int typeFlag)
 	{
+		System.out.println("log type flag: " + typeFlag);
 
 		SpannableString spanText = new SpannableString(newLog);
 		int spanColor = Color.WHITE;
-		if (newLog.contains("dealt") || newLog.contains("Stunned"))
+		switch (typeFlag)
 		{
-			spanColor = Color.parseColor("#FFFF9900");
-		}
-		else if (newLog.contains("has spotted"))
-		{
-			spanColor = Color.parseColor("#FFFF3300");
-		}
-		else if (newLog.contains("You are"))
-		{
-			spanColor = Color.parseColor("#FFFFD700");
-		}
-		else if (newLog.contains("and Stunned you"))
-		{
-			spanColor = Color.parseColor("#FFFF9900");
-		}
-		else if (newLog.contains("hits you for"))
-		{
-			spanColor = Color.parseColor("#FF30C1AE");
-		}
-		else if (newLog.contains("You CRIT"))
-		{
-			spanColor = Color.parseColor("#FFFF99CC");
-		}
-		else if (newLog.contains("has found you"))
-		{
-			spanColor = Color.parseColor("#FF30C1AE");
-		}
-		else if (newLog.contains("CRIT you"))
-		{
-			spanColor = Color.parseColor("#FF30C1AE");
-		}
-		else if (newLog.contains("absorbed"))
-		{
-			spanColor = Color.parseColor("#FFB4EEB4");
-		}
-		else if (newLog.contains("dodged") || newLog.contains("monster missed"))
-		{
-			spanColor = Color.parseColor("#FF2493D2");
-		}
-		else if (newLog.contains("Using ability"))
-		{
-			spanColor = Color.parseColor("#FF54FF9F");
-		}
-		else if (newLog.contains("dealt you") && newLog.contains("damage"))
-		{
-			spanColor = Color.parseColor("#FFFFB6C1");
-		}
-		else if (newLog.contains("You found") && newLog.contains("gold!"))
-		{
-			spanColor = Color.parseColor("#FFE9FA27");
-		}
-		else if (newLog.contains("gold!"))
-		{
-			spanColor = Color.parseColor("#FFE9FA27");
-		}
-		else if (newLog.contains("gained") || newLog.contains("Forever!"))
-		{
-			spanColor = Color.parseColor("#FF32CD32");
-		}
-		else if (newLog.contains("recovered"))
-		{
-			spanColor = Color.parseColor("#FF76EE00");
-		}
-		else if (newLog.contains("is Stunned"))
-		{
-			spanColor = Color.parseColor("#FFFF9900");
-		}
-		else
-		{
-			spanColor = Color.parseColor("#FFFFFFFF");
+			case DefinitionGlobal.LOG_TYPE_ACTION_FAILED:
+				spanColor = Color.parseColor("#FFC0C0C0");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_DEFAULT:
+				spanColor = Color.parseColor("#FFFFFFFF");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_TAKE_HIT_DMG:
+				spanColor = Color.parseColor("#FFFF2424");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_USE_ABILITY:
+				spanColor = Color.parseColor("#FF0099CC");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_TAKE_ABILITY_DMG:
+				spanColor = Color.parseColor("#FFFF2424");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_USE_ABILITY:
+				spanColor = Color.parseColor("#FF99FF99");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_TAKE_ABILITY_DMG:
+				spanColor = Color.parseColor("#FFFFFFFF");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_STUNNED:
+				spanColor = Color.parseColor("#FFFF9900");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_STUNNED:
+				spanColor = Color.parseColor("#FFFFFF00");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_EFFECT_GOOD:
+				spanColor = Color.parseColor("#FF66FF00");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_GAINS_EFFECT:
+				spanColor = Color.parseColor("#FFFFFF00");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_MISSES:
+				spanColor = Color.parseColor("#FFFFFFFF");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_DODGES:
+				spanColor = Color.parseColor("#FF0099CC");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_MISSES:
+				spanColor = Color.parseColor("#FFFF3333");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_TAKE_HIT_DMG:
+				spanColor = Color.parseColor("#FFFFFFFF");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_HP:
+				spanColor = Color.parseColor("#FF00CC00");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_LOSES_HP:
+				spanColor = Color.parseColor("#FFFF2424");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_AP:
+				spanColor = Color.parseColor("#FFFF9999");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_LOSES_AP:
+				spanColor = Color.parseColor("#FFFF9900");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_GAINS_HP:
+				spanColor = Color.parseColor("#FFFFFF00");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_LOSES_HP:
+				spanColor = Color.parseColor("#FFFFFF00");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_GAINS_AP:
+				spanColor = Color.parseColor("#FFFFFF00");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_LOSES_AP:
+				spanColor = Color.parseColor("#FFFFFF00");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_SOMETHING_BAD_FOR_PLAYER:
+				spanColor = Color.parseColor("#FFFF3300");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_SOMETHING_GOOD_FOR_PLAYER:
+				spanColor = Color.parseColor("#FF66FF00");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_USE_ITEM:
+				spanColor = Color.parseColor("#FFFFFFFF");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_EFFECT_BAD:
+				spanColor = Color.parseColor("#FFFF0033");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_IS_CASTING:
+				spanColor = Color.parseColor("#FFC0C0C0");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_LOOT:
+				spanColor = Color.parseColor("#FFFFFF00");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_MONSTER_TAKE_CRIT_DMG:
+				spanColor = Color.parseColor("#FF99FF99");
+				break;
+
+			case DefinitionGlobal.LOG_TYPE_PLAYER_TAKE_CRIT_DMG:
+				spanColor = Color.parseColor("#FFFF0033");
+				break;
+
+			default:
+				spanColor = Color.parseColor("#FFFFFFFF");
+				break;
 		}
 
 		spanText.setSpan(new ForegroundColorSpan(spanColor), 0, newLog.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -329,10 +417,16 @@ public class Helper
 
 		return false;
 	}
+	
+	
 
 	public static ItemRune[] getStartingRunesForClass(int cls, Context context)
 	{
-		int[] runeIds = getRuneIdsForClassAndRank(cls, 1);
+		
+		//int[] runeIds = getRuneIdsForClassAndRank(cls, 1);
+		int[] runeIds = DefinitionClasses.CLASS_STARTING_RUNES[cls];
+		
+		
 		ItemRune[] startingClassRunes = new ItemRune[runeIds.length];
 
 		for (int a = 0; a < runeIds.length; a++)
@@ -342,6 +436,7 @@ public class Helper
 		}
 
 		return startingClassRunes;
+		
 	}
 
 	public static ItemWeapon[] getStartingPlayerWeaponsForClass(int classID, Context context)
@@ -499,28 +594,27 @@ public class Helper
 			if (statId == 0)
 			{
 				// strength
-				amt = source.strength();
+				amt = source.exec();
 			}
 			else if (statId == 1)
 			{
 				amt = source.reaction();
 			}
-			else if(statId == 2)
+			else if (statId == 2)
 			{
 				amt = source.knowledge();
 			}
-			else if(statId == 3)
+			else if (statId == 3)
 			{
 				amt = source.magelore();
 			}
-			else if(statId == 4)
+			else if (statId == 4)
 			{
 				amt = source.luck();
 			}
 
-			dmg = (int) Math.round((0.01 * amt) * target.maxHP());			
+			dmg = (int) Math.round((0.01 * amt) * target.maxHP());
 
-			
 		}
 		else
 		{
@@ -530,35 +624,152 @@ public class Helper
 			if (statId == 0)
 			{
 				// strength
-				amt = target.strength();
+				amt = target.exec();
 			}
 			else if (statId == 1)
 			{
 				amt = target.reaction();
 			}
-			else if(statId == 2)
+			else if (statId == 2)
 			{
 				amt = target.knowledge();
-			}			
-			else if(statId == 3)
+			}
+			else if (statId == 3)
 			{
 				amt = target.magelore();
-			}			
-			else if(statId == 4)
+			}
+			else if (statId == 4)
 			{
 				amt = target.luck();
 			}
-			dmg = (int) Math.round((0.01 * amt) * target.maxHP());		
-			
+			dmg = (int) Math.round((0.01 * amt) * target.maxHP());
+
 		}
 		return dmg;
 	}
-
-	public static int getCastingDamage(ItemRune ability, boolean isBonus)
+	
+	public static int getMinRank(int itemType, int itemId)
 	{
-		int dmg = getRandomIntFromRange(ability.dealWeaponDamageMax(), ability.dealWeaponDamageMin());
-		if (isBonus)
-			dmg = getRandomIntFromRange(ability.dealWeaponDamageMaxBonus(), ability.dealWeaponDamageMinBonus());
+		int minRank = 1;
+		
+		if (itemType == DefinitionGlobal.ITEM_TYPE_WEAPON)
+		{
+			minRank = DefinitionWeapons.WEAPON_MIN_LEVEL_TO_USE[itemId];
+		}		
+		else if (itemType == DefinitionGlobal.ITEM_TYPE_ARMOR)
+		{
+			minRank = DefinitionArmor.ARMOR_MIN_LEVEL_TO_USE[itemId];
+		}
+				
+		return minRank;
+	}
+
+	public static String getAllowedClassesString(int itemType, int itemId)
+	{
+		String allowedClasses = "";
+
+		if (itemType == DefinitionGlobal.ITEM_TYPE_WEAPON)
+		{
+			for (int a = 0; a < DefinitionWeapons.WEAPON_ONLY_FOR_CLASSES[itemId].length; a++)
+			{
+				if (DefinitionWeapons.WEAPON_ONLY_FOR_CLASSES[itemId][a] == -1)
+				{
+					allowedClasses += "all";
+					break;
+				}
+
+				if (a != 0)
+					allowedClasses += ", ";
+
+				allowedClasses += DefinitionClasses.CLASS_NAMES[DefinitionWeapons.WEAPON_ONLY_FOR_CLASSES[itemId][a]];
+			}
+		}
+
+		if (itemType == DefinitionGlobal.ITEM_TYPE_ARMOR)
+		{
+			for (int a = 0; a < DefinitionArmor.ARMOR_FOR_CLASS_ONLY[itemId].length; a++)
+			{
+				if (DefinitionArmor.ARMOR_FOR_CLASS_ONLY[itemId][a] == -1)
+				{
+					allowedClasses += "all";
+					break;
+				}
+
+				if (a != 0)
+					allowedClasses += ", ";
+
+				allowedClasses += DefinitionClasses.CLASS_NAMES[DefinitionArmor.ARMOR_FOR_CLASS_ONLY[itemId][a]];
+			}
+		}
+
+		if (itemType == DefinitionGlobal.ITEM_TYPE_RUNE_ABILITY)
+		{
+			for (int a = 0; a < DefinitionRunes.runeData[itemId][DefinitionRunes.RUNE_ONLY_FOR_CLASSES].length; a++)
+			{
+				if (a != 0)
+					allowedClasses += ", ";
+
+				allowedClasses +=
+					DefinitionClasses.CLASS_NAMES[(Integer) DefinitionRunes.runeData[itemId][DefinitionRunes.RUNE_ONLY_FOR_CLASSES][a]];
+			}
+		}
+
+		if (itemType == DefinitionGlobal.ITEM_TYPE_ITEM)
+		{
+			allowedClasses = "all";
+		}
+
+		if (itemType == DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS)
+		{
+			allowedClasses = DefinitionClasses.CLASS_NAMES[itemId];
+		}
+
+		return allowedClasses;
+	}
+
+	public static int getMultipleStatDamage(Actor source, ItemRune ability)
+	{
+		// deal multiple stat based damage
+
+		int amt1 = 0;
+		int amt2 = 0;
+		if (ability.dealMultipleStatBasedDamageStat1() == 0)
+			amt1 = source.exec();
+
+		if (ability.dealMultipleStatBasedDamageStat1() == 1)
+			amt1 = source.reaction();
+
+		if (ability.dealMultipleStatBasedDamageStat1() == 2)
+			amt1 = source.knowledge();
+
+		if (ability.dealMultipleStatBasedDamageStat1() == 3)
+			amt1 = source.magelore();
+
+		if (ability.dealMultipleStatBasedDamageStat1() == 4)
+			amt1 = source.luck();
+
+		if (ability.dealMultipleStatBasedDamageStat2() == 0)
+			amt2 = source.exec();
+
+		if (ability.dealMultipleStatBasedDamageStat2() == 1)
+			amt2 = source.reaction();
+
+		if (ability.dealMultipleStatBasedDamageStat2() == 2)
+			amt2 = source.knowledge();
+
+		if (ability.dealMultipleStatBasedDamageStat2() == 3)
+			amt2 = source.magelore();
+
+		if (ability.dealMultipleStatBasedDamageStat2() == 4)
+			amt2 = source.luck();
+
+		if (ability.dealMultipleStatBasedDamageStat2() == 99)
+			amt2 = source.getMaxDamage();
+
+		if (ability.dealMultipleStatBasedDamageStat2() == -1)
+			amt2 = 1;
+
+		int dmg = (int) Math.round(ability.dealMultipleStatBasedDamageMult() * amt1 * amt2);
 
 		return dmg;
 	}
@@ -675,12 +886,14 @@ public class Helper
 		return row;
 	}
 
-	public static Map<String, Object> createAttackTypeMap(CharSequence Name, CharSequence Stat1, CharSequence Stat2)
+	public static HashMap<String, String> createAttackTypeMap(String Name, String Stat1, String Stat2, String Stat3, String Stat4)
 	{
-		Map<String, Object> row = new HashMap<String, Object>();
+		HashMap<String, String> row = new HashMap<String, String>();
 		row.put("Name", Name);
 		row.put("Stat1", Stat1);
 		row.put("Stat2", Stat2);
+		row.put("Stat3", Stat3);
+		row.put("Stat4", Stat4);
 		return row;
 	}
 
@@ -696,7 +909,8 @@ public class Helper
 	}
 
 	public static Map<String, Object> createStoreMap(CharSequence storeName, CharSequence storeDescription,
-		int storeImage, CharSequence storeLevel, CharSequence storeValue)
+		int storeImage, CharSequence storeLevel, CharSequence storeValue, CharSequence storeStats,
+		CharSequence storeClasses)
 	{
 		Map<String, Object> row = new HashMap<String, Object>();
 		row.put("storeName", storeName);
@@ -704,6 +918,8 @@ public class Helper
 		row.put("storeImage", storeImage);
 		row.put("storeLevel", storeLevel);
 		row.put("storeValue", storeValue);
+		row.put("storeStats", storeStats);
+		row.put("storeClasses", storeClasses);
 		return row;
 	}
 
@@ -734,27 +950,32 @@ public class Helper
 
 	public static int getRandomIntFromIntArray(int[] arr)
 	{
+		if (arr == null)
+			return 0;
+
 		int ind = (int) Math.floor(Math.random() * arr.length);
+		if (ind >= arr.length)
+			ind--;
+
+		if (ind < 0)
+			ind = 0;
+
 		return arr[ind];
 	}
 
 	public static int getRandomIntFromIntArray(ArrayList<Integer> arr)
 	{
+		if (arr == null)
+			return 0;
+
 		int ind = (int) Math.floor(Math.random() * arr.size());
 		return arr.get(ind);
 	}
 
-	public static ArrayList<StoreItem> getRandomDropsForRound(int round, int value, Context context)
+	public static ArrayList<StoreItem> getRandomDropsForRound(int round, int chest, Context context)
 	{
 		ArrayList<StoreItem> drops = new ArrayList<StoreItem>();
-
-		int valueMin = value - Helper.getPercentFromInt(50, value);
-		int valueMax = value + Helper.getPercentFromInt(50, value);
-
-		if (valueMax < 11)
-			valueMax = 10;
-
-		Log.d("loot", "pulling from loot range " + valueMin + " to " + valueMax);
+		chest++;
 
 		// weapon drops
 		for (int a = 0; a < DefinitionWeapons.WEAPON_NAMES.length; a++)
@@ -763,11 +984,16 @@ public class Helper
 			{
 				if (randomInt(100) < DefinitionWeapons.WEAPON_DROPS[a][2])
 				{
+					if (DefinitionWeapons.WEAPON_DROPS[a][3] > chest)
+						continue;
+
 					ItemWeapon w = new ItemWeapon(DefinitionGlobal.ITEM_TYPE_WEAPON, a, context);
 					drops.add(w);
 				}
 			}
 		}
+
+		String arString = "";
 
 		// armor drops
 		for (int a = 0; a < DefinitionArmor.ARMOR_NAMES.length; a++)
@@ -776,19 +1002,27 @@ public class Helper
 			{
 				if (randomInt(100) < DefinitionArmor.ARMOR_DROPS[a][2])
 				{
+					if (DefinitionArmor.ARMOR_DROPS[a][3] > chest)
+						continue;
+
 					ItemArmor ar = new ItemArmor(DefinitionGlobal.ITEM_TYPE_ARMOR, a, context);
+					arString = DefinitionGlobal.EQUIP_SLOT_NAMES[DefinitionArmor.ARMOR_SLOT[a][0]];
 					drops.add(ar);
 				}
 			}
 		}
 
 		// item drops
-		for (int a = 0; a < DefinitionItems.ITEM_NAME.length; a++)
+		for (int a = 0; a < DefinitionItems.itemdata.length; a++)
 		{
-			if (DefinitionItems.ITEM_DROPS[a][0] <= round && DefinitionItems.ITEM_DROPS[a][1] >= round)
+			if ((Integer) DefinitionItems.itemdata[a][DefinitionItems.ITEM_DROPS][0] <= round
+				&& (Integer) DefinitionItems.itemdata[a][DefinitionItems.ITEM_DROPS][1] >= round)
 			{
-				if (randomInt(100) < DefinitionItems.ITEM_DROPS[a][2])
+				if (randomInt(100) < (Integer) DefinitionItems.itemdata[a][DefinitionItems.ITEM_DROPS][2])
 				{
+					if ((Integer) DefinitionItems.itemdata[a][DefinitionItems.ITEM_DROPS][3] > chest)
+						continue;
+
 					ItemItem ar = new ItemItem(DefinitionGlobal.ITEM_TYPE_ITEM, a, context);
 					drops.add(ar);
 				}
@@ -803,6 +1037,9 @@ public class Helper
 			{
 				if (randomInt(100) < (Integer) DefinitionRunes.runeData[a][DefinitionRunes.RUNE_DROPS][2])
 				{
+					if ((Integer) DefinitionRunes.runeData[a][DefinitionRunes.RUNE_DROPS][3] > chest)
+						continue;
+
 					ItemRune ar = new ItemRune(DefinitionGlobal.ITEM_TYPE_RUNE_ABILITY, a, context);
 					drops.add(ar);
 				}
@@ -816,10 +1053,20 @@ public class Helper
 			{
 				if (randomInt(100) < DefinitionClasses.CLASS_DROPS[a][2])
 				{
-					ItemItem ar = new ItemItem(DefinitionGlobal.ITEM_TYPE_ITEM, a, context);
+					if (DefinitionClasses.CLASS_DROPS[a][3] > chest)
+						continue;
+
+					ItemClass ar = new ItemClass(DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS, a, context);
 					drops.add(ar);
 				}
 			}
+		}
+
+		for (int a = 0; a < drops.size(); a++)
+		{
+
+			Log.d("drop", "possible drop for Round " + round + " Chest " + chest + ": " + drops.get(a).name() + " - "
+				+ DefinitionGlobal.ITEM_TYPE_NAMES[drops.get(a).itemType()] + " " + arString);
 		}
 
 		return drops;

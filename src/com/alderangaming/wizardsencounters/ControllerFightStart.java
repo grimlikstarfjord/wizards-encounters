@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class ControllerFightStart extends Activity
@@ -40,7 +41,7 @@ public class ControllerFightStart extends Activity
 
 		restartingFight = b.getInt("restartfightflag");
 
-		if (restartingFight == 1)
+		if (restartingFight > 0)
 		{
 			monsterId = b.getInt("restartfightmonster");
 		}
@@ -49,6 +50,7 @@ public class ControllerFightStart extends Activity
 
 		setupViews();
 		setupFight();
+		loadBattleSounds();
 		updateViews();
 	}
 
@@ -57,8 +59,8 @@ public class ControllerFightStart extends Activity
 		monsterNameView.setText(DefinitionMonsters.MONSTER_NAMES[monsterId]);
 		monster.setImageResource(getResources().getIdentifier(monster.imageName(), "drawable", getPackageName()));
 		playerNameView.setText(player.name());
-		playerHPView.setText(player.currentHP() + "/" + player.maxHP());
-		playerAPView.setText(player.currentAP() + "/" + player.maxAP());
+		playerHPView.setText("HP: " + player.currentHP() + "/" + player.maxHP());
+		playerAPView.setText("AP: " + player.currentAP() + "/" + player.maxAP());
 		monsterImageView.setImageResource(monster.imageResource());
 		fightInfoText.setText(fightInfo);
 
@@ -89,11 +91,12 @@ public class ControllerFightStart extends Activity
 					continue;
 
 				// we know which group we're in, start with a+1
-				progressRound1Text.setText("" + (a + 1));
-				progressRound2Text.setText("" + (a + 2));
-				progressRound3Text.setText("" + (a + 3));
-				progressRound4Text.setText("" + (a + 4));
+				progressRound1Text.setText("" + (a + 2));
+				progressRound2Text.setText("" + (a + 3));
+				progressRound3Text.setText("" + (a + 4));
+				progressRound4Text.setText("" + (a + 5));
 				foundboss = true;
+				break;
 			}
 		}
 		if (!foundboss)
@@ -104,30 +107,46 @@ public class ControllerFightStart extends Activity
 			progressRound4Text.setText("" + (4));
 		}
 
-		if (player.currentRound() == 1)
+		if (player.currentRound() % 5 == 1)
 			progressRound1Text.setBackgroundColor(0xFF5555FF);
 
-		if (player.currentRound() == 2)
+		if (player.currentRound() % 5 == 2)
 			progressRound2Text.setBackgroundColor(0xFF5555FF);
 
-		if (player.currentRound() == 3)
+		if (player.currentRound() % 5 == 3)
 			progressRound3Text.setBackgroundColor(0xFF5555FF);
 
-		if (player.currentRound() == 4)
+		if (player.currentRound() % 5 == 4)
 			progressRound4Text.setBackgroundColor(0xFF5555FF);
 
-		if (player.currentRound() == 5)
+		if (player.currentRound() % 5 == 0)
 			progressRound5Text.setBackgroundColor(0xFF5555FF);
 	}
 
 	private void setupFight()
 	{
 
-		if (DefinitionRounds.ROUND_TYPE[player.currentRound() - 1] == 1)
+		if (restartingFight == 1)
+		{
+			fightInfo += System.getProperty("line.separator") + "* HP Set to 50% *";
+			player.setCurrentHP((int) Math.round(player.maxHP() / 2));
+		}
+		else if (restartingFight == 2)
+		{
+			fightInfo += System.getProperty("line.separator") + "* HP Set to 100% *";
+			player.setCurrentHP(player.maxHP());
+		}
+		else if (DefinitionRounds.ROUND_TYPE[player.currentRound() - 1] == 1)
 		{
 			// this is a boss fight
 			// monster ID is specified uniquely by round
 			monsterId = Helper.getBossMonsterIDForRound(player.currentRound());
+
+			if (player.currentHP() != player.maxHP())
+			{
+				fightInfo += System.getProperty("line.separator") + "* +"+DefinitionGlobal.REGEN_HP_AT_BOSS_START+"% HP Recharged *";
+				player.updateHP(Helper.getPercentFromInt(DefinitionGlobal.REGEN_HP_AT_BOSS_START, player.maxHP()));
+			}
 		}
 		else
 		{
@@ -136,23 +155,15 @@ public class ControllerFightStart extends Activity
 					player.foughtMonstersInRound());
 
 			monsterId = Helper.getRandomIntFromIntArray(possibleMonsterIds);
-		}
 
-		if (restartingFight == 1)
-		{
-			fightInfo += System.getProperty("line.separator") + "* HP Set to 50% *";
-			player.setCurrentHP((int) Math.round(player.maxHP() / 2));
-		}
-		else
-		{
 			if (player.currentHP() != player.maxHP())
 			{
-				fightInfo += System.getProperty("line.separator") + "* +20% HP Recharged *";
-				player.updateHP(Helper.getPercentFromInt(20, player.maxHP()));
+				fightInfo += System.getProperty("line.separator") + "* +"+DefinitionGlobal.REGEN_HP_AT_FIGHT_START+"% HP Recharged *";
+				player.updateHP(Helper.getPercentFromInt(DefinitionGlobal.REGEN_HP_AT_FIGHT_START, player.maxHP()));
 			}
-			monster = new Monster(monsterId, getApplicationContext());
 		}
 
+		monster = new Monster(monsterId, getApplicationContext());
 		player.addMonsterInRound(monsterId);
 
 		// set AP per class type
@@ -176,6 +187,62 @@ public class ControllerFightStart extends Activity
 		}
 	}
 
+	private void loadBattleSounds()
+	{
+		// weapon attacks
+		int[] attackSoundTypes = new int[DefinitionWeapons.WEAPON_ATTACK_TYPES[player.equippedWeapon()].length];
+
+		for (int a = 0; a < attackSoundTypes.length; a++)
+		{
+			attackSoundTypes[a] =
+				DefinitionAttackTypes.ATTACK_SOUND_CLIPS[DefinitionWeapons.WEAPON_ATTACK_TYPES[player.equippedWeapon()][a]];
+		}
+
+		SoundManager.loadBattleSoundEffects(getApplicationContext(), attackSoundTypes);
+
+		// monster taunts
+		SoundManager.loadBattleSoundEffects(getApplicationContext(), new int[]
+		{ DefinitionMonsters.MONSTER_TAUNT_SOUND_TYPE[monsterId] });
+
+		// monster abilities
+		int[] monsAbils = new int[DefinitionMonsters.MONSTER_ABILITIES[monsterId].length];
+		for (int a = 0; a < monsAbils.length; a++)
+		{
+			monsAbils[a] =
+				(Integer) DefinitionRunes.runeData[DefinitionMonsters.MONSTER_ABILITIES[monsterId][a]][DefinitionRunes.RUNE_SOUND_CLIP][0];
+		}
+		SoundManager.loadBattleSoundEffects(getApplicationContext(), monsAbils);
+
+		// current abilities
+		int[] abilitySounds = new int[player.getActiveAbilities().length];
+		for (int a = 0; a < abilitySounds.length; a++)
+		{
+			abilitySounds[a] =
+				(Integer) DefinitionRunes.runeData[player.getActiveAbilityByIndex(a)][DefinitionRunes.RUNE_SOUND_CLIP][0];
+		}
+		SoundManager.loadBattleSoundEffects(getApplicationContext(), abilitySounds);
+
+		// current items
+		if (player.equippedItemSlot1() > -1)
+		{
+			if (OwnedItems.getChargesOfItemId(player.equippedItemSlot1())[0] > 0)
+			{
+				SoundManager.loadBattleSoundEffects(getApplicationContext(), new int[]
+				{ (Integer) DefinitionItems.itemdata[player.equippedItemSlot1()][DefinitionItems.ITEM_SOUND_CLIP][0] });
+			}
+		}
+		if (player.equippedItemSlot2() > -1)
+		{
+			if (OwnedItems.getChargesOfItemId(player.equippedItemSlot2())[0] > 0)
+			{
+				SoundManager.loadBattleSoundEffects(getApplicationContext(), new int[]
+				{ (Integer) DefinitionItems.itemdata[player.equippedItemSlot2()][DefinitionItems.ITEM_SOUND_CLIP][0] });
+			}
+		}
+
+		startButton.setEnabled(true);
+	}
+
 	private void setupViews()
 	{
 		playerNameView = (TextView) findViewById(R.id.startFightPlayerNameLabel);
@@ -185,6 +252,7 @@ public class ControllerFightStart extends Activity
 		monsterImageView = (ImageView) findViewById(R.id.fightStartImage);
 		fightNameView = (TextView) findViewById(R.id.startFightFightLabel);
 		startButton = (Button) findViewById(R.id.startFightBeginButton);
+		startButton.setEnabled(false);
 		fightInfoText = (TextView) findViewById(R.id.fightStartInfoText);
 
 		progressFight1Text = (TextView) findViewById(R.id.progressFight1Text);
@@ -206,13 +274,12 @@ public class ControllerFightStart extends Activity
 			public void onClick(View v)
 			{
 				startButton.setEnabled(false);
+				startButton.setVisibility(View.INVISIBLE);
+				ProgressBar startFightSpinner = (ProgressBar)findViewById(R.id.startFightSpinner);
+				startFightSpinner.setVisibility(View.VISIBLE);
 
 				if (DBHandler.isOpen(getApplicationContext()))
 					DBHandler.close();
-
-				// RECHARGE PLAYER HP AT START OF NEW FIGHT if flag = 1
-				if (restartingFight == 1)
-					player.setCurrentHP(player.maxHP());
 
 				Intent i =
 					new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerCombat.class);

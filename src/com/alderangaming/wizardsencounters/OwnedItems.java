@@ -11,8 +11,8 @@ public class OwnedItems
 	private static ArrayList<StoreItem> ownedItems = new ArrayList<StoreItem>();
 	private static ArrayList<StoreItem> tempEarnedItems = new ArrayList<StoreItem>();
 	private static int _gold = 0;
-	
-	public static  StoreItem[] getOwnedItems()
+
+	public static StoreItem[] getOwnedItems()
 	{
 		StoreItem[] items = new StoreItem[ownedItems.size()];
 		for (int a = 0; a < items.length; a++)
@@ -22,13 +22,13 @@ public class OwnedItems
 		return items;
 	}
 
-	public static  void addTempItems(ArrayList<StoreItem> items)
+	public static void addTempItems(ArrayList<StoreItem> items)
 	{
 		for (int a = 0; a < items.size(); a++)
 			tempEarnedItems.add(items.get(a));
 	}
 
-	public static  void saveTempItemsToOwnedItems()
+	public static void saveTempItemsToOwnedItems()
 	{
 		StoreItem[] toadd = new StoreItem[tempEarnedItems.size()];
 		for (int a = 0; a < toadd.length; a++)
@@ -39,12 +39,12 @@ public class OwnedItems
 		addOwnedItems(toadd);
 	}
 
-	public static  void addTempItem(StoreItem item)
+	public static void addTempItem(StoreItem item)
 	{
 		tempEarnedItems.add(item);
 	}
 
-	public static  StoreItem[] getTempItems()
+	public static StoreItem[] getTempItems()
 	{
 		StoreItem[] items = new StoreItem[tempEarnedItems.size()];
 		for (int a = 0; a < tempEarnedItems.size(); a++)
@@ -54,7 +54,7 @@ public class OwnedItems
 		return items;
 	}
 
-	public static  int getAmountOwnedOfTypeId(int type, int id)
+	public static int getAmountOwnedOfTypeId(int type, int id)
 	{
 		int amt = 0;
 		for (int a = 0; a < ownedItems.size(); a++)
@@ -65,7 +65,7 @@ public class OwnedItems
 		return amt;
 	}
 
-	public static  boolean getPlayerOwnsThis(int type, int id)
+	public static boolean getPlayerOwnsThis(int type, int id)
 	{
 		for (int a = 0; a < ownedItems.size(); a++)
 		{
@@ -77,7 +77,7 @@ public class OwnedItems
 		return false;
 	}
 
-	public static  StoreItem getPlayerOwnsThis(StoreItem i)
+	public static StoreItem getPlayerOwnsThis(StoreItem i)
 	{
 		for (int a = 0; a < ownedItems.size(); a++)
 		{
@@ -89,7 +89,7 @@ public class OwnedItems
 		return null;
 	}
 
-	public static  String getItemEnhancedNameByTypeId(int type, int id)
+	public static String getItemEnhancedNameByTypeId(int type, int id)
 	{
 		String s = "";
 		for (int a = 0; a < ownedItems.size(); a++)
@@ -97,7 +97,7 @@ public class OwnedItems
 			if (ownedItems.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_ITEM && ownedItems.get(a).id() == id)
 			{
 				StoreItem i = ownedItems.get(a);
-				
+
 				if (i.maxCharges() > 1)
 				{
 					int amtPurchased = i.chargesPurchased();
@@ -124,19 +124,20 @@ public class OwnedItems
 					else if (amtPurchased == 10)
 						num = " X (" + i.chargesLeft() + "/" + amtPurchased + ")";
 
-					s = DefinitionItems.ITEM_NAME[i.id()] + num;
+					s = DefinitionItems.itemdata[i.id()][DefinitionItems.ITEM_NAME][0] + num;
 				}
 				else
 				{
-					s = DefinitionItems.ITEM_NAME[i.id()] + " (" + i.chargesLeft() + "/" + i.chargesPurchased()
-						+ ")";
+					s =
+						DefinitionItems.itemdata[i.id()][DefinitionItems.ITEM_NAME][0] + " (" + i.chargesLeft() + "/"
+							+ i.chargesPurchased() + ")";
 				}
 			}
 		}
 		return s;
 	}
 
-	public static  ArrayList<StoreItem> getItemsToSell()
+	public static ArrayList<StoreItem> getItemsToSell()
 	{
 		ArrayList<StoreItem> items = new ArrayList<StoreItem>();
 		for (int a = 0; a < ownedItems.size(); a++)
@@ -171,12 +172,12 @@ public class OwnedItems
 					else if (amtPurchased == 10)
 						num = " X (" + i.chargesLeft() + "/" + amtPurchased + ")";
 
-					i.setName(DefinitionItems.ITEM_NAME[i.id()] + num);
+					i.setName(DefinitionItems.itemdata[i.id()][DefinitionItems.ITEM_NAME][0] + num);
 				}
 				else
 				{
-					i.setName(DefinitionItems.ITEM_NAME[i.id()] + " (" + i.chargesLeft() + "/" + i.chargesPurchased()
-						+ ")");
+					i.setName(DefinitionItems.itemdata[i.id()][DefinitionItems.ITEM_NAME][0] + " (" + i.chargesLeft()
+						+ "/" + i.chargesPurchased() + ")");
 				}
 
 				items.add(i);
@@ -184,21 +185,21 @@ public class OwnedItems
 		}
 		return items;
 	}
-	
+
 	public static void addChargeToItem(StoreItem i)
 	{
-		for(int a= 0; a < ownedItems.size(); a++)
+		for (int a = 0; a < ownedItems.size(); a++)
 		{
-			if(ownedItems.get(a).id() == i.id() && ownedItems.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_ITEM)
+			if (ownedItems.get(a).id() == i.id() && ownedItems.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_ITEM)
 			{
 				ownedItems.get(a).addCharge();
-				if(ownedItems.get(a).chargesLeft() > ownedItems.get(a).chargesPurchased())
+				if (ownedItems.get(a).chargesLeft() > ownedItems.get(a).chargesPurchased())
 					ownedItems.get(a).rechargeAll();
 			}
 		}
 	}
 
-	public static  StoreItem[] addOwnedItems(StoreItem[] items)
+	public static StoreItem[] addOwnedItems(StoreItem[] items)
 	{
 		for (int a = 0; a < items.length; a++)
 		{
@@ -223,8 +224,7 @@ public class OwnedItems
 					else if (items[a].itemType() == DefinitionGlobal.ITEM_TYPE_ITEM)
 					{
 						ownedItems.get(b).setChargesPurchased(items[a].chargesPurchased());
-						
-						
+
 						added = true;
 						Log.d("owneditems", "updated charges for " + ownedItems.get(b).name());
 					}
@@ -278,7 +278,7 @@ public class OwnedItems
 
 	}
 
-	public static  int getIndexOfItemTypeId(int type, int id)
+	public static int getIndexOfItemTypeId(int type, int id)
 	{
 		for (int a = 0; a < ownedItems.size(); a++)
 		{
@@ -288,7 +288,7 @@ public class OwnedItems
 		return -1;
 	}
 
-	public static  void payForRechargeItem(int itemId)
+	public static void payForRechargeItem(int itemId)
 	{
 		for (int a = 0; a < ownedItems.size(); a++)
 		{
@@ -297,22 +297,32 @@ public class OwnedItems
 		}
 	}
 
-	public static  int costToRechargeItem(int itemId)
+	public static int costToRechargeItem(int itemId)
 	{
 		for (int a = 0; a < ownedItems.size(); a++)
 		{
 			if (ownedItems.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_ITEM && ownedItems.get(a).id() == itemId)
-				return ownedItems.get(a).value();
+				return Math.round((float) ownedItems.get(a).value() * DefinitionGlobal.ITEM_RECHARGE_PERCENT_OF_COST);
 		}
 		return 0;
 	}
 
-	public static  void setChargesPucrchasedOfItemByOwnedIndex(int index, int c)
+	public static void setChargesPucrchasedOfItemByOwnedIndex(int index, int c)
 	{
 		ownedItems.get(index).setChargesPurchased(c);
 	}
+	
+	public static void giveItemStartingCharge(int itemId)
+	{
+		for (int a = 0; a < ownedItems.size(); a++)
+		{
+			if (ownedItems.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_ITEM
+				&& ownedItems.get(a).id() == itemId)
+				ownedItems.get(a).addCharge();
+		}
+	}
 
-	public static  void rechargeItems(int item1, int item2)
+	public static void rechargeItems(int item1, int item2)
 	{
 		if (item1 >= 0)
 		{
@@ -344,7 +354,7 @@ public class OwnedItems
 		}
 	}
 
-	public static  int getItemImage(int itemType, int id)
+	public static int getItemImage(int itemType, int id)
 	{
 
 		int img = 0;
@@ -353,27 +363,32 @@ public class OwnedItems
 		{
 			if (ownedItems.get(a).itemType() == itemType && ownedItems.get(a).id() == id)
 			{
-				img = ownedItems.get(a).imageResource();
+				if (ownedItems.get(a).animationImageResource() >= 0)
+					img = ownedItems.get(a).animationImageResource();
+				else
+					img = ownedItems.get(a).imageResource();
+
 				break;
 			}
 		}
 		return img;
 	}
 
-	public static  void useItemCharge(int itemId)
+	public static void useItemCharge(int itemId)
 	{
 		for (int a = 0; a < ownedItems.size(); a++)
 		{
 			if (ownedItems.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_ITEM && ownedItems.get(a).id() == itemId)
 			{
 				ownedItems.get(a).useCharge();
-				Log.d("UseItem", "used charge for " + DefinitionItems.ITEM_NAME[itemId] + ", "
+				Log.d("UseItem", "used charge for "
+					+ DefinitionItems.itemdata[ownedItems.get(a).id()][DefinitionItems.ITEM_NAME][0] + ", "
 					+ ownedItems.get(a).chargesLeft() + " left");
 			}
 		}
 	}
 
-	public static  StoreItem getItemByTypeId(int itemType, int id)
+	public static StoreItem getItemByTypeId(int itemType, int id)
 	{
 		for (int a = 0; a < ownedItems.size(); a++)
 		{
@@ -386,7 +401,7 @@ public class OwnedItems
 		return null;
 	}
 
-	public static  int[] getChargesOfItemId(int itemId)
+	public static int[] getChargesOfItemId(int itemId)
 	{
 		int[] charges =
 		{ 0, 0 };
@@ -402,7 +417,7 @@ public class OwnedItems
 		return charges;
 	}
 
-	public static  void addAllItems(Context context)
+	public static void addAllItems(Context context)
 	{
 		// weapons
 		for (int a = 0; a < DefinitionWeapons.WEAPON_NAMES.length; a++)
@@ -417,7 +432,7 @@ public class OwnedItems
 		}
 
 		// items
-		for (int a = 0; a < DefinitionItems.ITEM_NAME.length; a++)
+		for (int a = 0; a < DefinitionItems.itemdata.length; a++)
 		{
 			ownedItems.add(new ItemItem(DefinitionGlobal.ITEM_TYPE_ITEM, a, context));
 		}
@@ -427,9 +442,17 @@ public class OwnedItems
 		{
 			ownedItems.add(new ItemRune(DefinitionGlobal.ITEM_TYPE_RUNE_ABILITY, a, context));
 		}
+
+		// classes
+		for (int a = 0; a < DefinitionClasses.CLASS_NAMES.length; a++)
+		{
+			ownedItems.add(new ItemClass(DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS, a, context));
+		}
+
+		_gold = 50000;
 	}
 
-	public static  void addDefaultItems(int[] itemIds, Context context)
+	public static void addDefaultItems(int[] itemIds, Context context)
 	{
 		boolean hadWeapon = false;
 		boolean hadHelm = false;
@@ -527,7 +550,7 @@ public class OwnedItems
 
 	}
 
-	public static  void sellItem(int itemType, int id, Context context)
+	public static void sellItem(int itemType, int id, Context context)
 	{
 		for (int a = 0; a < ownedItems.size(); a++)
 		{
@@ -538,7 +561,7 @@ public class OwnedItems
 		}
 	}
 
-	public static  StoreItem getItemClone(int itemType, int id, Context context)
+	public static StoreItem getItemClone(int itemType, int id, Context context)
 	{
 		StoreItem i = null;
 
@@ -577,7 +600,7 @@ public class OwnedItems
 		return i;
 	}
 
-	public static  ItemRune removeItemRune(int id)
+	public static ItemRune removeItemRune(int id)
 	{
 		ItemRune r = null;
 		for (int a = 0; a < ownedItems.size(); a++)
@@ -590,7 +613,7 @@ public class OwnedItems
 		return r;
 	}
 
-	public static  ItemRune[] getRunesForClass(Player player)
+	public static ArrayList<ItemRune> getRunesForClass(Player player)
 	{
 		ArrayList<Integer> runeIds = new ArrayList<Integer>();
 		for (int a = 0; a < ownedItems.size(); a++)
@@ -607,16 +630,16 @@ public class OwnedItems
 			}
 		}
 
-		ItemRune[] runes = new ItemRune[runeIds.size()];
-		for (int a = 0; a < runes.length; a++)
+		ArrayList<ItemRune> runes = new ArrayList<ItemRune>();
+		for (int a = 0; a < runeIds.size(); a++)
 		{
-			runes[a] = (ItemRune) ownedItems.get(runeIds.get(a));
+			runes.add((ItemRune) ownedItems.get(runeIds.get(a)));
 		}
 
 		return runes;
 	}
 
-	public static  ArrayList<StoreItem> getAllItemsForSlot(int slot)
+	public static ArrayList<StoreItem> getAllItemsForSlot(int slot)
 	{
 		Log.d("ownedItems", "getAllItemsForSlot (" + slot + ")...");
 
@@ -636,7 +659,7 @@ public class OwnedItems
 		return items;
 	}
 
-	public static  ArrayList<StoreItem> getAllItemsForTypeSlot(int type, int slot)
+	public static ArrayList<StoreItem> getAllItemsForTypeSlot(int type, int slot, int sortState, int minRank, int pClass)
 	{
 		Log.d("owneditems", "getallitemsforslot: type=" + type + ", slot=" + slot);
 
@@ -650,14 +673,50 @@ public class OwnedItems
 
 				if (Helper.intArrayContainsInt(DefinitionArmor.ARMOR_SLOT[ownedItems.get(a).id()], slot))
 				{
-					items.add(ownedItems.get(a));
+					boolean classAllowed = true;
+					if (sortState == 1)
+					{
+						if (DefinitionArmor.ARMOR_MIN_LEVEL_TO_USE[ownedItems.get(a).id()] > minRank)
+							continue;
+
+						classAllowed = false;
+						for (int b = 0; b < DefinitionArmor.ARMOR_FOR_CLASS_ONLY[ownedItems.get(a).id()].length; b++)
+						{
+							if (DefinitionArmor.ARMOR_FOR_CLASS_ONLY[ownedItems.get(a).id()][b] == -1
+								|| DefinitionArmor.ARMOR_FOR_CLASS_ONLY[ownedItems.get(a).id()][b] == pClass)
+							{
+								classAllowed = true;
+								break;
+							}
+						}
+					}
+					if (classAllowed)
+						items.add(ownedItems.get(a));
 				}
 			}
 			else if (ownedItems.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_WEAPON)
 			{
 				if (Helper.intArrayContainsInt(DefinitionGlobal.EQUIP_SLOT_WEAPON, slot))
 				{
-					items.add(ownedItems.get(a));
+					boolean classAllowed = true;
+					if (sortState == 1)
+					{
+						if (DefinitionWeapons.WEAPON_MIN_LEVEL_TO_USE[ownedItems.get(a).id()] > minRank)
+							continue;
+
+						classAllowed = false;
+						for (int b = 0; b < DefinitionWeapons.WEAPON_ONLY_FOR_CLASSES[ownedItems.get(a).id()].length; b++)
+						{
+							if (DefinitionWeapons.WEAPON_ONLY_FOR_CLASSES[ownedItems.get(a).id()][b] == -1
+								|| DefinitionWeapons.WEAPON_ONLY_FOR_CLASSES[ownedItems.get(a).id()][b] == pClass)
+							{
+								classAllowed = true;
+								break;
+							}
+						}
+					}
+					if (classAllowed)
+						items.add(ownedItems.get(a));
 				}
 			}
 			else if (ownedItems.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_ITEM)
@@ -672,22 +731,37 @@ public class OwnedItems
 		return items;
 	}
 	
-	public static ArrayList<ItemClass> getAllClasses()
+	public static ArrayList<Integer> getAllClassIds()
 	{
-		ArrayList<ItemClass> items = new ArrayList<ItemClass>();
+		ArrayList<Integer> classIds = new ArrayList<Integer>();
 		
 		for (int a = 0; a < ownedItems.size(); a++)
 		{
 			if (ownedItems.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS)
 			{
-				items.add((ItemClass)ownedItems.get(a));
+				classIds.add(ownedItems.get(a).id());
+			}
+		}
+
+		return classIds;
+	}
+
+	public static ArrayList<ItemClass> getAllClasses()
+	{
+		ArrayList<ItemClass> items = new ArrayList<ItemClass>();
+
+		for (int a = 0; a < ownedItems.size(); a++)
+		{
+			if (ownedItems.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS)
+			{
+				items.add((ItemClass) ownedItems.get(a));
 			}
 		}
 
 		return items;
 	}
 
-	public static  ArrayList<StoreItem> getAllItemsOfType(int t)
+	public static ArrayList<StoreItem> getAllItemsOfType(int t)
 	{
 		ArrayList<StoreItem> items = new ArrayList<StoreItem>();
 
@@ -702,17 +776,17 @@ public class OwnedItems
 		return items;
 	}
 
-	public static  int gold()
+	public static int gold()
 	{
 		return _gold;
 	}
 
-	public static  void setGold(int gold)
+	public static void setGold(int gold)
 	{
 		_gold = gold;
 	}
 
-	public static  void updateGold(int amt)
+	public static void updateGold(int amt)
 	{
 		_gold += amt;
 	}

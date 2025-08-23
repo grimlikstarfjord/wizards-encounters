@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_height="wrap_content"
-	android:layout_width="100dp"
-	android:padding="4dip"
-	android:background="#CC112233"
->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="120dp"
+    android:layout_height="wrap_content"
+    android:background="#CC112233"
+    android:orientation="vertical"
+    android:padding="4dip" >
 
     <TextView
         android:id="@+id/attackListName"
@@ -14,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="attackListName"
         android:textColor="#FFFFFF"
-        android:textSize="17sp" android:layout_weight="1"/>
+        android:textSize="17sp" />
 
     <TextView
         android:id="@+id/attackListStat1"
@@ -22,14 +20,30 @@
         android:layout_height="wrap_content"
         android:text="stat1"
         android:textColor="#44BBFF"
-        android:textSize="14sp" android:layout_weight="1"/>
+        android:textSize="14sp" />
 
-	<TextView
-		android:text="stat2"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:id="@+id/attackListStat2"
-		android:textColor="#FFFFAA"
-		android:textSize="14sp" android:layout_weight="1"/>
+    <TextView
+        android:id="@+id/attackListStat2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stat2"
+        android:textColor="#FF00FF"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/attackListStat3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stat3"
+        android:textColor="#FFFF00"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/attackListStat4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stat4"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#FFFFFF" />
 
 </LinearLayout>

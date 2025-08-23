@@ -27,7 +27,6 @@ public class BackgroundManager
 		backgrounds.add(R.drawable.blacktidepoolbackground);
 		backgrounds.add(R.drawable.camp);
 		backgrounds.add(R.drawable.canopycavebackground);
-		backgrounds.add(R.drawable.elderhutbackground);
 		backgrounds.add(R.drawable.grassyplainsbackground);
 		backgrounds.add(R.drawable.rollingfoothillsbackground);
 		backgrounds.add(R.drawable.septictombbackground);

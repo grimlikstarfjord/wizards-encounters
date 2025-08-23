@@ -14,7 +14,7 @@ public class CombatEffect implements Serializable
 	private int _turnsRemaining = 0;			
 	private boolean _stuns = false;
 	private boolean _blocksAbilities = false;
-	private boolean _makesImmuneToEffects = false;
+	private boolean _makesImmuneToBadEffects = false;
 	private int _modHPPerTurn = 0;
 	private int _modAPPerTurn = 0;
 	private int _modHitChance = 0;
@@ -44,7 +44,7 @@ public class CombatEffect implements Serializable
 		_image = DefinitionEffects.EFFECT_IMAGE[_id];
 		_description = DefinitionEffects.EFFECT_DESCRIPTIONS[_id];
 		_blocksAbilities = DefinitionEffects.EFFECT_BLOCKS_ABILITIES[_id];
-		_makesImmuneToEffects = DefinitionEffects.EFFECT_MAKES_IMMUNE_TO_EFFECTS[_id];
+		_makesImmuneToBadEffects = DefinitionEffects.EFFECT_MAKES_IMMUNE_TO_EFFECTS[_id];
 		_modHPPerTurn = DefinitionEffects.EFFECT_MOD_HP_PER_TURN[_id];
 		_modAPPerTurn = DefinitionEffects.EFFECT_MOD_AP_PER_TURN[_id];
 		_modHitChance = DefinitionEffects.EFFECT_MOD_HIT_CHANCE[_id];
@@ -106,6 +106,8 @@ public class CombatEffect implements Serializable
 	public void updateTurns()
 	{
 		_turnsRemaining--;
+		if(_turnsRemaining < 0)
+			_turnsRemaining = 0;
 	}
 
 	public boolean stuns()
@@ -172,9 +174,9 @@ public class CombatEffect implements Serializable
 		return _modDodge;
 	}
 
-	public boolean makesImmuneToEffects()
+	public boolean makesImmuneToBadEffects()
 	{
-		return _makesImmuneToEffects;
+		return _makesImmuneToBadEffects;
 	}		
 	
 	public void addTurn()

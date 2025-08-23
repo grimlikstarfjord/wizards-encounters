@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#333388" >
+    android:background="#002234" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,14 +15,19 @@
 
             <Button
                 android:id="@+id/storeLeaveButton"
-                android:layout_width="75dp"
-                android:layout_height="wrap_content"
-                android:text="&lt; Leave" />
+                android:layout_width="90dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/buttondoneleftup" />
 
             <TextView
                 android:id="@+id/storeCurrentTypeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Weapons"
@@ -30,9 +35,17 @@
 
             <Button
                 android:id="@+id/storeNextTypeButton"
-                android:layout_width="105dp"
-                android:layout_height="wrap_content"
-                android:text="Chest Armor &gt;" android:textSize="13sp"/>
+                android:layout_width="90dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="2dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/itembuttonup"
+                android:text="Armor >"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -42,48 +55,23 @@
 
             <TextView
                 android:id="@+id/textView1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_margin="2dp"
+                android:layout_weight="0.3"
                 android:gravity="center"
-                android:text="Sort:"
+                android:text="Show:"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <TextView
-                android:id="@+id/storeSortNameText"
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/storeSortButton"
+                android:layout_width="0dp"
                 android:layout_height="fill_parent"
-                android:layout_margin="1dp"
-                android:layout_weight="1"
+                android:layout_margin="2dp"
+                android:layout_weight="0.7"
                 android:background="#CCAA33"
-                android:clickable="true"
-                android:gravity="center"
-                android:text="Name"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:text="Only Usable + Affordable" />
 
-            <TextView
-                android:id="@+id/storeSortLevelText"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_margin="1dp"
-                android:layout_weight="1"
-                android:background="#CCAA33"
-                android:clickable="true"
-                android:gravity="center"
-                android:text="Level"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/storeSortGoldText"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_margin="1dp"
-                android:layout_weight="1"
-                android:background="#CCAA33"
-                android:clickable="true"
-                android:gravity="center"
-                android:text="Price"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
 
         <ListView
@@ -102,14 +90,19 @@
                 android:id="@+id/storeCurrentGoldText"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
                 android:text="400gp"
-                android:textAppearance="?android:attr/textAppearanceLarge" android:gravity="center_vertical" android:layout_weight="1"/>
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
                 android:id="@+id/storeBuyButton"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:text="Buy" />
+                android:layout_width="90dp"
+                android:layout_height="45dp"
+                android:layout_margin="3dp"
+                android:background="@drawable/buttonbuy" />
+
         </LinearLayout>
     </LinearLayout>
 
@@ -124,9 +117,10 @@
 
         <Button
             android:id="@+id/storeDrawerButton"
-            android:layout_width="90dp"
-            android:layout_height="wrap_content"
-            android:text="Show Inventory"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:background="@drawable/buttonopeninventory"
+            android:gravity="center"
             android:textSize="12sp" />
 
         <LinearLayout
@@ -155,14 +149,6 @@
             android:layout_height="35dp"
             android:gravity="center_vertical" android:id="@+id/storeDrawerSortLayout" android:background="#774400">
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Sort:"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/storeDrawerSortNameText"
@@ -171,10 +157,11 @@
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="#CCAA33"
-                android:clickable="true"
+                android:clickable="false"
                 android:gravity="center"
                 android:text="Name"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+
 
             <TextView
                 android:id="@+id/storeDrawerSortLevelText"
@@ -183,22 +170,25 @@
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="#CCAA33"
-                android:clickable="true"
+                android:clickable="false"
                 android:gravity="center"
                 android:text="Level"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
 
             <TextView
                 android:id="@+id/storeDrawerSortGoldText"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_margin="1dp"
-                android:layout_weight="1"
+                android:layout_weight="0.2"
                 android:background="#CCAA33"
-                android:clickable="true"
+                android:clickable="false"
                 android:gravity="center"
                 android:text="Price"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+
         </LinearLayout>
 
             <ListView
@@ -211,20 +201,25 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:background="#445599">
+                android:layout_height="wrap_content"
+                android:background="#445599" >
 
                 <TextView
                     android:id="@+id/storeCurrentGoldText2"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
                     android:text="400gp"
-                    android:textAppearance="?android:attr/textAppearanceLarge" android:gravity="center_vertical" android:layout_weight="1"/>
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <Button
                     android:id="@+id/storeSellButton"
-                    android:layout_width="85dp"
-                    android:layout_height="wrap_content"
-                    android:text="Sell" />
+                    android:layout_width="90dp"
+                    android:layout_height="45dp"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/buttonsell" />
 
             </LinearLayout>
 

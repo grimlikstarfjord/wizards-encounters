@@ -17,6 +17,7 @@ public abstract class Actor implements Serializable
 	private int _rank = -1;
 	private ArrayList<Integer> _activeAbilities = new ArrayList<Integer>();
 	private ArrayList<CombatEffect> _activeEffects = new ArrayList<CombatEffect>();
+	private ArrayList<UsedAbility> _usedAbilities = new ArrayList<UsedAbility>();
 
 	public void removeEffects()
 	{
@@ -65,7 +66,7 @@ public abstract class Actor implements Serializable
 	private boolean _stunned = false;
 	private boolean _dead = false;
 	private boolean _cannotUseAbilities = false;
-	private boolean _immuneToEffects = false;
+	private boolean _immuneToBadEffects = false;
 	private boolean _casting = false;
 	private int _castingTurnsLeft = 0;
 
@@ -76,8 +77,9 @@ public abstract class Actor implements Serializable
 		_stunned = false;
 		_dead = false;
 		_cannotUseAbilities = false;
-		_immuneToEffects = false;
+		_immuneToBadEffects = false;
 		_casting = false;
+		clearCounters();
 	}
 
 	private int _activeCastingAbility = -1;
@@ -97,19 +99,25 @@ public abstract class Actor implements Serializable
 
 	private int _counterAbsorbDamageMin = 0;
 	private int _counterAbsorbDamageMax = 0;
-	private int _counterAbsorbDamageTurns = 0;
+	private int _counterAbsorbDamageCharges = 0;
 
-	private int _counterModifyHPStatBasedTurns = 0;
-	private int _counterModifyHPStatBasedId = 0;
-	private int _counterModifyHPStatBasedMult = 0;
+	// private int _counterModifyHPStatBasedTurns = 0;
+	// private int _counterModifyHPStatBasedId = 0;
+	// private int _counterModifyHPStatBasedMult = 0;
+
+	private int _counterModifyStatTurns = 0;
+	private int _counterModifyStatId = 0;
+	private double _counterModifyStatPercent = 0;
 
 	private int _counterDotModifyHPMaxHPBasedHPTurns = 0;
 	private int _counterDotModifyHPMaxHPBasedHPAmount = 0;
+	private String _counterDotModifyHPMaxHPBasedHPName = "";
 
 	private int _counterDotModifyHPStatBasedTurns = 0;
 	private int _counterDotModifyHPStatBasedAmount = 0;
+	private String _counterDotModifyHPStatBasedName = "";
 
-	private int _counterModifyWeaponDamageTurns = 0;
+	protected int _counterModifyWeaponDamageTurns = 0;
 	private int _counterModifyWeaponDamageAmount = 0;
 	private int _counterModifyWeaponDamageAmountBonus = 0;
 	private int _counterModifyWeaponDamageBonusEffectActiveId = -1;
@@ -123,20 +131,23 @@ public abstract class Actor implements Serializable
 	private int _counterDotModifyHPWeaponDamageBasedEffectActiveId = 0;
 	private int _counterDotModifyHPWeaponBasedSourceAmount = 0;
 
+	private int _counterDotModifyHPStatTimesWpnDmgBasedTurns = 0;
+	private int _counterDotModifyHPStatTimesWpnDmgBasedAmount = 0;
+	private String _counterDotModifyHPStatTimesWpnDmgBasedName = "";
+
 	private int _counterReflectDamageTurns = 0;
 	private int _counterReflectPercentAmount = 0;
 
 	private int _counterModifyStatForStatTurnsTurns = 0;
 	private int _counterModifyStatForStatTurnsStatId = 0;
 	private int _counterModifyStatForStatTurnsAmount = 0;
-	
+
 	private int _counterModifyHPStatIsPercentWithMultTurns = 0;
 	private int _counterModifyHPStatIsPercentWithMultAmount = 0;
+	private String _counterModifyHPStatIsPercentWithMultName = "";
 
 	/* combat instance counters */
 	private int _noAbilityInARow = 0;
-	private int _missesInARow = 0;
-	private int _stunsInARow = 0;
 
 	public int getDamageCounterBonus(int baseDmg)
 	{
@@ -153,6 +164,10 @@ public abstract class Actor implements Serializable
 				dmg += Helper.getPercentFromInt(_counterModifyWeaponDamageAmount, baseDmg);
 			}
 		}
+
+		Log.d("modifier", name() + ", counterModifyWeaponDamageTurns: " + _counterModifyWeaponDamageTurns + ", %="
+			+ _counterModifyWeaponDamageAmount + ", baseDmg=" + baseDmg + ", +amt = " + dmg);
+
 		return dmg;
 	}
 
@@ -162,10 +177,7 @@ public abstract class Actor implements Serializable
 
 	public abstract int getDamage();
 
-	public void modifyAttackPower(int amount, int turns)
-	{
-		// TODO did I do this?
-	}
+	public abstract int getMaxDamage();
 
 	public void setName(String n)
 	{
@@ -287,29 +299,28 @@ public abstract class Actor implements Serializable
 
 	public void addActiveAbility(int rune)
 	{
-		_activeAbilities.add(rune);
+		if (!_activeAbilities.contains(rune))
+			_activeAbilities.add(rune);
 	}
 
 	public boolean checkPlayerHasAbility(int id)
 	{
-		for (int a = 0; a < _activeAbilities.size(); a++)
-			if (_activeAbilities.get(a) == id)
-				return true;
-
-		return false;
+		return _activeAbilities.contains(id);
 	}
 
 	private void clearModifiers()
 	{
 		_stunned = false;
 		_cannotUseAbilities = false;
-		_immuneToEffects = false;
+		_immuneToBadEffects = false;
 
 		_abilityAbsorbDamage = 0;
 		_abilityModHitDamage = 0;
 		_abilityModStrength = 0;
 		_abilityModKnowledge = 0;
 		_abilityModReaction = 0;
+		_abilityModMagelore = 0;
+		_abilityModLuck = 0;
 		_abilityModHitChance = 0;
 		_abilityModCritChance = 0;
 		_abilityModStunChance = 0;
@@ -323,20 +334,55 @@ public abstract class Actor implements Serializable
 		_effectModStrength = 0;
 		_effectModReaction = 0;
 		_effectModKnowledge = 0;
+		_effectModMagelore = 0;
+		_effectModLuck = 0;
 		_effectModDodge = 0;
+	}
+
+	private void clearCounters()
+	{
+		_counterModifyStatTurns = 0;
+		_counterDotModifyHPMaxHPBasedHPTurns = 0;
+		_counterDotModifyHPStatBasedTurns = 0;
+		_counterModifyWeaponDamageTurns = 0;
+		_counterDotModifyHPWeaponDamageBasedTurns = 0;
+		_counterDotModifyHPStatTimesWpnDmgBasedTurns = 0;
+		_counterReflectDamageTurns = 0;
+		_counterModifyStatForStatTurnsTurns = 0;
+		_counterModifyHPStatIsPercentWithMultTurns = 0;
+		_counterModStrength = 0;
+		_counterModKnowledge = 0;
+		_counterModReaction = 0;
+		_counterModMagelore = 0;
+		_counterModLuck = 0;
+		_counterModStrength2 = 0;
+		_counterModKnowledge2 = 0;
+		_counterModReaction2 = 0;
+		_counterModMagelore2 = 0;
+		_counterModLuck2 = 0;
+	}
+	
+	public boolean shouldUseWeaponAttack()
+	{
+		if(_counterModifyWeaponDamageTurns > 0)
+			return true;
+		
+		return false;
 	}
 
 	public ArrayList<ReturnData> advanceTurn()
 	{
+		Log.d("combat", "advancing turn for Actor " + name() + "...");
+
 		ArrayList<ReturnData> returnData = new ArrayList<ReturnData>();
 
 		clearModifiers();
 
-		returnData = updateAbilityCounters();
+		returnData.addAll(updateAbilityCounters());
 
-		returnData = updateEffectCounters(returnData);
+		returnData.addAll(updateEffectCounters());
 
-		returnData = updateCastingCounter(returnData);
+		returnData.addAll(updateCastingCounter());
 
 		return returnData;
 	}
@@ -351,40 +397,126 @@ public abstract class Actor implements Serializable
 		return _castingTurnsLeft;
 	}
 
-	private ArrayList<ReturnData> updateCastingCounter(ArrayList<ReturnData> returnData)
+	private ArrayList<ReturnData> updateCastingCounter()
 	{
-		if (!_casting)
-			return returnData;
+		ArrayList<ReturnData> rdArray = new ArrayList<ReturnData>();
 
-		if (_castingTurnsLeft < 0)
+		if (!_casting)
+			return rdArray;
+
+		if (_castingTurnsLeft <= 0)
 		{
 			_casting = false;
 			_castingTurnsLeft = 0;
 			_currentCastingAbility = null;
+			return rdArray;
 		}
 
-		ReturnData rd = new ReturnData();
-		rd.whatHappend = name() + " is casting... (" + _castingTurnsLeft + ")";
-		returnData.add(rd);
+		else
+		{
+			ReturnData rd = new ReturnData();
+			rd.whatHappend = name() + " is casting... (" + _castingTurnsLeft + ")";
+			rd.logType = DefinitionGlobal.LOG_TYPE_IS_CASTING;
+			rdArray.add(rd);
 
-		_castingTurnsLeft--;
+			_castingTurnsLeft--;
 
-		return returnData;
+			return rdArray;
+		}
 	}
 
 	public class ReturnData
 	{
 		String whatHappend = "";
+		int logType = -1;
+	}
+
+	private class UsedAbility
+	{
+		public int abilID = -1;
+		public int turnsUsed = -1;
+	}
+
+	public boolean canUseAbility(int abilId)
+	{
+		for (int a = 0; a < _usedAbilities.size(); a++)
+			if (_usedAbilities.get(a).abilID == abilId)
+				return false;
+
+		// never found it, add it
+		UsedAbility u = new UsedAbility();
+		u.abilID = abilId;
+		u.turnsUsed = (Integer) DefinitionRunes.runeData[abilId][DefinitionRunes.RUNE_REUSE_WAIT_TURNS][0];
+		_usedAbilities.add(u);
+
+		return true;
 	}
 
 	private ArrayList<ReturnData> updateAbilityCounters()
 	{
-		// TODO create the returnData for these abilities
+		// countdown used abilities counters
+		for (int a = 0; a < _usedAbilities.size(); a++)
+		{
+			_usedAbilities.get(a).turnsUsed--;
+			if (_usedAbilities.get(a).turnsUsed <= 0)
+				_usedAbilities.remove(a);
+		}
+
+		String actionName = name();
+		String actionNamePossessive = name() + "'s";
+		if (_actorType == 0)
+		{
+			actionName = "You";
+			actionNamePossessive = "Your";
+		}
 
 		ArrayList<ReturnData> returnDataArray = new ArrayList<ReturnData>();
+
+		_counterDotModifyHPStatTimesWpnDmgBasedTurns--;
+		if (_counterDotModifyHPStatTimesWpnDmgBasedTurns < 0)
+		{
+			_counterDotModifyHPStatTimesWpnDmgBasedTurns = 0;
+			_counterDotModifyHPStatTimesWpnDmgBasedAmount = 0;
+		}
+		else
+		{
+			updateHP(_counterDotModifyHPStatTimesWpnDmgBasedAmount);
+
+			ReturnData rd = new ReturnData();
+			if (_counterDotModifyHPStatTimesWpnDmgBasedAmount > 0)
+			{
+				rd.whatHappend =
+					actionName + " recovered " + _counterDotModifyHPStatTimesWpnDmgBasedAmount + " HP from "
+						+ _counterDotModifyHPStatTimesWpnDmgBasedName + ".";
+
+				if (_actorType == 0)
+					rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_HP;
+				else
+					rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_GAINS_HP;
+			}
+			else
+			{
+				rd.whatHappend =
+					actionName + " lost " + -_counterDotModifyHPStatTimesWpnDmgBasedAmount + " HP from "
+						+ _counterDotModifyHPStatTimesWpnDmgBasedName + ".";
+
+				if (_actorType == 0)
+					rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_LOSES_HP;
+				else
+					rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_LOSES_HP;
+			}
+			returnDataArray.add(rd);
+		}
 		
+		_counterReflectDamageTurns--;
+		if (_counterReflectDamageTurns < 0)
+		{
+			_counterReflectPercentAmount = 0;
+			_counterReflectDamageTurns = 0;
+		}
+
 		_counterModifyHPStatIsPercentWithMultTurns--;
-		if(_counterModifyHPStatIsPercentWithMultTurns < 0)
+		if (_counterModifyHPStatIsPercentWithMultTurns < 0)
 		{
 			_counterModifyHPStatIsPercentWithMultTurns = 0;
 			_counterModifyHPStatIsPercentWithMultAmount = 0;
@@ -392,19 +524,32 @@ public abstract class Actor implements Serializable
 		else
 		{
 			updateHP(_counterModifyHPStatIsPercentWithMultAmount);
-			
-			ReturnData rd = new ReturnData();			
-			if(_counterModifyHPStatIsPercentWithMultAmount > 0)
+
+			ReturnData rd = new ReturnData();
+			if (_counterModifyHPStatIsPercentWithMultAmount > 0)
 			{
-				rd.whatHappend = name() + " recovered " + _counterModifyHPStatIsPercentWithMultAmount + " HP.";
+				rd.whatHappend =
+					actionName + " recovered " + _counterModifyHPStatIsPercentWithMultAmount + " HP from "
+						+ _counterModifyHPStatIsPercentWithMultName + ".";
+
+				if (_actorType == 0)
+					rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_HP;
+				else
+					rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_GAINS_HP;
 			}
 			else
 			{
-				rd.whatHappend = name() + " lost " + _counterModifyHPStatIsPercentWithMultAmount + " HP.";
+				rd.whatHappend =
+					actionName + " lost " + -_counterModifyHPStatIsPercentWithMultAmount + " HP from "
+						+ _counterModifyHPStatIsPercentWithMultName + ".";
+
+				if (_actorType == 0)
+					rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_LOSES_HP;
+				else
+					rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_LOSES_HP;
 			}
 			returnDataArray.add(rd);
 		}
-		
 
 		_counterModifyStatForStatTurnsTurns--;
 		if (_counterModifyStatForStatTurnsTurns < 0)
@@ -421,103 +566,153 @@ public abstract class Actor implements Serializable
 			{
 				_counterModStrength2 += _counterModifyStatForStatTurnsAmount;
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend = name() + "s Strength was modified by " + _counterModifyStatForStatTurnsAmount + ".";
-				returnDataArray.add(rd);
+				if (_counterModifyStatForStatTurnsAmount != 0)
+				{
+					ReturnData rd = new ReturnData();
+					rd.whatHappend =
+						actionNamePossessive + " Execution was modified by " + _counterModifyStatForStatTurnsAmount
+							+ ".";
+					rd.logType = DefinitionGlobal.LOG_TYPE_DEFAULT;
+
+					returnDataArray.add(rd);
+
+				}
 			}
 			if (_counterModifyStatForStatTurnsStatId == 1 || _counterModifyStatForStatTurnsStatId == 99)
 			{
 				_counterModReaction2 += _counterModifyStatForStatTurnsAmount;
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend = name() + "s Reaction was modified by " + _counterModifyStatForStatTurnsAmount + ".";
-				returnDataArray.add(rd);
+				if (_counterModifyStatForStatTurnsAmount != 0)
+				{
+					ReturnData rd = new ReturnData();
+					rd.whatHappend =
+						actionNamePossessive + " Reaction was modified by " + _counterModifyStatForStatTurnsAmount
+							+ ".";
+					rd.logType = DefinitionGlobal.LOG_TYPE_DEFAULT;
+					returnDataArray.add(rd);
+				}
 			}
 			if (_counterModifyStatForStatTurnsStatId == 2 || _counterModifyStatForStatTurnsStatId == 99)
 			{
 				_counterModKnowledge2 += _counterModifyStatForStatTurnsAmount;
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend = name() + "s Knowledge was modified by " + _counterModifyStatForStatTurnsAmount + ".";
-				returnDataArray.add(rd);
+				if (_counterModifyStatForStatTurnsAmount != 0)
+				{
+					ReturnData rd = new ReturnData();
+					rd.whatHappend =
+						actionNamePossessive + " Knowledge was modified by " + _counterModifyStatForStatTurnsAmount
+							+ ".";
+					rd.logType = DefinitionGlobal.LOG_TYPE_DEFAULT;
+					returnDataArray.add(rd);
+				}
 			}
 			if (_counterModifyStatForStatTurnsStatId == 3 || _counterModifyStatForStatTurnsStatId == 99)
 			{
 				_counterModMagelore2 += _counterModifyStatForStatTurnsAmount;
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend = name() + "s Magelore was modified by " + _counterModifyStatForStatTurnsAmount + ".";
-				returnDataArray.add(rd);
+				if (_counterModifyStatForStatTurnsAmount != 0)
+				{
+					ReturnData rd = new ReturnData();
+					rd.whatHappend =
+						actionNamePossessive + " Magelore was modified by " + _counterModifyStatForStatTurnsAmount
+							+ ".";
+					rd.logType = DefinitionGlobal.LOG_TYPE_DEFAULT;
+					returnDataArray.add(rd);
+				}
 			}
 			if (_counterModifyStatForStatTurnsStatId == 4 || _counterModifyStatForStatTurnsStatId == 99)
 			{
 				_counterModLuck2 += _counterModifyStatForStatTurnsAmount;
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend = name() + "s Luck was modified by " + _counterModifyStatForStatTurnsAmount + ".";
-				returnDataArray.add(rd);
+				if (_counterModifyStatForStatTurnsAmount != 0)
+				{
+					ReturnData rd = new ReturnData();
+					rd.whatHappend =
+						actionNamePossessive + " Luck was modified by " + _counterModifyStatForStatTurnsAmount + ".";
+					rd.logType = DefinitionGlobal.LOG_TYPE_DEFAULT;
+					returnDataArray.add(rd);
+				}
 			}
 		}
 
-		_counterAbsorbDamageTurns--;
-		if (_counterAbsorbDamageTurns < 0)
-		{
-			_counterAbsorbDamageTurns = 0;
-			_counterAbsorbDamageMin = 0;
-			_counterAbsorbDamageMax = 0;
-		}
-
-		_counterModifyHPStatBasedTurns--;
-		if (_counterModifyHPStatBasedTurns < 0)
-			_counterModifyHPStatBasedTurns = 0;
+		_counterModifyStatTurns--;
+		if (_counterModifyStatTurns < 0)
+			_counterModifyStatTurns = 0;
 		else
 		{
-			if (_counterModifyHPStatBasedId == 0)
+			if (_counterModifyStatId == 0)
 			{
-				_counterModStrength += strength() * _counterModifyHPStatBasedMult;
+				_counterModStrength += Math.round((double) exec() * _counterModifyStatPercent);
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend =
-					name() + "s Strength was modified by " + (strength() * _counterModifyHPStatBasedMult) + ".";
-				returnDataArray.add(rd);
+				if (_counterModStrength != 0)
+				{
+					ReturnData rd = new ReturnData();
+					rd.whatHappend =
+						actionNamePossessive + " Strength was modified by "
+							+ (Math.round((double) exec() * _counterModifyStatPercent)) + ".";
+					rd.logType = DefinitionGlobal.LOG_TYPE_DEFAULT;
+					returnDataArray.add(rd);
+				}
 			}
 
-			if (_counterModifyHPStatBasedId == 1)
+			if (_counterModifyStatId == 1)
 			{
-				_counterModReaction += reaction() * _counterModifyHPStatBasedMult;
+				_counterModReaction += Math.round((double) reaction() * _counterModifyStatPercent);
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend =
-					name() + "s Reaction was modified by " + (reaction() * _counterModifyHPStatBasedMult) + ".";
-				returnDataArray.add(rd);
+				if (_counterModReaction != 0)
+				{
+					ReturnData rd = new ReturnData();
+					rd.whatHappend =
+						actionNamePossessive + " Reaction was modified by "
+							+ (Math.round((double) reaction() * _counterModifyStatPercent)) + ".";
+					rd.logType = DefinitionGlobal.LOG_TYPE_DEFAULT;
+					returnDataArray.add(rd);
+				}
 			}
 
-			if (_counterModifyHPStatBasedId == 2)
+			if (_counterModifyStatId == 2)
 			{
-				_counterModKnowledge += knowledge() * _counterModifyHPStatBasedMult;
+				_counterModKnowledge += Math.round((double) knowledge() * _counterModifyStatPercent);
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend =
-					name() + "s Knowledge was modified by " + (knowledge() * _counterModifyHPStatBasedMult) + ".";
-				returnDataArray.add(rd);
+				if (_counterModKnowledge != 0)
+				{
+					ReturnData rd = new ReturnData();
+					rd.whatHappend =
+						actionNamePossessive + " Knowledge was modified by "
+							+ (Math.round((double) knowledge() * _counterModifyStatPercent)) + ".";
+					rd.logType = DefinitionGlobal.LOG_TYPE_DEFAULT;
+					returnDataArray.add(rd);
+				}
 			}
 
-			if (_counterModifyHPStatBasedId == 3)
+			if (_counterModifyStatId == 3)
 			{
-				_counterModMagelore += magelore() * _counterModifyHPStatBasedMult;
-				ReturnData rd = new ReturnData();
-				rd.whatHappend =
-					name() + "s Magelore was modified by " + (magelore() * _counterModifyHPStatBasedMult) + ".";
-				returnDataArray.add(rd);
+				_counterModMagelore += Math.round((double) magelore() * _counterModifyStatPercent);
+
+				if (_counterModMagelore != 0)
+				{
+					ReturnData rd = new ReturnData();
+					rd.whatHappend =
+						actionNamePossessive + " Magelore was modified by "
+							+ (Math.round((double) magelore() * _counterModifyStatPercent)) + ".";
+					rd.logType = DefinitionGlobal.LOG_TYPE_DEFAULT;
+					returnDataArray.add(rd);
+				}
 			}
 
-			if (_counterModifyHPStatBasedId == 4)
+			if (_counterModifyStatId == 4)
 			{
-				_counterModLuck += luck() * _counterModifyHPStatBasedMult;
+				_counterModLuck += Math.round((double) luck() * _counterModifyStatPercent);
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend = name() + "s Luck was modified by " + (luck() * _counterModifyHPStatBasedMult) + ".";
-				returnDataArray.add(rd);
+				if (_counterModLuck != 0)
+				{
+					ReturnData rd = new ReturnData();
+					rd.whatHappend =
+						actionNamePossessive + " Luck was modified by "
+							+ (Math.round((double) luck() * _counterModifyStatPercent)) + ".";
+					rd.logType = DefinitionGlobal.LOG_TYPE_DEFAULT;
+					returnDataArray.add(rd);
+				}
 			}
 
 		}
@@ -529,6 +724,34 @@ public abstract class Actor implements Serializable
 		}
 		else
 		{
+			ReturnData rd = new ReturnData();
+
+			if (_counterDotModifyHPMaxHPBasedHPAmount < 0)
+			{
+
+				if (_actorType == 0)
+					rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_LOSES_HP;
+				else
+					rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_LOSES_HP;
+
+				rd.whatHappend =
+					actionName + " lost " + -_counterDotModifyHPMaxHPBasedHPAmount + " HP from "
+						+ _counterDotModifyHPMaxHPBasedHPName + ".";
+				returnDataArray.add(rd);
+			}
+			else if (_counterDotModifyHPMaxHPBasedHPAmount > 0)
+			{
+				if (_actorType == 0)
+					rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_HP;
+				else
+					rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_GAINS_HP;
+
+				rd.whatHappend =
+					actionName + " gained " + _counterDotModifyHPMaxHPBasedHPAmount + " HP from "
+						+ _counterDotModifyHPMaxHPBasedHPName + ".";
+				returnDataArray.add(rd);
+			}
+
 			updateHP(_counterDotModifyHPMaxHPBasedHPAmount);
 		}
 
@@ -539,6 +762,33 @@ public abstract class Actor implements Serializable
 		}
 		else
 		{
+			ReturnData rd = new ReturnData();
+
+			if (_counterDotModifyHPStatBasedAmount < 0)
+			{
+				if (_actorType == 0)
+					rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_LOSES_HP;
+				else
+					rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_LOSES_HP;
+
+				rd.whatHappend =
+					actionName + " lost " + -_counterDotModifyHPStatBasedAmount + " HP from "
+						+ _counterDotModifyHPMaxHPBasedHPName + ".";
+			}
+			else
+			{
+				if (_actorType == 0)
+					rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_HP;
+				else
+					rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_GAINS_HP;
+
+				rd.whatHappend =
+					actionName + " gained " + _counterDotModifyHPStatBasedAmount + " HP from "
+						+ _counterDotModifyHPStatBasedName + ".";
+			}
+
+			returnDataArray.add(rd);
+
 			updateHP(_counterDotModifyHPStatBasedAmount);
 		}
 
@@ -585,32 +835,45 @@ public abstract class Actor implements Serializable
 			updateHP(amt);
 
 			if (amt < 0)
+			{
+				if (_actorType == 0)
+					rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_LOSES_HP;
+				else
+					rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_LOSES_HP;
+
 				rd.whatHappend =
-					name() + " took " + amt + " damage from " + _counterDotModifyHPWeaponDamageBasedName + ".";
+					actionName + " took " + (-amt) + " damage from " + _counterDotModifyHPWeaponDamageBasedName + ".";
+			}
 			else if (amt > 0)
+			{
+				if (_actorType == 0)
+					rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_HP;
+				else
+					rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_GAINS_HP;
+
 				rd.whatHappend =
-					name() + " gained " + amt + "HP from " + _counterDotModifyHPWeaponDamageBasedName + ".";
+					actionName + " gained " + amt + "HP from " + _counterDotModifyHPWeaponDamageBasedName + ".";
+
+			}
 			else
-				rd.whatHappend = _counterDotModifyHPWeaponDamageBasedName + " didn't work right";
+				rd.whatHappend =
+					_counterDotModifyHPWeaponDamageBasedName + " didn't work right. mult=" + mult + ", ctrsrcAmt="
+						+ _counterDotModifyHPWeaponBasedSourceAmount + ", finalAmt=" + amt;
 
 			returnDataArray.add(rd);
-		}
-
-		_counterReflectDamageTurns--;
-		if (_counterReflectDamageTurns < 0)
-		{
-			_counterReflectPercentAmount = 0;
-			_counterReflectDamageTurns = 0;
 		}
 
 		return returnDataArray;
 
 	}
 
-	private ArrayList<ReturnData> updateEffectCounters(ArrayList<ReturnData> returnData)
+	private ArrayList<ReturnData> updateEffectCounters()
 	{
+		ArrayList<ReturnData> rdArray = new ArrayList<ReturnData>();
+		String targetName = name();
 
-		// TODO create returnData for these effect updates
+		if (_actorType == 0)
+			targetName = "You";
 
 		// first update turns
 		for (int a = 0; a < _activeEffects.size(); a++)
@@ -623,6 +886,7 @@ public abstract class Actor implements Serializable
 				_activeEffects.remove(a);
 			}
 		}
+
 		for (int a = 0; a < _activeEffects.size(); a++)
 		{
 			if (_activeEffects.get(a).stuns())
@@ -635,48 +899,109 @@ public abstract class Actor implements Serializable
 				_cannotUseAbilities = true;
 			}
 
-			if (_activeEffects.get(a).makesImmuneToEffects())
+			if (_activeEffects.get(a).makesImmuneToBadEffects())
 			{
-				_immuneToEffects = true;
+				_immuneToBadEffects = true;
 			}
 
 			if (_activeEffects.get(a).modHPPerTurn() != 0)
 			{
-				String text = " gained ";
-				if (_activeEffects.get(a).modHPPerTurn() < 0)
-					text = " lost ";
+				int amt = Helper.getPercentFromInt(_activeEffects.get(a).modHPPerTurn(), maxHP());
+				if (amt == 0)
+					if (_activeEffects.get(a).modHPPerTurn() < 0)
+						amt = -1;
+					else
+						amt = 1;
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend =
-					name() + text + updateHP(Helper.getPercentFromInt(_activeEffects.get(a).modHPPerTurn(), maxHP()))
-						+ " HP from being " + _activeEffects.get(a) + ".";
+				int result = updateHP(amt);
+				if (result < 0)
+					result = -result;
+
+				if (result != 0)
+				{
+					ReturnData rd = new ReturnData();
+
+					String text = "gained";
+					if (amt < 0)
+					{
+						text = "lost";
+						if (_actorType == 0)
+							rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_LOSES_HP;
+						else
+							rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_LOSES_HP;
+					}
+					else
+					{
+						if (_actorType == 0)
+							rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_HP;
+						else
+							rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_GAINS_HP;
+					}
+
+					rd.whatHappend =
+						targetName + " " + text + " " + result + " HP from being " + _activeEffects.get(a).name() + ".";
+
+					rdArray.add(rd);
+				}
 			}
 
 			if (_activeEffects.get(a).modAPPerTurn() != 0)
 			{
-				String text = " gained ";
-				if (_activeEffects.get(a).modAPPerTurn() < 0)
-					text = " lost ";
+				int amt = Helper.getPercentFromInt(_activeEffects.get(a).modAPPerTurn(), maxAP());
+				if (amt == 0)
+				{
+					if (_activeEffects.get(a).modAPPerTurn() < 0)
+						amt = -1;
+					else
+						amt = 1;
+				}
 
-				ReturnData rd = new ReturnData();
-				rd.whatHappend =
-					name() + text + updateAP(Helper.getPercentFromInt(_activeEffects.get(a).modAPPerTurn(), maxAP()))
-						+ " AP from being " + _activeEffects.get(a) + ".";
+				String text = " gained ";
+
+				int result = updateAP(amt);
+				if (result < 0)
+					result = -result;
+
+				if (result != 0)
+				{
+					ReturnData rd = new ReturnData();
+
+					if (amt < 0)
+					{
+						text = " lost ";
+						if (_actorType == 0)
+							rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_LOSES_AP;
+						else
+							rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_LOSES_AP;
+					}
+					else
+					{
+						if (_actorType == 0)
+							rd.logType = DefinitionGlobal.LOG_TYPE_PLAYER_GAINS_AP;
+						else
+							rd.logType = DefinitionGlobal.LOG_TYPE_MONSTER_GAINS_AP;
+					}
+
+					rd.whatHappend =
+						targetName + text + result + " AP from being " + _activeEffects.get(a).name() + ".";
+					rdArray.add(rd);
+				}
 			}
 
 			_effectModHitChance += _activeEffects.get(a).modHitChance();
 			_effectModHitDamage += _activeEffects.get(a).modHitDamage();
 			_effectModCritChance += _activeEffects.get(a).modCritChance();
+			_effectModDodge += _activeEffects.get(a).modDodge();
+
 			_effectModStrength += _activeEffects.get(a).modStrength();
 			_effectModReaction += _activeEffects.get(a).modReaction();
 			_effectModKnowledge += _activeEffects.get(a).modKnowledge();
 			_effectModMagelore += _activeEffects.get(a).modMagelore();
 			_effectModLuck += _activeEffects.get(a).modLuck();
-			_effectModDodge += _activeEffects.get(a).modDodge();
 
 		}
 
-		return returnData;
+		return rdArray;
 	}
 
 	public ArrayList<CombatEffect> getActiveEffects()
@@ -687,6 +1012,16 @@ public abstract class Actor implements Serializable
 	public CombatEffect getActiveEffectByIndex(int ind)
 	{
 		return _activeEffects.get(ind);
+	}
+
+	public boolean hasActiveEffect(int effectId)
+	{
+		for (int a = 0; a < _activeEffects.size(); a++)
+		{
+			if (_activeEffects.get(a).id() == effectId)
+				return true;
+		}
+		return false;
 	}
 
 	public CombatEffect getActiveEffectByEffectId(int id)
@@ -708,16 +1043,18 @@ public abstract class Actor implements Serializable
 			for (int a = 0; a < turns; a++)
 				e.addTurn();
 
-			_stunsInARow++;
 		}
 		else
 		{
 			CombatEffect e = new CombatEffect(Helper.getEffectIdByName("Stunned"));
 			_activeEffects.add(e);
+			
+			//add 1 extra for initial stun
+			e.addTurn();
+			
 			for (int a = 0; a < turns; a++)
 				e.addTurn();
 
-			_stunsInARow = 1;
 		}
 	}
 
@@ -758,9 +1095,9 @@ public abstract class Actor implements Serializable
 		return _cannotUseAbilities;
 	}
 
-	public boolean immuneToEffects()
+	public boolean immuneToBadEffects()
 	{
-		return _immuneToEffects;
+		return _immuneToBadEffects;
 	}
 
 	public int modDodgeChance()
@@ -813,7 +1150,7 @@ public abstract class Actor implements Serializable
 
 	public int execDiff()
 	{
-		return strength() - _baseStrength;
+		return exec() - _baseStrength;
 	}
 
 	public int reacDiff()
@@ -836,71 +1173,103 @@ public abstract class Actor implements Serializable
 		return luck() - _baseLuck;
 	}
 
-	public int strength()
+	public int exec()
 	{
-		return _baseStrength + _effectModStrength + _abilityModStrength + _counterModStrength + _counterModStrength2;
+
+		int effMod = Helper.getPercentFromInt(_effectModStrength, _baseStrength);
+		int ablMod = Helper.getPercentFromInt(_abilityModStrength, _baseStrength);
+		int ctr1Mod = Helper.getPercentFromInt(_counterModStrength, _baseStrength);
+		int ctr2Mod = _counterModStrength2;
+
+		return _baseStrength + effMod + ablMod + ctr1Mod + ctr2Mod;
 	}
 
 	public int reaction()
 	{
-		return _baseReaction + _effectModReaction + _abilityModReaction + _counterModReaction + _counterModReaction2;
+		int effMod = Helper.getPercentFromInt(_effectModReaction, _baseReaction);
+		int ablMod = Helper.getPercentFromInt(_abilityModReaction, _baseReaction);
+		int ctr1Mod = Helper.getPercentFromInt(_counterModReaction, _baseReaction);
+		int ctr2Mod = _counterModReaction2;
+
+		return _baseReaction + effMod + ablMod + ctr1Mod + ctr2Mod;
 	}
 
 	public int knowledge()
 	{
-		return _baseKnowledge + _effectModKnowledge + _abilityModKnowledge + _counterModKnowledge
-			+ _counterModKnowledge2;
+
+		int effMod = Helper.getPercentFromInt(_effectModKnowledge, _baseKnowledge);
+		int ablMod = Helper.getPercentFromInt(_abilityModKnowledge, _baseKnowledge);
+		int ctr1Mod = Helper.getPercentFromInt(_counterModKnowledge, _baseKnowledge);
+		int ctr2Mod = _counterModKnowledge2;
+
+		return _baseKnowledge + effMod + ablMod + ctr1Mod + ctr2Mod;
 	}
 
 	public int magelore()
 	{
-		return _baseMagelore + _effectModMagelore + _abilityModMagelore + _counterModMagelore + _counterModMagelore2;
+
+		int effMod = Helper.getPercentFromInt(_effectModMagelore, _baseMagelore);
+		int ablMod = Helper.getPercentFromInt(_abilityModMagelore, _baseMagelore);
+		int ctr1Mod = Helper.getPercentFromInt(_counterModMagelore, _baseMagelore);
+		int ctr2Mod = _counterModMagelore2;
+
+		return _baseMagelore + effMod + ablMod + ctr1Mod + ctr2Mod;
+
 	}
 
 	public int luck()
 	{
-		return _baseLuck + _effectModLuck + _abilityModLuck + _counterModLuck + _counterModLuck2;
+		int effMod = Helper.getPercentFromInt(_effectModLuck, _baseLuck);
+		int ablMod = Helper.getPercentFromInt(_abilityModLuck, _baseLuck);
+		int ctr1Mod = Helper.getPercentFromInt(_counterModLuck, _baseLuck);
+		int ctr2Mod = _counterModLuck2;
+
+		return _baseLuck + effMod + ablMod + ctr1Mod + ctr2Mod;
+
 	}
 
 	public void setCounterAbsorbDamage(int turns, int min, int max)
 	{
-		_counterAbsorbDamageTurns = turns;
+		_counterAbsorbDamageCharges = turns;
 		_counterAbsorbDamageMin = min;
-		_counterAbsorbDamageMin = min;
+		_counterAbsorbDamageMax = max;
 	}
 
-	public void setcounterModifyHPStatBased(int turns, int stat, int mult)
+	public void setCounterModifyStat(int turns, int stat, double percent)
 	{
-		_counterModifyHPStatBasedTurns = turns;
-		_counterModifyHPStatBasedId = stat;
-		_counterModifyHPStatBasedMult = mult;
+		_counterModifyStatTurns = turns;
+		_counterModifyStatId = stat;
+		_counterModifyStatPercent = percent;
 
 		if (stat == 0)
-			_counterModStrength += (mult * strength());
+			_counterModStrength += (percent * exec());
 
 		if (stat == 1)
-			_counterModReaction += (mult * reaction());
+			_counterModReaction += (percent * reaction());
 
 		if (stat == 2)
-			_counterModKnowledge += (mult * knowledge());
+			_counterModKnowledge += (percent * knowledge());
 
 		if (stat == 3)
-			_counterModMagelore += (mult * magelore());
+			_counterModMagelore += (percent * magelore());
 
 		if (stat == 4)
-			_counterModLuck += (mult * luck());
+			_counterModLuck += (percent * luck());
 
 	}
 
-	public void setCounterModifyHPStatTimesWpnDmgBased(int turns, int amt)
+	public void setCounterModifyHPStatTimesWpnDmgBased(int turns, int amt, String sourceName)
 	{
-		_counterDotModifyHPStatBasedTurns = turns;
-		_counterDotModifyHPStatBasedAmount = amt;
+		_counterDotModifyHPStatTimesWpnDmgBasedTurns = turns;
+		_counterDotModifyHPStatTimesWpnDmgBasedAmount = amt;
+		_counterDotModifyHPStatTimesWpnDmgBasedName = sourceName;
 	}
 
 	public void setCounterModifyWeaponDamage(int turns, int amt, int amtbonus, int effectId)
 	{
-		_counterModifyWeaponDamageTurns = turns;
+		Log.d("setabilitycounter", name() + ": " + turns + "," + amt + "," + amtbonus + "," + effectId);
+
+		_counterModifyWeaponDamageTurns = turns + 1;
 		_counterModifyWeaponDamageAmount = amt;
 		_counterModifyWeaponDamageAmountBonus = amtbonus;
 		_counterModifyWeaponDamageBonusEffectActiveId = effectId;
@@ -919,21 +1288,36 @@ public abstract class Actor implements Serializable
 		_counterDotModifyHPWeaponBasedSourceAmount = sourceDamageAmount;
 	}
 
-	public void setCounterDotModifyHPMaxHPBasedHP(int turns, int percentAmount)
+	public void setCounterDotModifyHPMaxHPBasedHP(int turns, int amount, String sourceName)
 	{
 		_counterDotModifyHPMaxHPBasedHPTurns = turns;
-		_counterDotModifyHPMaxHPBasedHPAmount = Helper.getPercentFromInt(percentAmount, maxHP());
+		_counterDotModifyHPMaxHPBasedHPAmount = amount;
+		_counterDotModifyHPMaxHPBasedHPName = sourceName;
 	}
 
 	public int getCounterAbsorbDamageAmount(int hitAmount)
 	{
 		int percentAbsAmt = 0;
 		int absAmt = 0;
-		if (_counterAbsorbDamageTurns > 0)
+		if (_counterAbsorbDamageCharges > 0)
 		{
 			percentAbsAmt = Helper.getRandomIntFromRange(_counterAbsorbDamageMax + 1, _counterAbsorbDamageMin);
 			absAmt = Helper.getPercentFromInt(percentAbsAmt, hitAmount);
+			if (absAmt < 0)
+				absAmt = 0;
+
+			_counterAbsorbDamageCharges--;
+			if (_counterAbsorbDamageCharges < 0)
+			{
+				_counterAbsorbDamageCharges = 0;
+				_counterAbsorbDamageMin = 0;
+				_counterAbsorbDamageMax = 0;
+			}
 		}
+
+		Log.d("absorbtest", "getCountAbsDmgAmt: turns=" + _counterAbsorbDamageCharges + ", hitAmt=" + hitAmount
+			+ ", absAmt=" + absAmt);
+
 		return absAmt;
 	}
 
@@ -941,18 +1325,19 @@ public abstract class Actor implements Serializable
 	{
 		_counterModifyStatForStatTurnsTurns = turns;
 		_counterModifyStatForStatTurnsStatId = statIdToMod;
-		_counterModifyStatForStatTurnsAmount = 0;
+		_counterModifyStatForStatTurnsAmount = amt;
 	}
-	
-	public void setCounterModifyHPStatIsPercentWithMult(int turns,int amt)
+
+	public void setCounterModifyHPStatIsPercentWithMult(int turns, int amt, String name)
 	{
 		_counterModifyHPStatIsPercentWithMultTurns = turns;
 		_counterModifyHPStatIsPercentWithMultAmount = amt;
+		_counterModifyHPStatIsPercentWithMultName = name;
 	}
 
 	public void setCounterReflectDamage(int turns, int percentAmount)
 	{
-		_counterReflectDamageTurns += turns;
+		_counterReflectDamageTurns = turns;
 		_counterReflectPercentAmount = percentAmount;
 	}
 
@@ -1005,7 +1390,6 @@ public abstract class Actor implements Serializable
 
 	public void setDead(boolean d)
 	{
-
 		_dead = d;
 	}
 
@@ -1047,21 +1431,31 @@ public abstract class Actor implements Serializable
 
 	public void startCasting(ItemRune castingAbility, Actor source)
 	{
-
 		_casting = true;
 		_currentCastingAbility = castingAbility;
 
-		_castingTurnsLeft =
-			Helper.getRandomIntFromRange(_currentCastingAbility.castingTurnsMax(),
-				_currentCastingAbility.castingTurnsMin());
-
-		if (castingAbility.castingSpecialID() > 0)
+		if (castingAbility.castingTurnsMin() == 99)
 		{
-			int[] ints = Helper.getSpecialCastingInt(castingAbility.castingSpecialID(), source, null);
-			if (ints[1] > 0)
-			{
-				_castingTurnsLeft = ints[1];
-			}
+			if (castingAbility.castingTurnsMax() == 0)
+				_castingTurnsLeft = source.exec();
+
+			else if (castingAbility.castingTurnsMax() == 1)
+				_castingTurnsLeft = source.reaction();
+
+			else if (castingAbility.castingTurnsMax() == 2)
+				_castingTurnsLeft = source.knowledge();
+
+			else if (castingAbility.castingTurnsMax() == 3)
+				_castingTurnsLeft = source.magelore();
+
+			else if (castingAbility.castingTurnsMax() == 4)
+				_castingTurnsLeft = source.luck();
+		}
+		else
+		{
+			_castingTurnsLeft =
+				Helper.getRandomIntFromRange(_currentCastingAbility.castingTurnsMax(),
+					_currentCastingAbility.castingTurnsMin());
 		}
 
 		addActiveEffect(Helper.getEffectIdByName("Casting"));
@@ -1077,16 +1471,6 @@ public abstract class Actor implements Serializable
 		this._activeCastingAbility = _activeCastingAbility;
 	}
 
-	public void updateMissesInARow()
-	{
-		_missesInARow++;
-	}
-
-	public void resetMissesInARow()
-	{
-		_missesInARow = 0;
-	}
-
 	public int noAbilityInARow()
 	{
 		return _noAbilityInARow;
@@ -1100,6 +1484,11 @@ public abstract class Actor implements Serializable
 	public void updateNoAbilityInARow()
 	{
 		_noAbilityInARow++;
+	}
+
+	public void setActorType(int i)
+	{
+		_actorType = i;
 	}
 
 	public int actorType()

@@ -30,12 +30,15 @@ public class ControllerStore extends Activity
 {
 	// private OwnedItems OwnedItems;
 
-	private ArrayList<Player> savedPlayers;
+	private ArrayList<Player> savedPlayers = null;
 	private StoreItems storeItems;
 	private int equipTypeNameIndex = 0;
 
 	private int selectedBuyItemIndex = -1;
 	private int selectedSellItemIndex = -1;
+	
+	
+	private int sortState = 0; // 0=usable+affordable, 1=usable, 2=all
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -67,9 +70,21 @@ public class ControllerStore extends Activity
 	{
 
 		storeCurrentTypeText = (TextView) findViewById(R.id.storeCurrentTypeText);
-		storeSortNameText = (TextView) findViewById(R.id.storeSortNameText);
-		storeSortLevelText = (TextView) findViewById(R.id.storeSortLevelText);
-		storeSortGoldText = (TextView) findViewById(R.id.storeSortGoldText);
+		storeSortButton = (Button) findViewById(R.id.storeSortButton);
+		storeSortButton.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View arg0)
+			{
+				sortState++;
+				if(sortState > 2)
+					sortState = 0;
+				
+				updateViews();
+				updateBuyListData();
+			}
+
+		});
 		storeCurrentGoldText2 = (TextView) findViewById(R.id.storeCurrentGoldText2);
 		storeCurrentGoldText = (TextView) findViewById(R.id.storeCurrentGoldText);
 		storeInventoryTitleText = (TextView) findViewById(R.id.storeCurrentPlayerText);
@@ -87,7 +102,7 @@ public class ControllerStore extends Activity
 			{
 				storeCurrentTypeText.setVisibility(View.INVISIBLE);
 				storeTopSortLayout.setVisibility(View.INVISIBLE);
-				storeDrawerButton.setText("Close Inventory");
+				storeDrawerButton.setBackgroundResource(R.drawable.buttoncloseinventory);
 			}
 		});
 		storeDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener()
@@ -97,7 +112,7 @@ public class ControllerStore extends Activity
 			{
 				storeCurrentTypeText.setVisibility(View.VISIBLE);
 				storeTopSortLayout.setVisibility(View.VISIBLE);
-				storeDrawerButton.setText("Open Inventory");
+				storeDrawerButton.setBackgroundResource(R.drawable.buttonopeninventory);
 			}
 		});
 
@@ -141,21 +156,22 @@ public class ControllerStore extends Activity
 
 				if (DefinitionGlobal.EQUIP_TYPE_INDEX[equipTypeNameIndex] == DefinitionGlobal.ITEM_TYPE_ITEM)
 				{
-					storeSellButton.setText("Recharge");
+					storeSellButton.setBackgroundResource(R.drawable.buttonrecharge);
 					storeInventoryTitleText.setText("Select Item To Recharge");
 				}
 				else if (DefinitionGlobal.EQUIP_TYPE_INDEX[equipTypeNameIndex] == DefinitionGlobal.ITEM_TYPE_RUNE_ABILITY)
 				{
-					storeSellButton.setText("Sell");
+					storeSellButton.setBackgroundResource(R.drawable.buttonselldisabled);
 					storeInventoryTitleText.setText("Owned Ability Runes");
 				}
 				else if (DefinitionGlobal.EQUIP_TYPE_INDEX[equipTypeNameIndex] == DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS)
 				{
+					storeSellButton.setBackgroundResource(R.drawable.buttonselldisabled);
 					storeInventoryTitleText.setText("Owned Class Runes");
 				}
 				else
 				{
-					storeSellButton.setText("Sell");
+					storeSellButton.setBackgroundResource(R.drawable.buttonsell);
 					storeInventoryTitleText.setText("Select Item To Sell");
 				}
 
@@ -176,14 +192,14 @@ public class ControllerStore extends Activity
 				}
 				else
 				{
-					buySomething();					
+					buySomething();
 					clearSelection();
 				}
 			}
 		});
 
 		storeSellButton = (Button) findViewById(R.id.storeSellButton);
-		storeSellButton.setText("Sell");
+		storeSellButton.setBackgroundResource(R.drawable.buttonsell);
 		storeSellButton.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -218,6 +234,7 @@ public class ControllerStore extends Activity
 								.get(selectedSellItemIndex).id));
 							DBHandler.updateGlobalStats(OwnedItems.gold());
 							DBHandler.updateOwnedItems(OwnedItems.getOwnedItems());
+							SoundManager.playSound(SoundManager.RECHARGESOUND, true);
 							showToast("Item gained 1 charge.");
 							updateData();
 						}
@@ -300,19 +317,20 @@ public class ControllerStore extends Activity
 	private void buySomething()
 	{
 		StoreItem itemToBuy = buyItemsList.get(selectedBuyItemIndex);
-		
-		Log.d("store","tried to buy "+itemToBuy.name());
+
+		Log.d("store", "tried to buy " + itemToBuy.name());
 
 		// storeItems.updateStoreInventory(OwnedItems);
 
-		// TODO implement dialog
 		if (OwnedItems.gold() < itemToBuy.cost())
 		{
-			showToast("Not enough gold. Item cost "+itemToBuy.cost());
-			Log.d("store","not enough gold");
+			showToast("Not enough gold. Item cost " + itemToBuy.cost());
+			Log.d("store", "not enough gold");
 			return;
 		}
 		
+		SoundManager.playSound(SoundManager.BUYSOUND, true);
+
 		showToast("Item purchased!");
 
 		// deduct gold
@@ -353,6 +371,8 @@ public class ControllerStore extends Activity
 	{
 		// storeItems.addItemBackToStore(OwnedItems.getItemByTypeId(itemToSell.itemType,
 		// itemToSell.id));
+		
+		SoundManager.playSound(SoundManager.SELLSOUND, true);
 
 		// add gold
 		OwnedItems.updateGold(itemToSell.price);
@@ -441,10 +461,12 @@ public class ControllerStore extends Activity
 		// updateData();
 
 		String[] storeKeys = new String[]
-		{ "storeName", "storeDescription", "storeImage", "storeLevel", "storeValue" };
+		{ "storeName", "storeDescription", "storeImage", "storeLevel", "storeValue", "storeStats", "storeClasses" };
 
-		int[] storeIds = new int[]
-		{ R.id.storeListName, R.id.storeListDescription, R.id.storeListImage, R.id.storeListLevel, R.id.storeListCost };
+		int[] storeIds =
+			new int[]
+			{ R.id.storeListName, R.id.storeListDescription, R.id.storeListImage, R.id.storeListLevel,
+				R.id.storeListCost, R.id.storeListItemStats, R.id.storeListItemClasses };
 
 		toSellAdapter = new SimpleAdapter(this, toSellAdapterData, R.layout.storelistitem, storeKeys, storeIds);
 		toBuyAdapter = new SimpleAdapter(this, toBuyAdapterData, R.layout.storelistitem, storeKeys, storeIds);
@@ -489,6 +511,8 @@ public class ControllerStore extends Activity
 			sellItem.level = sellTheseThings.get(a).minLevel();
 			sellItem.price = sellTheseThings.get(a).value();
 			sellItem.image = sellTheseThings.get(a).imageResource();
+			sellItem.bound = sellTheseThings.get(a).bound();
+			
 			sellItemsList.add(sellItem);
 		}
 
@@ -496,8 +520,136 @@ public class ControllerStore extends Activity
 
 		for (int a = 0; a < sellItemsList.size(); a++)
 		{
+
+			String statsString = "";
+			String classData = "";
+			if (sellItemsList.get(a).itemType == DefinitionGlobal.ITEM_TYPE_WEAPON)
+			{
+				String atTypes = "[";
+				for (int b = 0; b < DefinitionWeapons.WEAPON_ATTACK_TYPES[sellItemsList.get(a).id].length; b++)
+				{
+					if (b != 0)
+						atTypes += ", ";
+					atTypes +=
+						DefinitionAttackTypes.ATTACK_TYPE_NAMES[DefinitionWeapons.WEAPON_ATTACK_TYPES[sellItemsList
+							.get(a).id][b]];
+				}
+				atTypes += "]";
+				String dmg =
+					"Dmg: " + DefinitionWeapons.WEAPON_MIN_DAMAGE[sellItemsList.get(a).id] + "-"
+						+ DefinitionWeapons.WEAPON_MAX_DAMAGE[sellItemsList.get(a).id];
+				String hit = "Hit: " + DefinitionWeapons.WEAPON_HIT_CHANCE[sellItemsList.get(a).id] + "%";
+				String stun = "Stun: " + DefinitionWeapons.WEAPON_STUN_CHANCE[sellItemsList.get(a).id] + "%";
+				String crit = "Crit: " + DefinitionWeapons.WEAPON_CRIT_CHANCE[sellItemsList.get(a).id] + "%";
+				statsString = atTypes + " " + dmg + " " + hit + " " + stun + " " + crit;
+			}
+			else if (sellItemsList.get(a).itemType == DefinitionGlobal.ITEM_TYPE_ARMOR)
+			{
+				String block = "";
+				if (DefinitionArmor.ARMOR_BLOCK_DAMAGE[sellItemsList.get(a).id][2] > 0)
+				{
+					block =
+						DefinitionArmor.ARMOR_BLOCK_DAMAGE[sellItemsList.get(a).id][0]+"% to Block: " + DefinitionArmor.ARMOR_BLOCK_DAMAGE[sellItemsList.get(a).id][1] + "-"
+							+ DefinitionArmor.ARMOR_BLOCK_DAMAGE[sellItemsList.get(a).id][2] + " Wpn Dmg";
+				}
+				String modDodge = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][0] > 0)
+				{
+					modDodge = "+" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][0] + "% Dodge";
+				}
+				String modInit = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][1] > 0)
+				{
+					modInit = "+" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][1] + "% Init";
+				}
+				String modStr = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][3] > 0)
+				{
+					modStr = "+" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][3] + " EXEC";
+				}
+				else if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][3] < 0)
+				{
+					modStr = "-" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][3] + " EXEC";
+				}
+				String modReac = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][4] > 0)
+				{
+					modReac = "+" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][4] + " REAC";
+				}
+				else if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][4] < 0)
+				{
+					modReac = "-" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][4] + " REAC";
+				}
+				String modKnow = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][5] > 0)
+				{
+					modKnow = "+" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][5] + " KNOW";
+				}
+				else if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][5] < 0)
+				{
+					modKnow = "-" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][5] + " KNOW";
+				}
+				String modMage = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][6] > 0)
+				{
+					modMage = "+" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][6] + " MAGE";
+				}
+				else if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][6] < 0)
+				{
+					modMage = "-" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][6] + " MAGE";
+				}
+				String modLuck = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][7] > 0)
+				{
+					modLuck = "+" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][7] + " LUCK";
+				}
+				else if (DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][7] < 0)
+				{
+					modLuck = "-" + DefinitionArmor.ARMOR_MODIFIES[sellItemsList.get(a).id][7] + " LUCK";
+				}
+				String modHp = "";
+				if (DefinitionArmor.ARMOR_ADDS_HP[sellItemsList.get(a).id] > 0)
+				{
+					modHp = "+" + DefinitionArmor.ARMOR_ADDS_HP[sellItemsList.get(a).id] + " HP";
+				}
+				String modAp = "";
+				if (DefinitionArmor.ARMOR_ADDS_AP[sellItemsList.get(a).id] > 0)
+				{
+					modAp = "+" + DefinitionArmor.ARMOR_ADDS_AP[sellItemsList.get(a).id] + " AP";
+				}
+				String abil = "";
+				if (DefinitionArmor.ARMOR_GRANTS_RUNE_ID[sellItemsList.get(a).id] >= 0)
+				{
+					abil =
+						"Grants Rune: "
+							+ DefinitionRunes.runeData[DefinitionArmor.ARMOR_GRANTS_RUNE_ID[sellItemsList.get(a).id]][DefinitionRunes.RUNE_NAMES][0]
+							+ " AP Cost: "
+							+ DefinitionRunes.runeData[DefinitionArmor.ARMOR_GRANTS_RUNE_ID[sellItemsList.get(a).id]][DefinitionRunes.RUNE_AP_COST][0];
+				}
+				statsString =
+					block + " " + modDodge + " " + modInit + " " + modStr + " " + modReac + " " + modKnow + " "
+						+ modMage + " " + modLuck + " " + modHp + " " + modAp + " " + abil;
+
+			}
+			else if (sellItemsList.get(a).itemType == DefinitionGlobal.ITEM_TYPE_RUNE_ABILITY)
+			{
+				statsString =
+					"AP Cost: " + DefinitionRunes.runeData[sellItemsList.get(a).id][DefinitionRunes.RUNE_AP_COST][0];
+			}
+			else if (sellItemsList.get(a).itemType == DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS)
+			{
+				statsString =
+					"Class Type: "
+						+ DefinitionClassType.CLASS_TYPE_NAME[DefinitionClasses.CLASS_TYPE[sellItemsList.get(a).id]];
+			}
+
+			classData =
+				"[Classes: " + Helper.getAllowedClassesString(sellItemsList.get(a).itemType, sellItemsList.get(a).id)
+					+ "]";
+
 			toSellAdapterData.add(Helper.createStoreMap(sellItemsList.get(a).name, sellItemsList.get(a).description,
-				sellItemsList.get(a).image, sellItemsList.get(a).level + "", sellItemsList.get(a).price + ""));
+				sellItemsList.get(a).image, "lvl " + sellItemsList.get(a).level + "",
+				sellItemsList.get(a).price + "gp", statsString, classData));
 		}
 
 		toSellAdapter.notifyDataSetChanged();
@@ -515,31 +667,157 @@ public class ControllerStore extends Activity
 			&& DefinitionGlobal.EQUIP_TYPE_INDEX[equipTypeNameIndex] != DefinitionGlobal.ITEM_TYPE_RUNE_ABILITY
 			&& DefinitionGlobal.EQUIP_TYPE_INDEX[equipTypeNameIndex] != DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS)
 		{
-			buyItemsList = storeItems.getUnownedStoreItemsBySlot(equipTypeNameIndex);
+			buyItemsList = storeItems.getUnownedStoreItemsBySlot(equipTypeNameIndex, sortState, savedPlayers);
 		}
 		// abilities
 		else if (DefinitionGlobal.EQUIP_TYPE_INDEX[equipTypeNameIndex] == DefinitionGlobal.ITEM_TYPE_RUNE_ABILITY)
 		{
-			buyItemsList = storeItems.getStoreItemsByType(DefinitionGlobal.EQUIP_TYPE_INDEX[equipTypeNameIndex]);
+			buyItemsList = storeItems.getStoreItemsByType(DefinitionGlobal.EQUIP_TYPE_INDEX[equipTypeNameIndex], sortState, savedPlayers);
 		}
 		// items
 		else if (DefinitionGlobal.EQUIP_TYPE_INDEX[equipTypeNameIndex] == DefinitionGlobal.ITEM_TYPE_ITEM)
 		{
-			buyItemsList = storeItems.getItemsForSale(equipTypeNameIndex);
+			buyItemsList = storeItems.getItemsForSale(equipTypeNameIndex, sortState);
 		}
 		// class runes
 		else if (DefinitionGlobal.EQUIP_TYPE_INDEX[equipTypeNameIndex] == DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS)
 		{
-			buyItemsList = storeItems.getClassRunesForSale();
+			buyItemsList = storeItems.getClassRunesForSale(sortState);
 		}
 
 		for (int a = 0; a < buyItemsList.size(); a++)
 		{
 			Log.d("store", "added " + buyItemsList.get(a).name() + " to buy list");
-			
+			String statsString = "";
+			String classData = "";
+			if (buyItemsList.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_WEAPON)
+			{
+				String atTypes = "[";
+				for (int b = 0; b < DefinitionWeapons.WEAPON_ATTACK_TYPES[buyItemsList.get(a).id()].length; b++)
+				{
+					if (b != 0)
+						atTypes += ", ";
+					atTypes +=
+						DefinitionAttackTypes.ATTACK_TYPE_NAMES[DefinitionWeapons.WEAPON_ATTACK_TYPES[buyItemsList.get(
+							a).id()][b]];
+				}
+				atTypes += "]";
+				String dmg =
+					"Dmg: " + DefinitionWeapons.WEAPON_MIN_DAMAGE[buyItemsList.get(a).id()] + "-"
+						+ DefinitionWeapons.WEAPON_MAX_DAMAGE[buyItemsList.get(a).id()];
+				String hit = "Hit: " + DefinitionWeapons.WEAPON_HIT_CHANCE[buyItemsList.get(a).id()] + "%";
+				String stun = "Stun: " + DefinitionWeapons.WEAPON_STUN_CHANCE[buyItemsList.get(a).id()] + "%";
+				String crit = "Crit: " + DefinitionWeapons.WEAPON_CRIT_CHANCE[buyItemsList.get(a).id()] + "%";
+				statsString = atTypes + " " + dmg + " " + hit + " " + stun + " " + crit;
+			}
+			else if (buyItemsList.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_ARMOR)
+			{
+				String block = "";
+				if (DefinitionArmor.ARMOR_BLOCK_DAMAGE[buyItemsList.get(a).id()][2] > 0)
+				{
+					block =
+							 DefinitionArmor.ARMOR_BLOCK_DAMAGE[buyItemsList.get(a).id()][0]+"% to Block: " + DefinitionArmor.ARMOR_BLOCK_DAMAGE[buyItemsList.get(a).id()][1] + "-"
+							+ DefinitionArmor.ARMOR_BLOCK_DAMAGE[buyItemsList.get(a).id()][2] + " Wpn Dmg";
+				}
+				String modDodge = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][0] > 0)
+				{
+					modDodge = "+" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][0] + "% Dodge";
+				}
+				String modInit = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][1] > 0)
+				{
+					modInit = "+" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][1] + "% Init";
+				}
+				String modStr = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][3] > 0)
+				{
+					modStr = "+" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][3] + " EXEC";
+				}
+				else if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][3] < 0)
+				{
+					modStr = "-" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][3] + " EXEC";
+				}
+				String modReac = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][4] > 0)
+				{
+					modReac = "+" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][4] + " REAC";
+				}
+				else if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][4] < 0)
+				{
+					modReac = "-" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][4] + " REAC";
+				}
+				String modKnow = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][5] > 0)
+				{
+					modKnow = "+" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][5] + " KNOW";
+				}
+				else if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][5] < 0)
+				{
+					modKnow = "-" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][5] + " KNOW";
+				}
+				String modMage = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][6] > 0)
+				{
+					modMage = "+" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][6] + " MAGE";
+				}
+				else if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][6] < 0)
+				{
+					modMage = "-" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][6] + " MAGE";
+				}
+				String modLuck = "";
+				if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][7] > 0)
+				{
+					modLuck = "+" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][7] + " LUCK";
+				}
+				else if (DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][7] < 0)
+				{
+					modLuck = "-" + DefinitionArmor.ARMOR_MODIFIES[buyItemsList.get(a).id()][7] + " LUCK";
+				}
+				String modHp = "";
+				if (DefinitionArmor.ARMOR_ADDS_HP[buyItemsList.get(a).id()] > 0)
+				{
+					modHp = "[+" + DefinitionArmor.ARMOR_ADDS_HP[buyItemsList.get(a).id()] + " HP]";
+				}
+				String modAp = "";
+				if (DefinitionArmor.ARMOR_ADDS_AP[buyItemsList.get(a).id()] > 0)
+				{
+					modAp = "[+" + DefinitionArmor.ARMOR_ADDS_AP[buyItemsList.get(a).id()] + " AP]";
+				}
+				String abil = "";
+				if (DefinitionArmor.ARMOR_GRANTS_RUNE_ID[buyItemsList.get(a).id()] >= 0)
+				{
+					abil =
+						"[Grants Rune: "
+							+ DefinitionRunes.runeData[DefinitionArmor.ARMOR_GRANTS_RUNE_ID[buyItemsList.get(a).id()]][DefinitionRunes.RUNE_NAMES][0]
+							+ ", AP Cost: "
+							+ DefinitionRunes.runeData[DefinitionArmor.ARMOR_GRANTS_RUNE_ID[buyItemsList.get(a).id()]][DefinitionRunes.RUNE_AP_COST][0]
+							+ "]";
+				}
+				statsString =
+					block + " " + modDodge + " " + modInit + " " + modStr + " " + modReac + " " + modKnow + " "
+						+ modMage + " " + modLuck + " " + modHp + " " + modAp + " " + abil;
+			}
+			else if (buyItemsList.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_RUNE_ABILITY)
+			{
+				statsString =
+					"AP Cost: " + DefinitionRunes.runeData[buyItemsList.get(a).id()][DefinitionRunes.RUNE_AP_COST][0];
+			}
+			else if (buyItemsList.get(a).itemType() == DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS)
+			{
+				statsString =
+					"Class Type: "
+						+ DefinitionClassType.CLASS_TYPE_NAME[DefinitionClasses.CLASS_TYPE[buyItemsList.get(a).id()]];
+				buyItemsList.get(a).setCost(DefinitionGlobal.CLASS_RUNE_COST);
+			}
+
+			classData =
+				"[Classes: " + Helper.getAllowedClassesString(buyItemsList.get(a).itemType(), buyItemsList.get(a).id())
+					+ "]";
+
 			toBuyAdapterData.add(Helper.createStoreMap(buyItemsList.get(a).name(), buyItemsList.get(a).description(),
-				buyItemsList.get(a).imageResource(), buyItemsList.get(a).minLevel() + "", buyItemsList.get(a).cost()
-					+ ""));
+				buyItemsList.get(a).imageResource(), "lvl " + buyItemsList.get(a).minLevel() + "", buyItemsList.get(a)
+					.cost() + "gp", statsString, classData));
 		}
 
 		if (toBuyAdapter != null)
@@ -565,6 +843,19 @@ public class ControllerStore extends Activity
 		else
 		{
 			storeNextTypeButton.setText(DefinitionGlobal.EQUIP_TYPE_NAMES[equipTypeNameIndex + 1] + " >");
+		}
+		
+		if(sortState == 0)
+		{
+			storeSortButton.setText("Only Usable + Affordable");
+		}
+		else if(sortState == 1)
+		{
+			storeSortButton.setText("Only Usable");
+		}
+		else
+		{
+			storeSortButton.setText("Showing All");
 		}
 
 		storeCurrentTypeText.setText(DefinitionGlobal.EQUIP_TYPE_NAMES[equipTypeNameIndex]);
@@ -594,11 +885,9 @@ public class ControllerStore extends Activity
 	private Button storeNextTypeButton;
 	private Button storeBuyButton;
 	private Button storeSellButton;
+	private Button storeSortButton;
 
 	private TextView storeCurrentTypeText;
-	private TextView storeSortNameText;
-	private TextView storeSortLevelText;
-	private TextView storeSortGoldText;
 	private TextView storeCurrentGoldText;
 	private TextView storeCurrentGoldText2;
 	private TextView storeInventoryTitleText;

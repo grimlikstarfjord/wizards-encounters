@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Attach Android (JDWP 8700)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 8700,
+            "preLaunchTask": "android: forward jdwp",
+            "sourcePaths": [
+                "${workspaceFolder}/src"
+            ]
+        }
+    ]
+}

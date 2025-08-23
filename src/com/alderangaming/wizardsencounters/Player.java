@@ -22,6 +22,7 @@ public class Player extends Actor implements Serializable
 	private int _equippedArmorSlot4 = -1;
 	private int _equippedItemSlot1 = -1;
 	private int _equippedItemSlot2 = -1;
+	private int[] _equippedStatBonuses = new int[8];
 
 	private int _currentRound = -1;
 	private int _currentFight = -1;
@@ -45,6 +46,9 @@ public class Player extends Actor implements Serializable
 	private int _item2ModDodgeAmount = 0;
 	private int _item2ModDodgeTurns = 0;
 
+	private int _itemApplyHPPercentGainAfterTurnsTurns = 0;
+	private int _itemApplyHPPercentGainAfterTurnsAmount = 0;
+
 	private int _freeAbilityCharge = 0;
 
 	private ArrayList<Integer> foughtMonstersInRound = new ArrayList<Integer>();
@@ -52,7 +56,8 @@ public class Player extends Actor implements Serializable
 	public Player(int i, String n, int c, boolean isNew)
 	{
 		_playerID = i;
-		super.setName(n);
+		setName(n);
+		setActorType(0);
 		_playerClass = c;
 
 		if (isNew)
@@ -62,6 +67,29 @@ public class Player extends Actor implements Serializable
 			setCurrentFight(0);
 			_inRound = false;
 		}
+	}
+	
+	public void resetFlags()
+	{
+		super.resetFlags();
+		_itemApplyHPPercentGainAfterTurnsTurns = 0;
+		_item1ModDamageTakenTurns = 0;
+		_item2ModDamageTakenTurns = 0;
+		_item1ModCritTurns = 0;
+		_item2ModCritTurns = 0;
+		_freeAbilityCharge = 0;		
+	}
+	
+	public int numEquippedItems()
+	{
+		int num = 0;
+		if(_equippedItemSlot1 > -1)
+			num++;
+		
+		if(_equippedItemSlot2 > -1)
+			num++;
+		
+		return num;
 	}
 
 	public int maxHP()
@@ -79,7 +107,7 @@ public class Player extends Actor implements Serializable
 		if (_equippedArmorSlot4 != -1)
 			modHP += DefinitionArmor.ARMOR_ADDS_HP[_equippedArmorSlot4];
 
-		return DefinitionClasses.CLASS_HP_TREE[_playerClass][super.rank()] + modHP;
+		return DefinitionClasses.CLASS_HP_TREE[_playerClass][super.rank()-1] + modHP;
 	}
 
 	public int maxAP()
@@ -97,12 +125,21 @@ public class Player extends Actor implements Serializable
 		if (_equippedArmorSlot4 != -1)
 			modAP += DefinitionArmor.ARMOR_ADDS_AP[_equippedArmorSlot4];
 
-		return DefinitionClassType.CLASS_TYPE_AP_TREE_BY_LEVEL[DefinitionClasses.CLASS_TYPE[_playerClass]][super.rank()]
+		// set test char data
+		if (name().equals("ttt"))
+		{
+			modAP += 500;
+		}
+
+		return DefinitionClassType.CLASS_TYPE_AP_TREE_BY_LEVEL[DefinitionClasses.CLASS_TYPE[_playerClass]][super.rank()-1]
 			+ modAP;
 	}
 
 	public void setRank(int r)
 	{
+		if(r > DefinitionClasses.CLASS_BASE_HIT_CHANCE_BY_LEVEL[0].length)
+			return;
+		
 		super.setRank(r);
 		updateStats();
 	}
@@ -115,13 +152,23 @@ public class Player extends Actor implements Serializable
 		super.setBaseMagelore(DefinitionClasses.CLASS_BASE_STATS[_playerClass][3]);
 		super.setBaseLuck(DefinitionClasses.CLASS_BASE_STATS[_playerClass][4]);
 
-		super.set_baseDodgeChance(DefinitionClasses.CLASS_BASE_DODGE_CHANCE_BY_LEVEL[_playerClass][super.rank()]);
-		super.setBaseHitChance(DefinitionClasses.CLASS_BASE_HIT_CHANCE_BY_LEVEL[_playerClass][super.rank()]);
+		super.set_baseDodgeChance(DefinitionClasses.CLASS_BASE_DODGE_CHANCE_BY_LEVEL[_playerClass][super.rank()-1]);
+		super.setBaseHitChance(DefinitionClasses.CLASS_BASE_HIT_CHANCE_BY_LEVEL[_playerClass][super.rank()-1]);
 	}
 
 	public ArrayList<ReturnData> advanceTurn()
 	{
 		// decrement active item use counters
+
+		if (_itemApplyHPPercentGainAfterTurnsTurns > 0)
+		{
+			_itemApplyHPPercentGainAfterTurnsTurns--;
+			if (_itemApplyHPPercentGainAfterTurnsTurns == 0)
+			{
+				updateHP(Helper.getPercentFromInt(_itemApplyHPPercentGainAfterTurnsAmount, maxHP()));
+			}
+		}
+
 		if (_item1ModCritTurns > 0)
 		{
 			_item1ModCritTurns--;
@@ -171,7 +218,10 @@ public class Player extends Actor implements Serializable
 
 	public int initiative()
 	{
+		
+		/*
 		int bonus = 0;
+		
 		if (_equippedArmorSlot1 >= 0)
 			bonus +=
 				((ItemArmor) OwnedItems.getItemByTypeId(DefinitionGlobal.ITEM_TYPE_ARMOR, _equippedArmorSlot1))
@@ -191,15 +241,19 @@ public class Player extends Actor implements Serializable
 			bonus +=
 				((ItemArmor) OwnedItems.getItemByTypeId(DefinitionGlobal.ITEM_TYPE_ARMOR, _equippedArmorSlot4))
 					.modifyInitiative();
-		
-		
 
 		int sum = super.baseInitiative() + bonus;
-		
+
 		sum = Helper.getStatMod(reacDiff(), sum);
 
 		return sum;
 		
+		*/
+		
+		int sum = super.baseInitiative() +  _equippedStatBonuses[1];
+
+		return Helper.getStatMod(reacDiff(), sum);
+
 	}
 
 	public int[] blockDmg()
@@ -281,15 +335,16 @@ public class Player extends Actor implements Serializable
 		}
 
 		int sum = wp + super.modHitChanceAbility() + super.modHitChanceEffect() + super.baseHitChance();
-		
+
 		sum = Helper.getStatMod(knowDiff(), sum);
 
 		return sum;
-		
+
 	}
 
 	public int dodgeChance()
 	{
+		/*
 		int bonus = 0;
 		if (_equippedArmorSlot1 >= 0)
 			bonus +=
@@ -321,11 +376,18 @@ public class Player extends Actor implements Serializable
 				((ItemArmor) OwnedItems.getItemByTypeId(DefinitionGlobal.ITEM_TYPE_ARMOR, _equippedArmorSlot4))
 					.modifyDodge();
 
-		int sum = bonus + super.modDodgeChance() + super.baseDodgeChance() + _item1ModDodgeAmount + _item2ModDodgeAmount;
-		
+		int sum =
+			bonus + super.modDodgeChance() + super.baseDodgeChance() + _item1ModDodgeAmount + _item2ModDodgeAmount;
+
 		sum = Helper.getStatMod(reacDiff(), sum);
 
 		return sum;
+		
+		*/
+		
+		int sum = super.modDodgeChance() + super.baseDodgeChance() + _item1ModDodgeAmount + _item2ModDodgeAmount + _equippedStatBonuses[0];
+		
+		return Helper.getStatMod(reacDiff(), sum);
 	}
 
 	public int playerID()
@@ -392,14 +454,16 @@ public class Player extends Actor implements Serializable
 
 	public void setEquippedArmorSlot4(int ownedItemID)
 	{
-		Log.d("equipthing", "new trinket equipped: " + ownedItemID);
-
-		if (ownedItemID >= 0 && DefinitionArmor.ARMOR_GRANTS_RUNE_ID[ownedItemID] >= 0)
+		Log.d("equipthing", "new trinket equipped: " + ownedItemID);		
+	
+		//check if previous trinket granted us an ability, if it did, remove the active ability
+		//this does not affect owned items where a duplicate owned rune should still be available
+		if(_equippedArmorSlot4 >= 0 && DefinitionArmor.ARMOR_GRANTS_RUNE_ID[_equippedArmorSlot4] >= 0)
 		{
-			super.addActiveAbility(DefinitionArmor.ARMOR_GRANTS_RUNE_ID[ownedItemID]);
+			removeActiveAbility(DefinitionArmor.ARMOR_GRANTS_RUNE_ID[_equippedArmorSlot4]);
 		}
 
-		this._equippedArmorSlot4 = ownedItemID;
+		_equippedArmorSlot4 = ownedItemID;
 	}
 
 	public int equippedItemSlot1()
@@ -519,11 +583,13 @@ public class Player extends Actor implements Serializable
 		// runes
 		if (getActiveAbilities().length < 1)
 		{
-			for(int a = 0; a < DefinitionClasses.CLASS_STARTING_RUNES[playerClass()].length; a++)
+			for (int a = 0; a < DefinitionClasses.CLASS_STARTING_RUNES[playerClass()].length; a++)
 			{
 				addActiveAbility(DefinitionClasses.CLASS_STARTING_RUNES[playerClass()][a]);
 			}
 		}
+		
+		updateEquippedArmorStatBonuses();
 	}
 
 	public void equipItemBySlot(int defId, int slot)
@@ -570,6 +636,8 @@ public class Player extends Actor implements Serializable
 				Log.d("equip", "equipped item2 id " + defId);
 			}
 		}
+		
+		updateEquippedArmorStatBonuses();
 	}
 
 	public int currentRound()
@@ -623,34 +691,74 @@ public class Player extends Actor implements Serializable
 
 	public void setBlockingFlag(int attackTypeBlockAmount)
 	{
+		if (attackTypeBlockAmount < 0)
+		{
+			_blocking = false;
+			_blockingAmount = 0;
+		}
+
 		_blocking = true;
 		_blockingAmount = attackTypeBlockAmount;
 		Log.d("block", "Player set blocking with amount " + attackTypeBlockAmount);
+	}
+	
+	public int blockingChance()
+	{
+		int blockchancesum = 0;
+		if (equippedArmorSlot1() >= 0)
+		{
+			blockchancesum += DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot1()][0];
+		}
+
+		if (equippedArmorSlot2() >= 0)
+		{
+			blockchancesum += DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot2()][0];
+		}
+
+		if (equippedArmorSlot3() >= 0)
+		{
+			blockchancesum += DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot3()][0];
+		}
+
+		if (equippedArmorSlot4() >= 0)
+		{
+			blockchancesum += DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot4()][0];
+		}
+		
+		return blockchancesum;
 	}
 
 	public int blockingAmount()
 	{
 		int blocksum = 0;
-		if(equippedArmorSlot1() >= 0)
+		if (equippedArmorSlot1() >= 0)
 		{
-			blocksum += Helper.getRandomIntFromRange(DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot1()][1], DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot1()][0]);		
+			blocksum +=
+				Helper.getRandomIntFromRange(DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot1()][2],
+					DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot1()][1]);
 		}
-		
-		if(equippedArmorSlot2() >= 0)
+
+		if (equippedArmorSlot2() >= 0)
 		{
-			blocksum += Helper.getRandomIntFromRange(DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot2()][1], DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot2()][0]);		
+			blocksum +=
+				Helper.getRandomIntFromRange(DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot2()][2],
+					DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot2()][1]);
 		}
-		
-		if(equippedArmorSlot3() >= 0)
+
+		if (equippedArmorSlot3() >= 0)
 		{
-			blocksum += Helper.getRandomIntFromRange(DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot3()][1], DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot3()][0]);		
+			blocksum +=
+				Helper.getRandomIntFromRange(DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot3()][2],
+					DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot3()][1]);
 		}
-		
-		if(equippedArmorSlot4() >= 0)
+
+		if (equippedArmorSlot4() >= 0)
 		{
-			blocksum += Helper.getRandomIntFromRange(DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot4()][1], DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot4()][0]);		
+			blocksum +=
+				Helper.getRandomIntFromRange(DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot4()][2],
+					DefinitionArmor.ARMOR_BLOCK_DAMAGE[equippedArmorSlot4()][1]);
 		}
-		
+
 		return _blockingAmount + blocksum;
 	}
 
@@ -668,6 +776,86 @@ public class Player extends Actor implements Serializable
 	{
 		_freeAbilityCharge++;
 	}
+	
+	public void updateEquippedArmorStatBonuses()
+	{	
+		for(int a = 0; a < _equippedStatBonuses.length; a++)
+			_equippedStatBonuses[a] = 0;
+		
+		
+		for(int a = 0; a < _equippedStatBonuses.length; a++)
+		{
+			if(equippedArmorSlot1() >= 0)
+			{
+				_equippedStatBonuses[a] += DefinitionArmor.ARMOR_MODIFIES[equippedArmorSlot1()][a];
+			}
+			
+			if(equippedArmorSlot2() >= 0)
+			{
+				_equippedStatBonuses[a] += DefinitionArmor.ARMOR_MODIFIES[equippedArmorSlot2()][a];
+			}
+			
+			if(equippedArmorSlot3() >= 0)
+			{
+				_equippedStatBonuses[a] +=  DefinitionArmor.ARMOR_MODIFIES[equippedArmorSlot3()][a];
+			}
+			
+			if(equippedArmorSlot4() >= 0)
+			{
+				_equippedStatBonuses[a] +=  DefinitionArmor.ARMOR_MODIFIES[equippedArmorSlot4()][a];
+			}
+		}
+	}
+	
+	public int execDiff()
+	{
+		return super.execDiff() + _equippedStatBonuses[3];
+	}
+
+	public int reacDiff()
+	{
+		return super.reacDiff()+ _equippedStatBonuses[4];
+	}
+
+	public int knowDiff()
+	{
+		return super.knowDiff()+ _equippedStatBonuses[5];
+	}
+
+	public int mageDiff()
+	{
+		return super.mageDiff() + _equippedStatBonuses[6];
+	}
+
+	public int luckDiff()
+	{
+		return super.luckDiff()+ _equippedStatBonuses[7];
+	}
+	
+	public int exec()
+	{
+		return super.exec() + + _equippedStatBonuses[3];
+	}
+	
+	public int reaction()
+	{
+		return super.reaction() + + _equippedStatBonuses[4];
+	}
+	
+	public int knowledge()
+	{
+		return super.knowledge() + + _equippedStatBonuses[5];
+	}
+	
+	public int magelore()
+	{				
+		return super.magelore() + _equippedStatBonuses[6];
+	}
+	
+	public int luck()
+	{
+		return super.luck() + + _equippedStatBonuses[7];
+	}
 
 	public boolean hasFreeAbility()
 	{
@@ -677,6 +865,12 @@ public class Player extends Actor implements Serializable
 		}
 
 		return true;
+	}
+
+	public void itemApplyHPPercentGainAfterTurns(int percentAmt, int turns)
+	{
+		_itemApplyHPPercentGainAfterTurnsAmount = percentAmt;
+		_itemApplyHPPercentGainAfterTurnsTurns = turns;
 	}
 
 	public boolean useFreeAbility()
@@ -700,6 +894,19 @@ public class Player extends Actor implements Serializable
 		return sum;
 	}
 
+	public int getMaxDamage()
+	{
+		int[] dmgData = getDamageRange();
+
+		int modDmg = dmgData[1];
+
+		int sum = modDmg + super.getDamageCounterBonus(modDmg);
+
+		sum = Helper.getStatMod(execDiff(), sum);
+
+		return sum;
+	}
+
 	public int[] tryHit(int attackType)
 	{
 		// HIT: dmg amt, crit flag, stun flag
@@ -714,51 +921,65 @@ public class Player extends Actor implements Serializable
 			((ItemWeapon) OwnedItems.getItemByTypeId(DefinitionGlobal.ITEM_TYPE_WEAPON, _equippedWeapon))
 				.getModWeaponStatsWithAttackType(attackType);
 
-		// check if this is a dodge move
-		if (stats[0] < 0)
+		// check if this is a block
+		if (stats[0] == -999)
 		{
-			returnData[0] = 0;
+			returnData[0] = -999;
 			returnData[1] = stats[1];
 			return returnData;
 		}
-
-		int roll = Helper.randomInt(101);
-		if (roll >= hitChance() + stats[2])
+		else
 		{
-			updateMissesInARow();
-			returnData[0] = -1;
-			returnData[1] = roll;
-			returnData[2] = hitChance() + stats[2];
-			return returnData;
+			_blocking = false;
+			_blockingAmount = 0;
+			returnData[0] = 1;
 		}
 
-		resetMissesInARow();
-
-		int dmgAmt = 0;
-		// check if crit
-		if (100 - Helper.randomInt(101) < critChance() + stats[4])
+		// do not check for miss if there is a pending weapon damage
+		// bonus:
+		
+		//check for miss
+		if (!(_counterModifyWeaponDamageTurns > 0))
 		{
-			dmgAmt = 2 * stats[1];
-			returnData[0] = dmgAmt;
-			returnData[1] = 1;
-			// check if stun and crit
+			int roll = Helper.randomInt(101);
+			if (roll >= hitChance() + stats[2])
+			{
+				returnData[0] = -1;
+				returnData[1] = roll;
+				returnData[2] = hitChance() + stats[2];
+				return returnData;
+			}
+		}
+
+		int dmgAmt = getDamage();
+
+		// do not check for crit or stun if there is a pending weapon damage
+		// bonus:
+		if (!(_counterModifyWeaponDamageTurns > 0))
+		{
+			// check if crit
+			if (100 - Helper.randomInt(101) < critChance() + stats[4])
+			{
+				dmgAmt = 2 * stats[1];
+				returnData[0] = dmgAmt;
+				returnData[1] = 1;
+				// check if stun and crit
+				if (100 - Helper.randomInt(101) < stunChance() + stats[3])
+				{
+					returnData[2] = 1;
+				}
+
+				return returnData;
+			}
+
+			// check if stun
 			if (100 - Helper.randomInt(101) < stunChance() + stats[3])
 			{
 				returnData[2] = 1;
 			}
-
-			return returnData;
 		}
 
-		dmgAmt = Helper.getRandomIntFromRange(stats[0], stats[1]);
-
-		// check if stun
-		if (100 - Helper.randomInt(101) < stunChance() + stats[3])
-		{
-			returnData[2] = 1;
-		}
-		
-		dmgAmt = Helper.getStatMod(execDiff(), dmgAmt);		
+		dmgAmt = Helper.getStatMod(execDiff(), dmgAmt);
 
 		returnData[0] = dmgAmt;
 		return returnData;
@@ -767,12 +988,10 @@ public class Player extends Actor implements Serializable
 	public int getDamage()
 	{
 		int[] dmgData = getDamageRange();
-
-		int modDmg = dmgData[4];
+		
+		int modDmg = Helper.getStatMod(execDiff(), dmgData[4]);
 
 		int sum = modDmg + super.getDamageCounterBonus(modDmg);
-
-		sum = Helper.getStatMod(execDiff(), sum);
 
 		return sum;
 	}
@@ -780,12 +999,8 @@ public class Player extends Actor implements Serializable
 	public int[] getDamageRange()
 	{
 		int[] dmg = new int[5];
-		int minDmg =
-			((ItemWeapon) OwnedItems.getItemByTypeId(DefinitionGlobal.ITEM_TYPE_WEAPON, _equippedWeapon))
-				.getDamageRange()[0];
-		int maxDmg =
-			((ItemWeapon) OwnedItems.getItemByTypeId(DefinitionGlobal.ITEM_TYPE_WEAPON, _equippedWeapon))
-				.getDamageRange()[1];
+		int minDmg = DefinitionWeapons.WEAPON_MIN_DAMAGE[_equippedWeapon];
+		int maxDmg = DefinitionWeapons.WEAPON_MAX_DAMAGE[_equippedWeapon];
 
 		dmg[0] = minDmg + super.modHitDamage(minDmg)[0];
 		dmg[1] = maxDmg + super.modHitDamage(maxDmg)[0];
@@ -891,7 +1106,7 @@ public class Player extends Actor implements Serializable
 		}
 	}
 
-	public void itemModifyDamageTakenDecrease(int amt, int turns)
+	public void itemModifyDamageTaken(int amt, int turns)
 	{
 		if (_item1ModDamageTakenTurns <= 0)
 		{
@@ -937,6 +1152,7 @@ public class Player extends Actor implements Serializable
 		}
 
 		return super.stunChance() + modStunAmt;
+		//return 75;
 	}
 
 	public int critChance()

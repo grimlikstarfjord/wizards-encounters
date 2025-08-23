@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "android: start debug app",
+            "type": "shell",
+            "command": "C:\\Android\\Sdk\\platform-tools\\adb shell am start -D -n com.alderangaming.wizardsencounters/.Start",
+            "problemMatcher": []
+        },
+        {
+            "label": "android: forward jdwp",
+            "type": "shell",
+            "options": {
+                "shell": {
+                    "executable": "C:\\Windows\\System32\\cmd.exe",
+                    "args": [
+                        "/d",
+                        "/c"
+                    ]
+                }
+            },
+            "command": "for /f %p in ('\"C:\\Android\\Sdk\\platform-tools\\adb\" shell pidof -s com.alderangaming.wizardsencounters') do \"C:\\Android\\Sdk\\platform-tools\\adb\" forward tcp:8700 jdwp:%p && echo 8700",
+            "problemMatcher": []
+        }
+    ]
+}

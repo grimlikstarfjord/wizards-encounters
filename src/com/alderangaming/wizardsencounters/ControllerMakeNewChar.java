@@ -20,7 +20,8 @@ public class ControllerMakeNewChar extends Activity
 
 	private String newPlayerName = "";
 	private int selectedClassId = 0;
-//	private OwnedItems ownedItems;
+
+	// private OwnedItems ownedItems;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -29,11 +30,11 @@ public class ControllerMakeNewChar extends Activity
 
 		if (!DBHandler.isOpen(getApplicationContext()))
 			DBHandler.open(getApplicationContext());
-		
+
 		Bundle b = getIntent().getExtras();
 
-		//ownedItems = (OwnedItems) b.getSerializable("ownedItems");
-		
+		// ownedItems = (OwnedItems) b.getSerializable("ownedItems");
+
 		setContentView(R.layout.makenewchar);
 		setupViews();
 	}
@@ -64,10 +65,11 @@ public class ControllerMakeNewChar extends Activity
 			public void onClick(View v)
 			{
 
-				Intent i = new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerSelectClass.class);
+				Intent i =
+					new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerSelectClass.class);
 				Bundle b = new Bundle();
 
-			//	b.putSerializable("ownedItems", ownedItems);
+				// b.putSerializable("ownedItems", ownedItems);
 
 				i.putExtras(b);
 
@@ -81,6 +83,7 @@ public class ControllerMakeNewChar extends Activity
 
 		makenewcharGoButton = (Button) findViewById(R.id.makenewcharGoButton);
 		makenewcharGoButton.setEnabled(false);
+		makenewcharGoButton.setBackgroundResource(R.drawable.buttondoneleftdisabled);
 		makenewcharGoButton.setOnClickListener(new OnClickListener()
 		{
 
@@ -95,9 +98,15 @@ public class ControllerMakeNewChar extends Activity
 					return;
 				}
 
-				if (newPlayerName.length() > 8)
+				if (newPlayerName.length() > 10)
 				{
 					makenewcharInfoLabel.setText("Player name is too long!");
+					return;
+				}
+				
+				if(newPlayerName.contains("kevin") || newPlayerName.contains("Kevin"))
+				{
+					makenewcharInfoLabel.setText("That is a banished name reserved for shallow fools!");
 					return;
 				}
 
@@ -111,13 +120,33 @@ public class ControllerMakeNewChar extends Activity
 					return;
 				}
 
+				makenewcharGoButton.setEnabled(false);
+				makenewcharGoButton.setBackgroundResource(R.drawable.buttondoneleftdisabled);
+
 				// save new player to player table
-				Log.d("selectclass","selected classId at desk go button was: "+selectedClassId);
+				Log.d("selectclass", "selected classId at desk go button was: " + selectedClassId);
 				int playerID = DBHandler.insertNewPlayer(newPlayerName, selectedClassId);
 
 				Player player = new Player(playerID, newPlayerName, selectedClassId, true);
-				
-				if(newPlayerName.equals("ttt"))
+				player.setCurrentHP(player.maxHP());
+
+				if (newPlayerName.contains(DefinitionGlobal.TESTCHAR)
+					|| newPlayerName.contains(DefinitionGlobal.TESTCHAR2)
+					|| newPlayerName.contains(DefinitionGlobal.TESTCHAR3)
+					|| newPlayerName.contains(DefinitionGlobal.TESTCHAR4))
+				{
+					player.setRank(Integer.parseInt(newPlayerName.substring(5, 6)));
+					player.setCurrentRound(Integer.parseInt(newPlayerName.substring(6)));
+				}
+
+				if (newPlayerName.contains(DefinitionGlobal.TESTCHAR3))
+				{
+					OwnedItems.updateGold(5000);
+					DBHandler.updateGlobalStats(OwnedItems.gold());
+				}
+
+				if (newPlayerName.contains(DefinitionGlobal.TESTCHAR)
+					|| newPlayerName.contains(DefinitionGlobal.TESTCHAR2))
 				{
 					OwnedItems.addAllItems(getApplicationContext());
 				}
@@ -125,9 +154,9 @@ public class ControllerMakeNewChar extends Activity
 				{
 					OwnedItems.addStartingRunesForClass(selectedClassId, getApplicationContext());
 				}
-				
+
 				DBHandler.updateOwnedItems(OwnedItems.getOwnedItems());
-				
+				DBHandler.updatePlayer(player);
 
 				if (DBHandler.isOpen(getApplicationContext()))
 					DBHandler.close();
@@ -135,16 +164,14 @@ public class ControllerMakeNewChar extends Activity
 				Intent resultIntent = new Intent();
 				Bundle b = new Bundle();
 
-			//	b.putSerializable("ownedItems", ownedItems);
+				// b.putSerializable("ownedItems", ownedItems);
 				b.putSerializable("player", player);
 
 				resultIntent.putExtras(b);
 
 				setResult(Activity.RESULT_OK, resultIntent);
 				finish();
-
 			}
-
 		});
 	}
 
@@ -156,14 +183,24 @@ public class ControllerMakeNewChar extends Activity
 		{
 			case (1001):
 			{
-				if (!DBHandler.isOpen(getApplicationContext()))
-					DBHandler.open(getApplicationContext());
+				try
+				{
 
-				selectedClassId = data.getIntExtra("selectedClassIdFromStore", 0);
+					if (!DBHandler.isOpen(getApplicationContext()))
+						DBHandler.open(getApplicationContext());
 
-				makenewcharInfoLabel.setText("Ah, I see you signed up for on of my favorite classes, the " + DefinitionClasses.CLASS_NAMES[selectedClassId]+". Good luck.");
+					selectedClassId = data.getIntExtra("selectedClassIdFromStore", 0);
 
-				makenewcharGoButton.setEnabled(true);
+					makenewcharInfoLabel.setText("Ah, I see you signed up for on of my favorite classes, the "
+						+ DefinitionClasses.CLASS_NAMES[selectedClassId] + ". Good luck.");
+
+					makenewcharGoButton.setEnabled(true);
+					makenewcharGoButton.setBackgroundResource(R.drawable.buttondoneleftup);
+				}
+				catch (Exception e)
+				{
+					// something went wrong
+				}
 			}
 		}
 	}

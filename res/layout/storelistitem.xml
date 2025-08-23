@@ -13,7 +13,7 @@
         android:layout_height="80dp"
         android:layout_weight="0.2"
         android:adjustViewBounds="true"
-        android:src="@drawable/weapon1" android:layout_gravity="center"/>
+        android:layout_gravity="center"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -40,9 +40,10 @@
                 android:id="@+id/storeListLevel"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
+                android:layout_marginLeft="2dp"
                 android:layout_weight="0.2"
                 android:gravity="center"
-                android:text="12"
+                android:text="lvl 12"
                 android:textColor="#FFFFFF"
                 android:textSize="15sp" />
 
@@ -50,11 +51,13 @@
                 android:id="@+id/storeListCost"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
-                android:layout_weight="0.2"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.3"
                 android:gravity="center"
-                android:text="1000"
-                android:textColor="#FFFFFF"
+                android:text="1000gp"
+                android:textColor="#FFFF00"
                 android:textSize="15sp" />
+
         </LinearLayout>
 
         <TextView
@@ -66,6 +69,21 @@
             android:text="a really long description about something super that does all kinds of amzing things over and over and over again"
             android:textColor="#FFFFAA"
             android:textSize="12sp" android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/storeListItemStats"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="+1 Awesome, +10% Cool" android:textColor="#AAFFFF" android:layout_margin="1dp" android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/storeListItemClasses"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="classes" android:layout_margin="1dp" android:textColor="#FFFFFF"/>
+
     </LinearLayout>
 
 </LinearLayout>

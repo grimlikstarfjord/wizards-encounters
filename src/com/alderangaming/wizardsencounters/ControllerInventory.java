@@ -1,13 +1,16 @@
 package com.alderangaming.wizardsencounters;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -17,6 +20,7 @@ public class ControllerInventory extends Activity
 
 	// private OwnedItems ownedItems;
 	private Player player;
+	private Dialog hDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -34,15 +38,67 @@ public class ControllerInventory extends Activity
 
 		setContentView(R.layout.inventory);
 
+		setupHelpDialog();
+
 		setupViews();
 
 		updateViews();
 	}
 
+	private void showHelp()
+	{
+		hDialog.show();
+	}
+
+	private void setupHelpDialog()
+	{
+		AlertDialog.Builder aboutDialog = new AlertDialog.Builder(this);
+
+		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(R.layout.help, (ViewGroup) findViewById(R.id.helpRoot));
+		TextView helpTextView = (TextView) layout.findViewById(R.id.helpText);
+		Button doneButton = (Button) layout.findViewById(R.id.helpDoneButton);
+		doneButton.setOnClickListener(new OnClickListener()
+		{
+
+			@Override
+			public void onClick(View v)
+			{
+				try
+				{
+					hDialog.dismiss();
+				}
+				catch (Exception e)
+				{
+					// who cares I have more important crap in my life to deal
+					// with
+				}
+			}
+
+		});
+		helpTextView.setText(R.string.inventoryHelpText);
+
+		aboutDialog.setView(layout);
+
+		hDialog = aboutDialog.create();
+	}
+
 	private void setupViews()
 	{
+		Button helpButton = (Button) findViewById(R.id.inventoryHelpButton);
+		helpButton.setOnClickListener(new OnClickListener()
+		{
+
+			@Override
+			public void onClick(View v)
+			{
+				showHelp();
+			}
+
+		});
+
 		inventoryLabel = (TextView) findViewById(R.id.inventoryLabel);
-		inventoryLabel.setText(player.name() + " - Inventory");
+		inventoryLabel.setText(player.name() + "'s Inventory");
 
 		dmgText = (TextView) findViewById(R.id.inventoryDmgText);
 		dodgeText = (TextView) findViewById(R.id.inventoryDodgeText);
@@ -55,6 +111,7 @@ public class ControllerInventory extends Activity
 		knowText = (TextView) findViewById(R.id.inventoryKnowledgeText);
 		mageText = (TextView) findViewById(R.id.inventoryMageloreText);
 		luckText = (TextView) findViewById(R.id.inventoryLuckText);
+		blockText = (TextView) findViewById(R.id.inventoryBlockText);
 
 		backButton = (Button) findViewById(R.id.inventoryBackButton);
 		backButton.setOnClickListener(new OnClickListener()
@@ -312,12 +369,15 @@ public class ControllerInventory extends Activity
 		critText.setText("Crit: " + player.critChance() + "%");
 		stunText.setText("Stun: " + player.stunChance() + "%");
 		hitText.setText("Hit: " + player.hitChance() + "%");
+		blockText.setText(player.blockingChance() + "% to block " + player.blockDmg()[1] + "-" + player.blockDmg()[2]
+			+ " dmg");
+
 		updateStatText();
 	}
-	
+
 	private void updateStatText()
 	{
-		execText.setText("EXEC:" + player.strength());
+		execText.setText("EXEC:" + player.exec());
 		if (player.execDiff() < 0)
 		{
 			execText.setTextColor(Color.RED);
@@ -448,6 +508,7 @@ public class ControllerInventory extends Activity
 	TextView knowText;
 	TextView mageText;
 	TextView luckText;
+	TextView blockText;
 
 	Button backButton;
 	Button forwardButton;

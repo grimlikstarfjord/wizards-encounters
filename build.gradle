@@ -1,5 +1,19 @@
-plugins {
-    id 'com.android.application' version '8.1.1'
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.2'
+    }
+}
+
+apply plugin: 'com.android.application'
+
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
 repositories {
@@ -9,14 +23,14 @@ repositories {
 
 android {
     namespace 'com.alderangaming.wizardsencounters'
-    compileSdk 33
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "com.alderangaming.wizardsencounters"
-        minSdk 8
-        targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 8
+        targetSdkVersion 33
+        versionCode 91
+        versionName "0.91"
     }
 
     sourceSets {
@@ -29,12 +43,55 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    lint {
+    lintOptions {
         abortOnError false
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                v1SigningEnabled true
+                v2SigningEnabled true
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+            applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    def vName = variant.versionName
+                    def vCode = variant.versionCode
+                    def baseName = "WizardsEncounters-${variant.buildType.name}-v${vName}(${vCode})"
+                    outputFileName = baseName + ".apk"
+                }
+            }
+        }
+        debug {
+            // default debug signing
+            applicationVariants.all { variant ->
+                if (variant.buildType.name == "debug") {
+                    variant.outputs.all { output ->
+                        def vName = variant.versionName
+                        def vCode = variant.versionCode
+                        def baseName = "WizardsEncounters-${variant.buildType.name}-v${vName}(${vCode})"
+                        outputFileName = baseName + ".apk"
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -18,6 +18,7 @@ public class ItemArmor extends StoreItem implements Serializable
 	private int _chanceToDrop = 0;
 	private int _blockMin = 0;
 	private int _blockMax = 0;
+	private int _blockChance = 0;
 	private int _modifyDodge = 0;
 	private int _modifyInitiative = 0;
 	private int _modifyAbilitySuccess = 0;
@@ -52,8 +53,9 @@ public class ItemArmor extends StoreItem implements Serializable
 		_minDropRound = DefinitionArmor.ARMOR_DROPS[i][0];
 		_maxDropRound = DefinitionArmor.ARMOR_DROPS[i][1];
 		_chanceToDrop = DefinitionArmor.ARMOR_DROPS[i][2];
-		_blockMin = DefinitionArmor.ARMOR_BLOCK_DAMAGE[i][0];
-		_blockMax = DefinitionArmor.ARMOR_BLOCK_DAMAGE[i][1];
+		_blockChance = DefinitionArmor.ARMOR_BLOCK_DAMAGE[i][0];
+		_blockMin = DefinitionArmor.ARMOR_BLOCK_DAMAGE[i][1];
+		_blockMax = DefinitionArmor.ARMOR_BLOCK_DAMAGE[i][2];
 		_modifyDodge = DefinitionArmor.ARMOR_MODIFIES[i][0];
 		
 		Log.d("armorinfo","armor object "+ DefinitionArmor.ARMOR_NAMES[i]+" set modifydodge: "+_modifyDodge);
@@ -82,6 +84,11 @@ public class ItemArmor extends StoreItem implements Serializable
 	public int chanceToDrop()
 	{
 		return _chanceToDrop;
+	}
+	
+	public int blockChance()
+	{
+		return _blockChance;
 	}
 
 	public int blockMin()

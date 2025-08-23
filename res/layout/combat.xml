@@ -8,7 +8,7 @@
         android:id="@+id/combatPlayerBar"
         android:layout_width="fill_parent"
         android:layout_height="25dp"
-        android:background="#44AA44"
+        android:background="@drawable/topbackgroundcombat"
         android:gravity="center_vertical" android:clickable="true">
 
         <TextView
@@ -17,25 +17,23 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="PlayerName"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="19sp" android:layout_marginLeft="5dp"/>
-
-        <TextView
-            android:id="@+id/combatPlayerHpLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:text="30/30 HP"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="19sp" android:gravity="center"/>
+            android:textSize="16sp" android:layout_marginLeft="10dp" android:textColor="#FFFFFF"/>
 
         <TextView
             android:id="@+id/combatPlayerApLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
             android:text="5/5 AP"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="19sp" android:layout_marginRight="5dp" android:gravity="center"/>
+            android:textSize="16sp" android:textColor="#427BFE"/>
+
+        <TextView
+            android:id="@+id/combatPlayerHpLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:text="30/30 HP"
+            android:textSize="16sp" android:textColor="#FF0000"/>
     </LinearLayout>
 
     <LinearLayout
@@ -97,7 +95,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/monsterinfobar" >
+                android:background="@drawable/monsterinfobar">
 
                 <TextView
                     android:id="@+id/combatMonsterName"
@@ -131,20 +129,29 @@
                         android:id="@+id/expandedMonsterName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TextView" android:layout_weight="1" android:layout_marginLeft="10dp" android:textSize="15sp" android:textColor="#FFFFFF"/>
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:text="Hmmm..."
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/expandedMonsterHP"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
-                        android:text="TextView" android:textSize="14sp" android:textColor="#FFFFFF"/>
+                        android:text="HP: ?"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/expandedMonsterAP"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TextView" android:layout_marginRight="10dp" android:textSize="14sp" android:textColor="#FFFFFF"/>
+                        android:layout_marginRight="10dp"
+                        android:text="AP: ?"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
@@ -152,7 +159,11 @@
                     android:id="@+id/expandedMonsterAbilities"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="list of monster abilities" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:textColor="#4488FF" android:textSize="14sp"/>
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="Trancending its mental barriers..."
+                    android:textColor="#4488FF"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
@@ -165,6 +176,11 @@
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                android:src="@drawable/hideousaunt"/>
+
+            <ImageView
+                android:id="@+id/combatImpactImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_alignRight="@id/combatMonsterImage" android:layout_alignLeft="@id/combatMonsterImage" android:layout_alignBottom="@id/combatMonsterImage" android:layout_alignTop="@id/combatMonsterImage" android:adjustViewBounds="true" android:scaleType="centerInside"/>
 
             <TableLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -441,15 +457,14 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@id/combatMonsterImage"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/weapon1" />
+                />
 
             <TextView
                 android:id="@+id/combatPlayerAttackText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="170dp"
                 android:textColor="#FFFFFF"
-                android:textSize="29sp" android:layout_above="@id/combatAttackImage" android:layout_centerHorizontal="true"/>
+                android:textSize="29sp" android:layout_above="@id/combatAttackImage" android:layout_centerHorizontal="true" android:gravity="center"/>
 
             <ImageView
                 android:id="@+id/combatHitImage"
@@ -462,23 +477,63 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="0dp" android:layout_weight="0.5" android:id="@+id/combatBottomLayout">
+            android:layout_height="0dp" android:layout_weight="0.5" android:id="@+id/combatBottomLayout" android:background="@drawable/bottombackgroundtown">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:orientation="vertical" android:layout_weight="0.8">
 
-                <TextView
-                    android:id="@+id/logTextView"
-                    android:layout_width="fill_parent"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:background="@drawable/combatlogback"
-                    android:gravity="bottom"
-                    android:padding="12dp"
-                    android:scrollHorizontally="false"
-                    android:scrollbars="vertical"
-                    android:text="onsdf punasdif nsadufn EASDFN SFN POSUNF PSODFN POSDNF OIDFN OSDNF OSPDH FGNpo nosufng osfng oifng ofng oifng oing sodign psifon spoding potihn [oitnb otenbio t noitmn [oitnh otn on pournv 9834hg 9o3ng 987e9735n " android:layout_weight="0.7"/>
+                    android:layout_weight="0.7"
+                    android:background="@drawable/background2" >
+
+                    <TextView
+                        android:id="@+id/textView1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.045" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.92"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.1" />
+
+                        <TextView
+                            android:id="@+id/logTextView"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.9"
+                            android:gravity="bottom"
+                            android:scrollHorizontally="false"
+                            android:scrollbars="vertical"
+                            android:text="onsdf punasdif nsadufn EASDFN SFN POSUNF PSODFN POSDNF OIDFN OSDNF OSPDH FGNpo nosufng osfng oifng ofng oifng oing sodign psifon spoding potihn [oitnb otenbio t noitmn [oitnh otn on pournv 9834hg 9olsg asng sangb aslukgb aslkbg aslgkb aslgb aslgb aslfugb aslgb saigbu saibg siagb saigb asibg asiubg asugb saibg saibg asifubg asiubg iasbg aisubg isaubg isab giasub giusbg iuasg biausbg isau bs3ng 987e9735n "
+                            android:textAllCaps="false" />
+
+                        <TextView
+                            android:id="@+id/textView4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.1" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.045" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -555,11 +610,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/buttondodge" android:visibility="invisible"/>
-
-    <Button
-        android:id="@+id/findObjectButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/buttonfindobject" android:visibility="invisible"/>
 
 </RelativeLayout>

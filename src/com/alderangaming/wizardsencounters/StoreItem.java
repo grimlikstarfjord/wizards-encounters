@@ -35,12 +35,40 @@ public abstract class StoreItem implements Serializable
 	
 	private boolean _isBound = false;
 	
-	private int _animationImageResource = 0;
-	private int _imageResource = 0;
+	private int _animationImageResource = -1;
+	private int _imageResource = -1;
 	private int[] _onlyForClasses = null;
 	private int _availForANewPlayer = 0;
 	private int _showsInStore = 0;
 	
+	public String equipTypeName()
+	{	
+		
+		if(_itemType == DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS)
+			return DefinitionGlobal.EQUIP_TYPE_NAMES[7];
+		
+		else if(_itemType == DefinitionGlobal.ITEM_TYPE_WEAPON)
+			return DefinitionGlobal.EQUIP_TYPE_NAMES[1];
+		
+		else if(_itemType == DefinitionGlobal.ITEM_TYPE_ITEM)
+			return DefinitionGlobal.EQUIP_TYPE_NAMES[5];
+		
+		else if(_itemType == DefinitionGlobal.ITEM_TYPE_RUNE_ABILITY)
+			return DefinitionGlobal.EQUIP_TYPE_NAMES[6];
+		
+		else if(_itemType == DefinitionGlobal.ITEM_TYPE_ARMOR && _equippableSlots[0] == DefinitionGlobal.EQUIP_SLOT_HELM[0])
+			return DefinitionGlobal.EQUIP_TYPE_NAMES[0];
+		
+		else if(_itemType == DefinitionGlobal.ITEM_TYPE_ARMOR && _equippableSlots[0] == DefinitionGlobal.EQUIP_SLOT_CHEST[0])
+			return DefinitionGlobal.EQUIP_TYPE_NAMES[2];
+		
+		else if(_itemType == DefinitionGlobal.ITEM_TYPE_ARMOR && _equippableSlots[0] == DefinitionGlobal.EQUIP_SLOT_SHOES[0])
+			return DefinitionGlobal.EQUIP_TYPE_NAMES[3];
+		
+		else 
+			return DefinitionGlobal.EQUIP_TYPE_NAMES[4];
+		
+	}
 	
 	public void setImageName(String n, String an, Context c)
 	{
@@ -52,6 +80,11 @@ public abstract class StoreItem implements Serializable
 	
 	public int cost()
 	{
+		if(itemType() == DefinitionGlobal.ITEM_TYPE_WEAPON)
+		{
+			return Helper.getWeaponCost(id());
+		}
+		
 		return _cost;
 	}
 	public void setCost(int c)
@@ -200,11 +233,17 @@ public abstract class StoreItem implements Serializable
 	
 	public int value()
 	{
+		if(itemType() == DefinitionGlobal.ITEM_TYPE_WEAPON)
+		{
+			return Math.round(Helper.getWeaponCost(id()) / DefinitionGlobal.ITEM_VALUE_DIVISOR);
+		}
+		
 		return _value;
 	}
 	
 	public void setAnimationImageResource(Context context)
 	{
+		if(_animationImageName.length() > 0)
 		_animationImageResource = context.getResources().getIdentifier(_animationImageName, "drawable", context.getPackageName());
 	}
 	

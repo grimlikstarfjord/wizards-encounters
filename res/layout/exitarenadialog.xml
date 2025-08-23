@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="250dp"
+    android:layout_height="200dp"
+    android:layout_gravity="center"
+    android:background="#33555555"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/exitArenaDialogTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Exiting the arena will make your this character (jerkface, Rank 13) to lose all progress and gold gained from this Round. They will revert to Round 1, Rank 1! What say you?"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="15dp"
+        android:gravity="center" >
+
+        <Button
+            android:id="@+id/exitArenaDialogButton"
+            android:layout_width="90dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="35dp"
+            android:background="@drawable/buttonexitarena" />
+
+        <Button
+            android:id="@+id/exitArenaDialogCancelButton"
+            android:layout_width="90dp"
+            android:layout_height="45dp"
+            android:background="@drawable/buttondonotexitarena" />
+
+    </LinearLayout>
+
+</LinearLayout>

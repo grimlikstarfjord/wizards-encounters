@@ -32,13 +32,13 @@
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="fill_parent">
 
             <ImageView
                 android:id="@+id/roundEndBackgroundImage"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/backgroundtreasure" />
+                android:src="@drawable/backgroundtreasure" android:adjustViewBounds="true" android:scaleType="fitXY" android:layout_centerInParent="true"/>
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -67,7 +67,8 @@
                             android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.4" android:gravity="center"/>
 
                     </LinearLayout>
-
+
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -85,7 +86,8 @@
                             android:text="15gp"
                             android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.4" android:gravity="center"/>
                     </LinearLayout>
-
+
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -109,7 +111,8 @@
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" android:layout_weight="1">
-
+
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -127,7 +130,8 @@
                             android:text="80gp"
                             android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.4" android:gravity="center"/>
                     </LinearLayout>
-
+
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -145,7 +149,8 @@
                             android:text="150gp"
                             android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.4" android:gravity="center"/>
                     </LinearLayout>
-
+
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -181,33 +186,37 @@
             android:id="@+id/roundEndText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Congratulations! Select two chests to open. asnd fians foisand foasinf aosnf aosinf aosn fasodifn asoidf noiasdf n"
+            android:text="Congratulations! Select two chests to open."
             android:padding="10dp" android:layout_gravity="center"/>
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="5dp"
+        android:gravity="center" >
 
         <Button
             android:id="@+id/roundEndCheckoutButton"
-            android:layout_width="100dp"
-            android:layout_height="60dp"
-            android:text="Checkout"/>
+            android:layout_width="90dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/buttoncheckout" />
 
         <Button
             android:id="@+id/roundendInventoryButton"
-            android:layout_width="100dp"
-            android:layout_height="60dp"
-            android:text="Inventory" android:layout_centerHorizontal="true"/>
+            android:layout_width="90dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/buttoninventory" />
 
         <Button
             android:id="@+id/roundEndContinueButton"
-            android:layout_width="100dp"
-            android:layout_height="60dp"
-            android:text="Continue To Round 2" android:layout_alignParentRight="true"/>
-
-    </RelativeLayout>
+            android:layout_width="90dp"
+            android:layout_height="50dp"
+            android:background="@drawable/buttonnextround" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -3,11 +3,14 @@ package com.alderangaming.wizardsencounters;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -29,7 +32,11 @@ public class ControllerRoundEnd extends Activity
 
 		super.onCreate(savedInstanceState);
 
+		//stop previous combat song
 		SoundManager.stopAllMusic();
+		
+		//start treasure room song
+		SoundManager.playMusic(SoundManager.SOUND_TYPE_MUSIC_TREASURE_ROOM, false, ControllerRoundEnd.this);
 
 		if (!DBHandler.isOpen(getApplicationContext()))
 			DBHandler.open(getApplicationContext());
@@ -49,6 +56,7 @@ public class ControllerRoundEnd extends Activity
 	{
 		roundEndTitleText = (TextView) findViewById(R.id.roundendTitleText);
 		roundendCheckoutButton = (Button) findViewById(R.id.roundEndCheckoutButton);
+
 		roundEndText = (TextView) findViewById(R.id.roundEndText);
 
 		goldText = (TextView) findViewById(R.id.roundEndGoldText);
@@ -77,12 +85,12 @@ public class ControllerRoundEnd extends Activity
 
 						if (Helper.randomInt(100) < DefinitionGlobal.CHANCE_FREE_CHEST_EMPTY)
 						{
+							SoundManager.playSound(SoundManager.OPEN_CHEST_EMPTY, true);
 							showToast("The chest was empty!");
 						}
 						else
 						{
-
-							getLootItem(DefinitionGlobal.CHEST_OPEN_COST[0]);
+							getLootItem(0, 50);
 						}
 						updateViews();
 
@@ -109,9 +117,10 @@ public class ControllerRoundEnd extends Activity
 						opened2 = true;
 						chestsOpened++;
 						chest2Image.setImageResource(R.drawable.chest2open);
-						OwnedItems.updateGold(-(player.rank() * DefinitionGlobal.CHEST_OPEN_COST[1]));
+						int openCost = player.rank() * DefinitionGlobal.CHEST_OPEN_COST[1];
+						OwnedItems.updateGold(-openCost);
 
-						getLootItem(DefinitionGlobal.CHEST_OPEN_COST[1]);
+						getLootItem(1, openCost);
 
 						updateViews();
 					}
@@ -137,9 +146,10 @@ public class ControllerRoundEnd extends Activity
 						opened3 = true;
 						chestsOpened++;
 						chest3Image.setImageResource(R.drawable.chest2open);
-						OwnedItems.updateGold(-(player.rank() * DefinitionGlobal.CHEST_OPEN_COST[2]));
+						int openCost = player.rank() * DefinitionGlobal.CHEST_OPEN_COST[2];
+						OwnedItems.updateGold(-openCost);
 
-						getLootItem(DefinitionGlobal.CHEST_OPEN_COST[2]);
+						getLootItem(2, openCost);
 
 						updateViews();
 					}
@@ -165,9 +175,10 @@ public class ControllerRoundEnd extends Activity
 						opened4 = true;
 						chestsOpened++;
 						chest4Image.setImageResource(R.drawable.chest4open);
-						OwnedItems.updateGold(-(player.rank() * DefinitionGlobal.CHEST_OPEN_COST[3]));
+						int openCost = player.rank() * DefinitionGlobal.CHEST_OPEN_COST[3];
+						OwnedItems.updateGold(-openCost);
 
-						getLootItem(DefinitionGlobal.CHEST_OPEN_COST[3]);
+						getLootItem(3, openCost);
 
 						updateViews();
 					}
@@ -193,9 +204,10 @@ public class ControllerRoundEnd extends Activity
 						opened5 = true;
 						chestsOpened++;
 						chest5Image.setImageResource(R.drawable.chest5open);
-						OwnedItems.updateGold(-(player.rank() * DefinitionGlobal.CHEST_OPEN_COST[4]));
+						int openCost = player.rank() * DefinitionGlobal.CHEST_OPEN_COST[4];
+						OwnedItems.updateGold(-openCost);
 
-						getLootItem(DefinitionGlobal.CHEST_OPEN_COST[4]);
+						getLootItem(4, openCost);
 
 						updateViews();
 					}
@@ -221,9 +233,10 @@ public class ControllerRoundEnd extends Activity
 						opened6 = true;
 						chestsOpened++;
 						chest6Image.setImageResource(R.drawable.chest6open);
-						OwnedItems.updateGold(-(player.rank() * DefinitionGlobal.CHEST_OPEN_COST[5]));
+						int openCost = player.rank() * DefinitionGlobal.CHEST_OPEN_COST[5];
+						OwnedItems.updateGold(-openCost);
 
-						getLootItem(DefinitionGlobal.CHEST_OPEN_COST[5]);
+						getLootItem(5, openCost);
 
 						updateViews();
 					}
@@ -245,11 +258,12 @@ public class ControllerRoundEnd extends Activity
 
 				// TODO add checkout verify dialog
 
-				// save player data
-				player.setCurrentRound(1);
+				//player.setCurrentRound(1);
 
-				if (DBHandler.isOpen(getApplicationContext()))
-					DBHandler.updatePlayer(player);
+				if (DBHandler.updatePlayer(player))
+				{
+					DBHandler.close();
+				}
 
 				finish();
 
@@ -257,6 +271,7 @@ public class ControllerRoundEnd extends Activity
 
 		});
 		roundendContinueButton = (Button) findViewById(R.id.roundEndContinueButton);
+
 		roundendContinueButton.setOnClickListener(new OnClickListener()
 		{
 
@@ -269,9 +284,22 @@ public class ControllerRoundEnd extends Activity
 					DBHandler.close();
 				}
 
-				Intent i =
-					new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerRoundStart.class);
-				Bundle b = new Bundle();
+				Intent i = null;
+				Bundle b = null;
+
+				if (player.currentRound() >= DefinitionRounds.LAST_ROUND)
+				{
+					i =
+						new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerEndGame.class);
+					b = new Bundle();
+				}
+				else
+				{
+					i =
+						new Intent(getApplicationContext(),
+							com.alderangaming.wizardsencounters.ControllerRoundStart.class);
+					b = new Bundle();
+				}
 
 				// b.putSerializable("OwnedItems", OwnedItems);
 				b.putSerializable("player", player);
@@ -284,6 +312,7 @@ public class ControllerRoundEnd extends Activity
 			}
 
 		});
+
 		roundendInventoryButton = (Button) findViewById(R.id.roundendInventoryButton);
 		roundendInventoryButton.setOnClickListener(new OnClickListener()
 		{
@@ -316,32 +345,56 @@ public class ControllerRoundEnd extends Activity
 		toast.show();
 	}
 
-	private void getLootItem(int value)
+	private void getLootItem(int chest, int chestCost)
 	{
+
+		if (Helper.randomInt(100) < DefinitionGlobal.CHANCE_TO_GET_GOLD_FROM_CHEST && chestCost >= 0)
+		{
+			// player found gold
+			
+				int amt = (Helper.randomInt(DefinitionGlobal.MAX_PERCENT_OF_CHEST_COST_OF_GOLD_IN_CHEST));
+			double amt2 = (double)amt / (double)100;
+
+			int goldAmt = (int) Math.round((double)chestCost * amt2);
+			
+			SoundManager.playSound(SoundManager.OPEN_CHEST_ITEM, true);
+			showToast("There was "+goldAmt+" gold inside!");
+			OwnedItems.updateGold(goldAmt);
+			updateGoldText();
+			return;
+		}
+
 		ArrayList<StoreItem> lootItems =
-			Helper.getRandomDropsForRound(player.currentRound() - 1, value, getApplicationContext());
+			Helper.getRandomDropsForRound(player.currentRound() - 1, chest, getApplicationContext());
 
 		Log.d("loot", "getLoot returned " + lootItems.size() + " items");
 
 		int tries = 0;
 		while (lootItems.size() < 1)
 		{
-			lootItems = Helper.getRandomDropsForRound(player.currentRound(), value, getApplicationContext());
+			lootItems = Helper.getRandomDropsForRound(player.currentRound(), chest, getApplicationContext());
 			tries++;
 
 			if (tries > 10)
 			{
 				Log.d("loot", "tried 10 times and couldn't get a drop: round " + player.currentRound() + ", value "
-					+ value);
+					+ chest);
 				break;
 			}
 		}
 
 		if (tries > 10)
+		{
+			SoundManager.playSound(SoundManager.OPEN_CHEST_EMPTY, true);
 			showToast("The chest was empty!");
+		}
 
 		else
 		{
+			// get item for that chest
+
+			SoundManager.playSound(SoundManager.OPEN_CHEST_ITEM, true);
+
 			StoreItem s = lootItems.get(Helper.randomInt(lootItems.size()));
 
 			final Dialog dialog = new Dialog(ControllerRoundEnd.this);
@@ -349,6 +402,8 @@ public class ControllerRoundEnd extends Activity
 			TextView itemName = (TextView) dialog.findViewById(R.id.itemInfoName);
 			TextView itemDescription = (TextView) dialog.findViewById(R.id.itemInfoDescription);
 			ImageView itemImage = (ImageView) dialog.findViewById(R.id.itemInfoImage);
+			TextView itemStats1 = (TextView) dialog.findViewById(R.id.itemInfoStats1);
+			TextView itemStats2 = (TextView) dialog.findViewById(R.id.itemInfoStats2);
 
 			// check if this is an item the player already owns - in this case
 			// we give them a charge
@@ -356,7 +411,7 @@ public class ControllerRoundEnd extends Activity
 			{
 				if (OwnedItems.getPlayerOwnsThis(s).chargesPurchased() + 1 > s.maxCharges())
 				{
-					getLootItem(value);
+					getLootItem(chest, -1);
 					return;
 				}
 				else
@@ -381,16 +436,19 @@ public class ControllerRoundEnd extends Activity
 				{
 					int index = OwnedItems.getIndexOfItemTypeId(s.itemType(), s.id());
 					OwnedItems.setChargesPucrchasedOfItemByOwnedIndex(index, 1);
-					OwnedItems.rechargeItems(s.id(), -1);
+					OwnedItems.giveItemStartingCharge(s.id());
 				}
 
-				dialog.setTitle("Loot: " + DefinitionGlobal.EQUIP_TYPE_NAMES[s.itemType()]);
+				dialog.setTitle("Loot: " + s.equipTypeName());
 				itemName.setText(s.name());
 			}
 
 			itemDescription.setText(s.description());
 			itemImage.setImageResource(s.imageResource());
+			itemStats1.setText("Equip on: "+Helper.getAllowedClassesString(s.itemType(), s.id()));
+			itemStats2.setText("Min Rank: "+Helper.getMinRank(s.itemType(), s.id()));
 			Button doneButton = (Button) dialog.findViewById(R.id.itemInfoDoneButton);
+
 			doneButton.setOnClickListener(new OnClickListener()
 			{
 				@Override
@@ -409,6 +467,8 @@ public class ControllerRoundEnd extends Activity
 			{
 				Log.d("loot", "error saving new looted item to db!!!");
 			}
+
+			DBHandler.updateGlobalStats(OwnedItems.gold());
 
 			dialog.show();
 		}
@@ -431,16 +491,20 @@ public class ControllerRoundEnd extends Activity
 			}
 		}
 	}
+	
+	private void updateGoldText()
+	{
+		goldText.setText("You have " + OwnedItems.gold() + "gp");
+	}
 
 	private void updateViews()
 	{
 		roundEndTitleText.setText("Round " + (player.currentRound() - 1) + " Complete");
-		roundendContinueButton.setText("Continue To Round " + player.currentRound());
-
+		
 		if (player.currentRound() - 2 >= 0)
 		{
 			if (DefinitionRounds.ROUND_TYPE[player.currentRound() - 2] == 1)
-			{				
+			{
 				roundEndText.setText("Congratulations! You are now Rank " + player.rank() + "! You may open up to "
 					+ DefinitionGlobal.MAX_CHESTS_TO_OPEN + " chests.");
 				DBHandler.updatePlayer(player);
@@ -451,7 +515,8 @@ public class ControllerRoundEnd extends Activity
 			roundEndText.setText("Congratulations! You may open up to " + DefinitionGlobal.MAX_CHESTS_TO_OPEN
 				+ " chests.");
 		}
-		goldText.setText("You have " + OwnedItems.gold() + "gp");
+		
+		updateGoldText();
 
 		if (player.rank() * DefinitionGlobal.CHEST_OPEN_COST[0] < 1)
 			chest1Text.setText("free");
@@ -480,10 +545,19 @@ public class ControllerRoundEnd extends Activity
 			chest6Text.setText("");
 
 			roundEndText
-				.setText("You have opened all the chests you can for now. If you checkout, you will keep your loot, but "
-					+ player.name() + " will start over at Round 1.");
+				.setText("You have opened all the chests you can for now. If you Check Out, your current Round will be saved.");
 		}
 
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+		if (keyCode == KeyEvent.KEYCODE_BACK)
+		{
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	TextView roundEndTitleText;

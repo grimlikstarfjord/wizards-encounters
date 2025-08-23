@@ -1,68 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_gravity="center_horizontal"
-	android:id="@+id/layout_root"
->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal" >
 
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
-
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/AboutTextView"
+            <ImageView
+                android:id="@+id/imageView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
-                android:text="Wizards Encounters"
-                android:textSize="20dip"
-                android:textStyle="bold" />
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/encounterstitle" />
+
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/version"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/TextView02"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:gravity="center_horizontal"
-                android:padding="10dip"
                 android:text="Thank you for purchasing Wizards Encounters!"
-                android:textSize="16dip" />
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/TextView03"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:gravity="center_horizontal"
-                android:padding="10dip"
                 android:text="We look forward to your constructive feedback."
-                android:textSize="16dip" />
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/TextView04"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:autoLink="email"
                 android:gravity="center_horizontal"
-                android:padding="10dip"
                 android:text="Comments or Questions: alderangaming@gmail.com"
-                android:textSize="15dip" />
+                android:textColor="#FFFFFF"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/TextView05"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:autoLink="phone"
                 android:gravity="center_horizontal"
-                android:padding="10dip"
                 android:text="or send a text to (636)ALD-ERAN"
-                android:textSize="16dip" />
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/TextView06"
@@ -71,172 +81,286 @@
                 android:autoLink="web"
                 android:gravity="center_horizontal"
                 android:text="www.alderangaming.com"
-                android:textSize="15dip" />
+                android:textSize="19sp" />
 
-            <TextView
-                android:id="@+id/TextView07"
-                android:layout_width="fill_parent"
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom|center_horizontal"
-                android:text="\u00A9 2012 Alderan Gaming"
-                android:textSize="15dip" />
+                android:layout_marginTop="10dp"
+                android:src="@drawable/classseparatorblue" />
 
             <TextView
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Credit Goes To"
-                android:textAppearance="?android:attr/textAppearanceLarge" android:layout_marginTop="15dp"/>
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Artwork"
-                android:textAppearance="?android:attr/textAppearanceMedium" android:layout_marginTop="5dp"/>
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="Development"
+                android:textColor="#FFFF55"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Flora Li"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:layout_gravity="center"
+                android:text="Norman Tatlock"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sounds"
-                android:textAppearance="?android:attr/textAppearanceMedium" android:layout_marginTop="5dp"/>
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:text="Game Concept &amp; Design"
+                android:textColor="#FFFF55"
+                android:textSize="15sp" />
 
             <TextView
-                android:id="@+id/textView5"
-                android:layout_width="200dp"
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="some clips used are from these contributors on freesound.org:"
-                android:textAppearance="?android:attr/textAppearanceSmall" android:gravity="center"/>
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Scott Robinson"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="adcbicycle"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:text="Music"
+                android:textColor="#FFFF55"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Norman Tatlock"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/textView31"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Main Title Theme (inspired by &apos;People&apos;)"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/textView26"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="oscillator"
+                android:text="&apos;Beware Falling Boulders&apos;"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/textView27"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&apos;Battle In The Raw&apos;"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/textView28"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&apos;I Am Growlistrix&apos;"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/textView29"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&apos;Wizzy Jam&apos;"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/textView30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&apos;Barster&apos;s Goin&apos; Rogue&apos;"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/textView24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&apos;Not All That Different&apos;"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="Scott Robinson"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp" />
+            
+              <TextView
+                  android:id="@+id/textView31"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="&apos;Treasure Room Theme&apos;"
+                  android:textAppearance="?android:attr/textAppearanceSmall" />
+
+              <TextView
+                  android:id="@+id/textView7"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="&apos;Heart Attack Incoming&apos;"
+                  android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
                 android:id="@+id/textView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="aust-paul"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:text="Background Art"
+                android:textColor="#FFFF55"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/textView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="themfish"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:layout_gravity="center"
+                android:text="Flora Li"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/textView10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="hello-flowers"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:text="Art Contributors"
+                android:textColor="#FFFF55"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/textView11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="the-bizniss"
+                android:gravity="center"
+                android:text="Scott Robinson\nMatthew Chastain Bowers\nRyan Young\nAvi Young\nJulia Young\nLatisha Trotter"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
                 android:id="@+id/textView12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="nthompson"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-            
-             <TextView
-                android:id="@+id/textView12"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="Game Content"
+                android:textColor="#FFFF55"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ejfortin"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-             
-              <TextView
-                android:id="@+id/textView12"
+                android:gravity="center"
+                android:text="Norman Tatlock"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="sharkmail"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-            
-             <TextView
-                android:id="@+id/textView12"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="Content Contributors"
+                android:textColor="#FFFF55"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="qubodup"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-             
-              <TextView
-                android:id="@+id/textView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="joelaudio"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-              
-               <TextView
-                android:id="@+id/textView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="xythe"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-               
-                <TextView
-                android:id="@+id/textView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="runnerpack"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-                
-                 <TextView
-                android:id="@+id/textView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="cgeffex"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-                 
-                  <TextView
-                android:id="@+id/textView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="willhiccups"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-                  
-                   <TextView
-                android:id="@+id/textView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="qat"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-                   
-                    <TextView
-                android:id="@+id/textView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="vosvoy"
+                android:gravity="center"
+                android:text="Scott Robinson\nMatthew Chastain Bowers"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="Sound Effects"
+                android:textColor="#FFFF55"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Norman Tatlock"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="Sound Effect Contributors"
+                android:textColor="#FFFF55"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Scott Robinson"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Sounds Used from FreesSound.org:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView21"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="adcbicycle\n oscillator\n aust-paul\n themfish\n hello-flowers\n the-bizniss\n nthompson\n ejfortin\n sharkmail\n qubodup\n joelaudio\n xythe\n runnerpack\n cgeffex\n willhiccups\n qat\n vosvoy"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/classseparatorblue" />
+
+            <TextView
+                android:id="@+id/TextView07"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="bottom|center_horizontal"
+                android:text="\u00A9 2012-2013 Alderan Gaming"
+                android:textSize="15sp" />
         </LinearLayout>
-
     </ScrollView>
 
 </RelativeLayout>

@@ -33,7 +33,6 @@ public class ItemRune extends StoreItem implements Serializable
 	private int _dealMultipleStatBasedDamageStat1 = -1;
 	private int _dealMultipleStatBasedDamageStat2 = -1;
 
-	private int _dealSpecialDamageID = -1;
 	private int _castingSpecialID = -1;
 
 	private int[] _appliesEffectSource = new int[0];
@@ -133,6 +132,8 @@ public class ItemRune extends StoreItem implements Serializable
 
 	private void makeSelf(int id)
 	{
+		//System.out.println("id:"+id);
+		
 		_apCost = (Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_AP_COST][0];
 		_successChance = (Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_SUCCESS_CHANCE][0];
 
@@ -142,28 +143,28 @@ public class ItemRune extends StoreItem implements Serializable
 		_dealWeaponDamageMaxBonus = (Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_DEALS_WEAPON_DAMAGE][3];
 
 		_stunTurns = (Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_STUNS][0];
+		
+		
 		if (_stunTurns > 0)
 			_stuns = true;
 
 		_stunActor = (Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_STUNS][1];
 		_stunOnlyIfSourceEffectActive = (Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_STUNS][2];
 		_stunOnlyIfTargetEffectActive = (Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_STUNS][3];
-
+		
+		
 		_dealStatIsHpPercentDamageSourceOrTargetFlag =
 			(Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_DEALS_STAT_IS_HP_PERCENT_DAMAGE][0];
 		_dealStatIsHpPercentDamageStatId =
 			(Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_DEALS_STAT_IS_HP_PERCENT_DAMAGE][1];
 
 		_dealMultipleStatBasedDamageMult =
-			(Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_DEALS_MULTIPLE_STAT_DAMAGE][0];
+			Double.parseDouble(DefinitionRunes.runeData[id][DefinitionRunes.RUNE_DEALS_MULTIPLE_STAT_DAMAGE][0].toString());
 		_dealMultipleStatBasedDamageStat1 =
 			(Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_DEALS_MULTIPLE_STAT_DAMAGE][1];
 		_dealMultipleStatBasedDamageStat2 =
 			(Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_DEALS_MULTIPLE_STAT_DAMAGE][2];
-
-		_dealSpecialDamageID =
-			(Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_DEALS_SPECIAL_DAMAGE_FLAGID][0];
-
+		
 		_appliesEffectSource =
 			new int[DefinitionRunes.runeData[id][DefinitionRunes.RUNE_APPLIES_SOURCE_EFFECTID].length];
 		for (int a = 0; a < _appliesEffectSource.length; a++)
@@ -244,7 +245,7 @@ public class ItemRune extends StoreItem implements Serializable
 		_counterModifyHPStatBasedTimesWpnDmgStatId =
 			(Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_COUNTER_REGEN_HP_STAT_BASED][1];
 		_counterModifyHPStatBasedTimesWpnDmgMult =
-			(Double) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_COUNTER_REGEN_HP_STAT_BASED][2];
+			Double.parseDouble(DefinitionRunes.runeData[id][DefinitionRunes.RUNE_COUNTER_REGEN_HP_STAT_BASED][2].toString());
 
 		_counterModifyWeaponDamageTurns =
 			(Integer) DefinitionRunes.runeData[id][DefinitionRunes.RUNE_COUNTER_MODIFY_WEAPON_DAMAGE][0];
@@ -358,12 +359,7 @@ public class ItemRune extends StoreItem implements Serializable
 	{
 		return _dealStatIsHpPercentDamageStatId;
 	}
-
-	public int dealSpecialDamageID()
-	{
-		return _dealSpecialDamageID;
-	}
-
+	
 	public int castingSpecialID()
 	{
 		return _castingSpecialID;

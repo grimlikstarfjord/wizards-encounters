@@ -45,10 +45,10 @@ public class StoreItems
 		}
 
 		// items
-		for (int a = 0; a < DefinitionItems.ITEM_NAME.length; a++)
+		for (int a = 0; a < DefinitionItems.itemdata.length; a++)
 		{
 
-			if (DefinitionItems.ITEM_SHOWS_IN_STORE[a] == 1)
+			if ((Integer) DefinitionItems.itemdata[a][DefinitionItems.ITEM_SHOWS_IN_STORE][0] == 1)
 			{
 				ItemItem i = new ItemItem(DefinitionGlobal.ITEM_TYPE_ITEM, a, context);
 
@@ -118,21 +118,61 @@ public class StoreItems
 		}
 	}
 
-	public ArrayList<StoreItem> getStoreItemsByType(int type)
+	// returns list of abilities for sale in store
+	public ArrayList<StoreItem> getStoreItemsByType(int type, int sortState, ArrayList<Player> savedPlayers)
 	{
 		ArrayList<StoreItem> st = new ArrayList<StoreItem>();
 		for (int a = 0; a < _storeItems.size(); a++)
 		{
 			if (_storeItems.get(a).itemType() == type)
 				if (!OwnedItems.getPlayerOwnsThis(_storeItems.get(a).itemType(), _storeItems.get(a).id()))
-					st.add(_storeItems.get(a));
+				{
+					boolean okToAdd = true;
+
+					// show only avail for classes
+					if (sortState == 0 || sortState == 1)
+					{
+						okToAdd = false;
+						
+						for (int b = 0; b < savedPlayers.size(); b++)
+						{
+							if (_storeItems.get(a).canUseWithClassId(-1)
+								|| _storeItems.get(a).canUseWithClassId(savedPlayers.get(b).playerClass()))
+							{
+								okToAdd = true;
+								if (sortState == 0)
+								{
+									okToAdd = false;
+									if (_storeItems.get(a).cost() <= OwnedItems.gold())
+									{
+										okToAdd = true;
+									}
+								}
+
+								break;
+							}
+						}
+
+						if (sortState == 0)
+						{
+							if (_storeItems.get(a).cost() <= OwnedItems.gold())
+								okToAdd = true;
+						}
+					}
+
+					if (okToAdd)
+						st.add(_storeItems.get(a));
+				}
 		}
 
 		return st;
 	}
 
-	public ArrayList<StoreItem> getUnownedStoreItemsBySlot(int slot)
+	public ArrayList<StoreItem> getUnownedStoreItemsBySlot(int slot, int sortState, ArrayList<Player> savedPlayers)
 	{
+
+		// sortState 0=usable classes and affordable, 1=usable classes, 2=all
+
 		ArrayList<StoreItem> st = new ArrayList<StoreItem>();
 		for (int a = 0; a < _storeItems.size(); a++)
 		{
@@ -143,7 +183,35 @@ public class StoreItems
 				if (!OwnedItems.getPlayerOwnsThis(_storeItems.get(a).itemType(), _storeItems.get(a).id()))
 				{
 					Log.d("store", ".. NO .. adding to unowned list");
-					st.add(_storeItems.get(a));
+
+					boolean okToAdd = true;
+
+					// do not add items outside of owned classes
+					if (sortState == 0 || sortState == 1)
+					{
+						okToAdd = false;
+						for (int b = 0; b < savedPlayers.size(); b++)
+						{
+							if (_storeItems.get(a).canUseWithClassId(-1)
+								|| _storeItems.get(a).canUseWithClassId(savedPlayers.get(b).playerClass()))
+							{
+								okToAdd = true;
+								if (sortState == 0)
+								{
+									okToAdd = false;
+									if (_storeItems.get(a).cost() <= OwnedItems.gold())
+									{
+										okToAdd = true;
+									}
+								}
+
+								break;
+							}
+						}
+					}
+
+					if (okToAdd)
+						st.add(_storeItems.get(a));
 				}
 				else
 				{
@@ -155,7 +223,7 @@ public class StoreItems
 		return st;
 	}
 
-	public ArrayList<StoreItem> getClassRunesForSale()
+	public ArrayList<StoreItem> getClassRunesForSale(int sortState)
 	{
 		ArrayList<StoreItem> st = new ArrayList<StoreItem>();
 		for (int a = 0; a < _storeItems.size(); a++)
@@ -168,14 +236,25 @@ public class StoreItems
 				}
 				else
 				{
-					st.add(_storeItems.get(a));
+					boolean okToAdd = true;
+
+					// show only affordable
+					if (sortState == 0)
+					{
+						okToAdd = false;
+						if (_storeItems.get(a).cost() <= OwnedItems.gold())
+							okToAdd = true;
+					}
+
+					if (okToAdd)
+						st.add(_storeItems.get(a));
 				}
 			}
 		}
 		return st;
 	}
 
-	public ArrayList<StoreItem> getItemsForSale(int slot)
+	public ArrayList<StoreItem> getItemsForSale(int slot, int sortState)
 	{
 		ArrayList<StoreItem> st = new ArrayList<StoreItem>();
 		for (int a = 0; a < _storeItems.size(); a++)
@@ -184,7 +263,8 @@ public class StoreItems
 			{
 				StoreItem i = _storeItems.get(a);
 				int amtPurchased = 0;
-				int mult = DefinitionItems.ITEM_INCREASE_CHARGE_COST_MULTIPLE[i.id()];
+				int mult =
+					(Integer) DefinitionItems.itemdata[i.id()][DefinitionItems.ITEM_INCREASE_CHARGE_COST_MULTIPLE][0];
 
 				if (OwnedItems.getPlayerOwnsThis(i.itemType(), i.id()))
 				{
@@ -221,13 +301,23 @@ public class StoreItems
 					if (amtPurchased > 0)
 						cost = i.value() * (amtPurchased) * mult;
 
-					i.setName(DefinitionItems.ITEM_NAME[i.id()] + num);
+					i.setName(DefinitionItems.itemdata[i.id()][DefinitionItems.ITEM_NAME][0] + num);
 				}
 
 				i.setCost(cost);
 				i.setChargesPurchased(amtPurchased);
 
-				st.add(i);
+				// show only affordable
+				boolean okToAdd = true;
+				if (sortState == 0)
+				{
+					okToAdd = false;
+					if (i.cost() <= OwnedItems.gold())
+						okToAdd = true;
+				}
+
+				if (okToAdd)
+					st.add(i);
 			}
 		}
 

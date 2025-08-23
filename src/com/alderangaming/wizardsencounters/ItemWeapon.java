@@ -28,7 +28,7 @@ public class ItemWeapon extends StoreItem implements Serializable
 
 		setName(DefinitionWeapons.WEAPON_NAMES[i]);
 		setDescription(DefinitionWeapons.WEAPON_DESCRIPTIONS[i]);
-		setImageName(DefinitionWeapons.WEAPON_IMAGE[i], DefinitionWeapons.WEAPON_IMAGE[i], c);
+		setImageName(DefinitionWeapons.WEAPON_IMAGE[i], DefinitionWeapons.PROJECTILE_IMAGE[i], c);
 		setAvailForANewPlayer(DefinitionWeapons.WEAPON_AVAIL_FOR_NEW_PLAYER[i]);
 		setValue(DefinitionWeapons.WEAPON_GOLD_VALUE[i]);
 		setCost(value());
@@ -54,10 +54,10 @@ public class ItemWeapon extends StoreItem implements Serializable
 			s.hitChance = DefinitionAttackTypes.ATTACK_TYPE_HIT_CHANCE[typeID];
 			s.stunChance = DefinitionAttackTypes.ATTACK_TYPE_STUN_CHANCE[typeID];
 			s.critChance = DefinitionAttackTypes.ATTACK_TYPE_CRIT_CHANCE[typeID];
-			s.blockAmount = DefinitionAttackTypes.ATTACK_TYPE_BLOCK_NEXT_DAMAGE_PERCENT[typeID];
+			s.blockChance = DefinitionAttackTypes.ATTACK_TYPE_BLOCK_NEXT_DAMAGE_PERCENT[typeID];
 			_attackTypes.add(s);
 
-			Log.d("block", "making attackType " + a + " has blockAmt: " + s.blockAmount);
+			Log.d("block", "making attackType " + a + " has blockChance: " + s.blockChance);
 		}
 
 		_baseMaxDamage = DefinitionWeapons.WEAPON_MAX_DAMAGE[i];
@@ -87,21 +87,31 @@ public class ItemWeapon extends StoreItem implements Serializable
 		{			
 			Log.d("block", "attack type " + at + " used");
 
-			if (_attackTypes.get(at).minDamage < 0)
+			int atIndex = 0;
+			for(int a = 0; a < _attackTypes.size(); a++)
+			{
+				if(_attackTypes.get(a).id == at)
+				{
+					atIndex = a;
+					break;
+				}
+			}
+			
+			if (_attackTypes.get(atIndex).minDamage < 0)
 			{
 				// this is a block
-				stats[0] = -1;
-				stats[1] = _attackTypes.get(at).blockAmount;
-				Log.d("block", "blockAmount found for " + _attackTypes.get(at).name + " is " + stats[1]);
+				stats[0] = -999;
+				stats[1] = _attackTypes.get(atIndex).blockChance;
+				Log.d("block", "blockChance found for " + _attackTypes.get(atIndex).name + " is " + stats[1]);
 
 				return stats;
 			}
 
-			stats[0] = _baseMinDamage + _attackTypes.get(at).minDamage;
-			stats[1] = _baseMaxDamage + _attackTypes.get(at).maxDamage;
-			stats[2] = _baseHitChance + _attackTypes.get(at).hitChance;
-			stats[3] = _baseStunChance + _attackTypes.get(at).stunChance;
-			stats[4] = _baseCritChance + _attackTypes.get(at).critChance;
+			stats[0] = _baseMinDamage + _attackTypes.get(atIndex).minDamage;
+			stats[1] = _baseMaxDamage + _attackTypes.get(atIndex).maxDamage;
+			stats[2] = _baseHitChance + _attackTypes.get(atIndex).hitChance;
+			stats[3] = _baseStunChance + _attackTypes.get(atIndex).stunChance;
+			stats[4] = _baseCritChance + _attackTypes.get(atIndex).critChance;
 
 		}
 
@@ -163,7 +173,7 @@ public class ItemWeapon extends StoreItem implements Serializable
 		int hitChance = 0;
 		int stunChance = 0;
 		int critChance = 0;
-		int blockAmount = 0;
+		int blockChance = 0;
 	}
 
 	public WeaponAttackType getAttackTypeByIndex(int i)

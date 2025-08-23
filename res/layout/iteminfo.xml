@@ -16,7 +16,7 @@
 			android:id="@+id/itemInfoImage"
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content" 
-			android:src="@drawable/weapon1" android:adjustViewBounds="true" android:maxHeight="50dp"/>		
+			android:adjustViewBounds="true" android:maxHeight="50dp"/>		
 			
 		<TextView android:text="itemInfoName" 
 			android:id="@+id/itemInfoName" 
@@ -35,7 +35,27 @@
 		android:layout_width="wrap_content"
 		android:id="@+id/itemInfoDescription"
 		android:textColor="#FFFFAA"
-		android:textSize="14dip" />
+		android:textSize="14sp" />
+
+	<TextView
+	    android:id="@+id/itemInfoStats1"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginLeft="5dp"
+	    android:layout_marginRight="5dp"
+	    android:text="stats1"
+	    android:textAppearance="?android:attr/textAppearanceMedium"
+	    android:textSize="15sp" />
+
+	<TextView
+	    android:id="@+id/itemInfoStats2"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginLeft="5dp"
+	    android:layout_marginRight="5dp"
+	    android:text="stats2"
+	    android:textAppearance="?android:attr/textAppearanceMedium"
+	    android:textSize="15sp" />
 
 	<Button
 	    android:id="@+id/itemInfoDoneButton"

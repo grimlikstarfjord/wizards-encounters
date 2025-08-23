@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background1"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/tutorialtitle" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/classseparatorblue" />
+
+            <TextView
+                android:id="@+id/tutorialTextBlock1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="Welcome to Wizards Encounters!"
+                android:textColor="#66FF00"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="Encounters is a loot/round based &apos;roguelike&apos; RPG - where gameplay is built around obtaining new classes and abilities, while getting as far as you can without dying."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:text="First Time Playing?"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="When you first start, you&apos;ll be able to create a character from one of three unlocked classes. When you return to the main screen, your new character will appear. Tap on him, and you can now click on Inventory or Start Round. You can also visit the Store."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:text="Gameplay"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="You are a hero, and your goal is to defeat all of the monsters in the game. The game is divided into Rounds, and Rounds are divided into Fights.  Each Round consists of 5 fights.  At the end of each round, you get to open two treasure chests.  At the start of each Round you can recharge any equipped items. Every five rounds is a boss.  Currently there are 4 bosses in the game. If your player is killed before you kill the last boss, all of his progress is lost and he is wiped out, but you do get to keep any gold and looted items acquired from that player. It is highly unlikely that a player will be able to complete the game with the default (starting) classes and equipment. The goal is to loot better items and classes, create the ultimate hero, and work your way up to the final boss without dying."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:text="Ranks"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="Players gain a rank after defeating a boss. All the equipment and abilities have specific minimum rank and class requirements. Ranking up also increases all of your stats."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Equipping"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="Before entering combat, you should equip your player with any weapons, armor, items, and abilities you want him to have. You will not get another chance to re-equip your players until you reach a treasure room (end of each round), or drop out. Dropping out means that you are running away, and the penalty is that your progress is reverted to the beginning of the last completed round."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Combat"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="You will fight monsters using your weapon and your abilities. Abilities cost Ability Points (AP). AP is handled differently depending on what class type your player is. Your current Hit Points (HP) and AP are shown at the top of the screen. The combat screen has 5 buttons: Hit, Ability, Flee, Item 1 and Item 2. Tapping Hit will toggle a submenu of the attack types for your current weapon. The information next to each attack type shows the modifier for chance to hit and chance to crit. Every weapon has different types of attacks they can do. All weapon attacks are free. Toggling Ability will display a list of your equipped ability runes, their descriptions and AP cost. If you have enough available AP, you can select an ability to use it. Flee will have your player attempt to run away like a coward. If you are successful, you will have two options: Restart Fight at 50% HP, or Drop Out. The penalty of dropping out is that this player will revert to the beginning of the last completed Round. Item 1 and Item 2 will display icons of your equipped items. The current and max charges are displayed above each button (i.e. 1/2). Items can be used at anytime during combat. If you forget what an icon represents on the button, you can press it and a dialog screen will display the item&apos;s description and confirmation before it is used up. The red bar shows the current monster&apos;s name, and their health status. A monster&apos;s health can be Healthy, Wounded, Bloodied, or Dying. The log shows all combat information, and can be scrolled by dragging your finger in the log window. Trying to exit a fight via the phone&apos;s &apos;back&apos; button will show a dialog explaining that the penalty for doing so is your character will revert to Round 1."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Class Types"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="There are 15 Classes in Wizards Encounters, and each class is part of one of the following Class Types: Brawler, Survivalist, Spellczar, Reaper, and Shield. Class Types handle AP in different ways: Brawler = starts combat with 0 AP, gains 1 AP on each weapon hit; Survivalist = starts combat with 0 AP and gains 1 AP per turn; Spellczar = starts Round with full AP, only gains back AP after end of full round; Reaper = starts combat with full AP, -1 AP per turn; Shield = starts combat with full AP, current AP is deducted instead of HP when dmg is dealt."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Effects"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="During combat, different abilities used by the player or monster will cause certain effects to become active. Effects can be either good or bad. The icons on the left side of the combat screen are the player&apos;s effects, and those on the right are the monster&apos;s. To see a description and turns remaining for any active effects, tap and hold on the effect icon."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Stats"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="Player stats are Execution (EXEC), Reaction (REAC), Knowledge, (KNOW), Magelore (MAGE), and Luck. Each class has different set values for these stats. EXEC modifies weapon damage and blocking chance; REAC modifies initiative roll (who goes first at fight start), dodge chance, run chance, armor block chance; KNOW modifies crit chance, weapon hit chance; MAGE modifies ability damage; LUCK modifies stun chance, gold drop, blocking chance, and artifact drop chance. During combat, active player effects can increase or decrease these stats. For example, if you are Demoralized, and lose 50% of your EXEC - your hit damage would be reduced. Monsters share the same stats, but these values are hidden from the player."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Things You Own"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView21"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="As your characters progress through the game, you will come across loot (gold), and you will also buy things from the store. Everything that all of your players acquire is shared, including gold. This means that two of your characters may equip the same item. When you sell an inventory piece, it will be removed from any characters that currently have it equipped."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Types Of Things"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="The basic things in the game that you can aquire are: Weapons, Armor (Head, Torso, Shoes, Trinket), Items, Ability Runes, and Class Runes."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Trinkets"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="Trinkets are a special type of armor that usually allow you to use an ability for which you currently do not own that rune. You may only use this ability while the trinket is equipped (as well as your other equipped ability runes)."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Items"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="Items are very special pieces of equipment that can help you during combat. Items are set with a certain number of charges which are consumed on each use. Some items have only one max charge. Those that have more, are listed with a roman numeral (I) appended to the name in the store list. Once you use an item in combat, its current charge is decremented. You can recharge your items from the store -> Player Inventory screen or at the end of each round. To increase the maximum charges of an item (if possible), you must purchase an upgraded (replacement) version of that item from the store. Items cannot be sold."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView27"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Ability Runes"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView28"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="Ability Runes unlock magical spells (abilities) that may be used during combat. When you loot or purchase a rune, it is added to your shared owned runes list. To equip a rune on a player, it must be allowed for use with that player’s class. If the class does not match the rune, it will not appear in the runes list from the inventory screen for that player. A player may have up to 8 equipped ability runes. Once you have acquired an ability rune, it cannot be sold."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView29"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Class Runes"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFFF44" />
+
+            <TextView
+                android:id="@+id/textView30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="These are the most rare and difficult to acquire. As loot, they only drop from chests of a defeated Boss. Some class runes can be purchased from the store, but they are very expensive."
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/tutorialExitButton"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/buttondoneleftup" />
+
+</LinearLayout>

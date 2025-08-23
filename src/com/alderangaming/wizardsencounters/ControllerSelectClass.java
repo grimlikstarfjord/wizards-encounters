@@ -1,29 +1,32 @@
 package com.alderangaming.wizardsencounters;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 public class ControllerSelectClass extends Activity
 {
 
 	private ArrayList<ItemClass> possibleClasses;
-	private int curIndex = 1;
+	private Dialog hDialog;
+	private int curIndex = 0;
 	private boolean showingRuneInfo = false;
 	private int runeIndex = 0;
 	private int[] runeIds =
@@ -34,18 +37,83 @@ public class ControllerSelectClass extends Activity
 	{
 		super.onCreate(savedInstanceState);
 
-		possibleClasses = OwnedItems.getAllClasses();;
+		possibleClasses = OwnedItems.getAllClasses();
 
 		setContentView(R.layout.selectclass);
+		setupHelpDialog();
 		setupViews();
 		setupClassLabels();
 		updateRuneList();
 	}
 
+	private void showHelp()
+	{
+		hDialog.show();
+	}
+
+	private void setupHelpDialog()
+	{
+		AlertDialog.Builder aboutDialog = new AlertDialog.Builder(this);
+
+		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(R.layout.help, (ViewGroup) findViewById(R.id.helpRoot));
+		TextView helpTextView = (TextView) layout.findViewById(R.id.helpText);
+		Button doneButton = (Button) layout.findViewById(R.id.helpDoneButton);
+		doneButton.setOnClickListener(new OnClickListener()
+		{
+
+			@Override
+			public void onClick(View v)
+			{
+				try
+				{
+					hDialog.dismiss();
+				}
+				catch (Exception e)
+				{
+					// who cares I have more important crap in my life to deal
+					// with
+				}
+			}
+
+		});
+		helpTextView.setText(R.string.selectclassHelpText);
+
+		aboutDialog.setView(layout);
+
+		hDialog = aboutDialog.create();
+	}
+
 	private void setupViews()
 	{
+		Button helpButton = (Button) findViewById(R.id.selectclassHelpButton);
+		helpButton.setOnClickListener(new OnClickListener()
+		{
+
+			@Override
+			public void onClick(View v)
+			{
+				showHelp();
+			}
+		});
+
 		selectclassTopLabel = (TextView) findViewById(R.id.selectclassTopLabel);
 		selectclassMiddleLabel = (TextView) findViewById(R.id.selectclassMiddleLabel);
+		selectclassMiddleLabel.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				Intent resultIntent = new Intent();
+				Log.d("selectclass", "classId when pressed go was " + possibleClasses.get(curIndex).id() + " ("
+					+ DefinitionClasses.CLASS_NAMES[possibleClasses.get(curIndex).id()]);
+				resultIntent.putExtra("selectedClassIdFromStore", possibleClasses.get(curIndex).id());
+
+				setResult(Activity.RESULT_OK, resultIntent);
+				finish();
+			}
+
+		});
 		selectclassBottomLabel = (TextView) findViewById(R.id.selectclassBottomLabel);
 		selectclassTitleLabel = (TextView) findViewById(R.id.selectclassTitleLabel);
 		selectclassSelectedInfoLabel = (TextView) findViewById(R.id.selectclassSelectedInfoLabel);
@@ -71,7 +139,7 @@ public class ControllerSelectClass extends Activity
 			public void onClick(View v)
 			{
 				moveUp();
-				Log.d("selectclass","classId = "+possibleClasses.get(curIndex).id());
+				Log.d("selectclass", "classId = " + possibleClasses.get(curIndex).id());
 			}
 
 		});
@@ -83,7 +151,7 @@ public class ControllerSelectClass extends Activity
 			public void onClick(View v)
 			{
 				moveDown();
-				Log.d("selectclass","classId = "+possibleClasses.get(curIndex).id());
+				Log.d("selectclass", "classId = " + possibleClasses.get(curIndex).id());
 			}
 
 		});
@@ -95,7 +163,8 @@ public class ControllerSelectClass extends Activity
 			public void onClick(View v)
 			{
 				Intent resultIntent = new Intent();
-				Log.d("selectclass","classId when pressed go was "+possibleClasses.get(curIndex).id()+" ("+DefinitionClasses.CLASS_NAMES[possibleClasses.get(curIndex).id()]);
+				Log.d("selectclass", "classId when pressed go was " + possibleClasses.get(curIndex).id() + " ("
+					+ DefinitionClasses.CLASS_NAMES[possibleClasses.get(curIndex).id()]);
 				resultIntent.putExtra("selectedClassIdFromStore", possibleClasses.get(curIndex).id());
 
 				setResult(Activity.RESULT_OK, resultIntent);
@@ -104,66 +173,43 @@ public class ControllerSelectClass extends Activity
 		});
 
 		selectclassRuneList = (ListView) findViewById(R.id.selectclassRuneList);
-		selectclassRuneList.setOnItemClickListener(new OnItemClickListener()
-		{
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3)
-			{
-				runeIndex = index;
-			}
-
-		});
-		selectclassRuneList.setOnTouchListener(new OnTouchListener()
-		{
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event)
-			{
-				switch (event.getAction())
-				{
-					case MotionEvent.ACTION_DOWN:
-					{
-						if (!showingRuneInfo)
-						{
-							showingRuneInfo = true;
-
-							selectclassSelectedAbilityName
-								.setText((String) DefinitionRunes.runeData[runeIds[runeIndex]][DefinitionRunes.RUNE_NAMES][0]);
-							selectclassSelectedAbilityInfo
-								.setText((String) DefinitionRunes.runeData[runeIds[runeIndex]][DefinitionRunes.RUNE_DESCRIPTION][0]);
-							selectclassSelectedAbilityLayout.setVisibility(View.VISIBLE);
-						}
-					}
-						break;
-					case MotionEvent.ACTION_UP:
-					{
-						showingRuneInfo = false;
-						selectclassSelectedAbilityLayout.setVisibility(View.INVISIBLE);
-					}
-						break;
-				}
-				return true;
-			}
-
-		});
-
 	}
 
-	private void updateRuneList()
+	public void updateRuneList()
 	{
+		List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
 
-		runeIds = Helper.getRuneIdsForClassAndRank(possibleClasses.get(curIndex).id(), 1);
-		String[] runeNames = new String[runeIds.length];
-		for (int a = 0; a < runeNames.length; a++)
-			runeNames[a] = (String) DefinitionRunes.runeData[runeIds[a]][DefinitionRunes.RUNE_NAMES][0];
+		// runeIds =
+		// Helper.getRuneIdsForClassAndRank(possibleClasses.get(curIndex).id(),
+		// 1);
+		runeIds = DefinitionClasses.CLASS_STARTING_RUNES[possibleClasses.get(curIndex).id()];
 
-		runeListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, runeNames);
-		selectclassRuneList.setAdapter(runeListAdapter);
+		for (int i = 0; i < runeIds.length; i++)
+		{
+			String name = (String) DefinitionRunes.runeData[runeIds[i]][DefinitionRunes.RUNE_NAMES][0];
+
+			String apcost = "" + DefinitionRunes.runeData[runeIds[i]][DefinitionRunes.RUNE_AP_COST][0];
+
+			String description = (String) DefinitionRunes.runeData[runeIds[i]][DefinitionRunes.RUNE_DESCRIPTION][0];
+
+			rows.add(Helper.createMap(name, apcost, description));
+		}
+
+		String[] fromKeys = new String[]
+		{ "Name", "APCost", "Description" };
+		int[] toIds = new int[]
+		{ R.id.abilityListName2, R.id.abilityListCost2, R.id.abilityListDescription2 };
+
+		selectclassRuneList.setAdapter(new SimpleAdapter(this, rows, R.layout.abilitylistitem2, fromKeys, toIds));
+
+		selectclassRuneList.invalidate();
 	}
 
 	private void moveUp()
 	{
+		if (possibleClasses.size() == 1)
+			return;
+
 		curIndex--;
 
 		if (curIndex < 0)
@@ -182,8 +228,9 @@ public class ControllerSelectClass extends Activity
 		}
 		else
 		{
-			selectclassTopLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(curIndex - 1).classType()]
-					+ ": " + possibleClasses.get(curIndex - 1).name());
+
+			selectclassTopLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(curIndex - 1)
+				.classType()] + ": " + possibleClasses.get(curIndex - 1).name());
 		}
 
 		if (curIndex == possibleClasses.size() - 1)
@@ -207,12 +254,15 @@ public class ControllerSelectClass extends Activity
 
 	private void moveDown()
 	{
+		if (possibleClasses.size() == 1)
+			return;
+
 		curIndex++;
 		if (curIndex > possibleClasses.size() - 1)
 		{
 			curIndex = 0;
 		}
-		
+
 		Log.d("selectclass", "current index is " + curIndex);
 
 		if (curIndex == possibleClasses.size() - 1)
@@ -222,19 +272,24 @@ public class ControllerSelectClass extends Activity
 		}
 		else
 		{
+
 			selectclassBottomLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(curIndex + 1)
 				.classType()] + ": " + possibleClasses.get(curIndex + 1).name());
+
 		}
-		
-		if(curIndex == 0)
+
+		if (curIndex == 0)
 		{
-			selectclassTopLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(possibleClasses.size() - 1).classType()]
-					+ ": " + possibleClasses.get(possibleClasses.size() - 1).name());
+			selectclassTopLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(
+				possibleClasses.size() - 1).classType()]
+				+ ": " + possibleClasses.get(possibleClasses.size() - 1).name());
 		}
 		else
 		{
-			selectclassTopLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(curIndex - 1).classType()]
-					+ ": " + possibleClasses.get(curIndex - 1).name());
+
+			selectclassTopLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(curIndex - 1)
+				.classType()] + ": " + possibleClasses.get(curIndex - 1).name());
+
 		}
 
 		selectclassMiddleLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(curIndex).classType()]
@@ -247,14 +302,19 @@ public class ControllerSelectClass extends Activity
 
 	private void setupClassLabels()
 	{
-		selectclassTitleLabel.setText("Unlocked Classes (" + possibleClasses.size() + ")");
+		selectclassTitleLabel.setText("Unlocked Classes (" + possibleClasses.size() + "/"
+			+ DefinitionClasses.CLASS_NAMES.length + ")");
 
-		selectclassTopLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(curIndex - 1).classType()]
-			+ ": " + possibleClasses.get(curIndex - 1).name());
-		selectclassMiddleLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(curIndex).classType()]
-			+ ": " + possibleClasses.get(curIndex).name());
-		selectclassBottomLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(curIndex + 1)
-			.classType()] + ": " + possibleClasses.get(curIndex + 1).name());
+		if (possibleClasses.size() > 2)
+		{
+			selectclassTopLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(
+				possibleClasses.size() - 1).classType()]
+				+ ": " + possibleClasses.get(possibleClasses.size() - 1).name());
+			selectclassMiddleLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(0).classType()]
+				+ ": " + possibleClasses.get(0).name());
+			selectclassBottomLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(1).classType()]
+				+ ": " + possibleClasses.get(1).name());
+		}
 
 		updateCurrentInfo();
 	}
@@ -263,7 +323,7 @@ public class ControllerSelectClass extends Activity
 	{
 		selectclassSelectedInfoLabel.setText("The " + possibleClasses.get(curIndex).name());
 		selectclassSelectedInfoDescription.setText(possibleClasses.get(curIndex).description());
-		
+
 		selectclassTypeSelectedInfoLabel.setText(DefinitionClassType.CLASS_TYPE_NAME[possibleClasses.get(curIndex)
 			.classType()] + "s");
 		selectclassTypeSelectedInfoDescription.setText(DefinitionClassType.CLASS_TYPE_DESCRIPTION[possibleClasses.get(
@@ -289,4 +349,5 @@ public class ControllerSelectClass extends Activity
 
 	ListView selectclassRuneList;
 	ListAdapter runeListAdapter;
+	private int position = 0;
 }

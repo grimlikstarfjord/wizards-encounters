@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#CC112233"
+    android:orientation="vertical"
+    android:padding="4dip" >
+
+    <TextView
+        android:id="@+id/abilityListName2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="abilityListName"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/abilityListCost2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="3dp"
+        android:text="abilityListCost"
+        android:textColor="#44BBFF"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/abilityListDescription2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginTop="3dp"
+        android:text="abilityListDescription"
+        android:textColor="#FFFFAA"
+        android:textSize="14sp" />
+
+</LinearLayout>

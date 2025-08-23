@@ -8,46 +8,61 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp" >
+        android:layout_margin="10dp"
+        android:gravity="center_vertical"
+        android:weightSum="1.0" >
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:layout_weight="0.7"
+            android:layout_weight="0.3"
             android:text="Music"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <ToggleButton
-            android:id="@+id/toggleMusicButton"
+        <SeekBar
+            android:id="@+id/seekMusicVolume"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.55"
+            android:max="100" />
+
+        <Button
+            android:id="@+id/nextSongButton"
+            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textOff="Off"
-            android:textOn="On" />
+            android:layout_gravity="center"
+            android:layout_marginLeft="8dp"
+            android:enabled="false"
+            android:text="Skip >" />
+
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp" >
+        android:layout_margin="10dp"
+        android:gravity="center_vertical"
+        android:weightSum="1.0" >
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:layout_weight="0.7"
+            android:layout_weight="0.3"
             android:text="Sounds"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <ToggleButton
-            android:id="@+id/toggleSoundsButton"
-            android:layout_width="wrap_content"
+        <SeekBar
+            android:id="@+id/seekSoundVolume"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="ToggleButton"
-            android:textOff="Off"
-            android:textOn="On" />
+            android:layout_weight="0.7"
+            android:max="100" />
     </LinearLayout>
 
     <LinearLayout

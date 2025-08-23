@@ -1,26 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/abilitiesLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" android:id="@+id/abilitiesLayout">
-    
+    android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content" >
 
         <Button
             android:id="@+id/abilitiesBackButton"
             android:layout_width="90dp"
             android:layout_height="45dp"
-            android:background="@drawable/buttondoneleftup" android:layout_marginLeft="5dp" android:layout_marginTop="5dp"/>
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/buttondoneleftup" />
+
 
         <TextView
             android:id="@+id/abilitiesScreenLabel"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="Abilities"
-            android:textAppearance="?android:attr/textAppearanceLarge" android:gravity="center"/>
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+
+        <Button
+            android:id="@+id/abilitiesHelpButton"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/buttonquestion" />
 
     </LinearLayout>
 
@@ -34,13 +47,16 @@
         android:id="@+id/abilitiesScreenEquippedText"
         android:layout_width="fill_parent"
         android:layout_height="45dp"
+        android:background="@drawable/selectedclassbackground"
+        android:gravity="center"
         android:text="Equipped Abilities (0/8)"
-        android:textAppearance="?android:attr/textAppearanceLarge" android:gravity="center" android:background="@drawable/selectedclassbackground"/>
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ListView
         android:id="@+id/abilitiesScreenListView"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent" android:layout_weight="0.5">
+        android:layout_height="fill_parent"
+        android:layout_weight="0.5" >
     </ListView>
 
     <ImageView
@@ -53,13 +69,16 @@
         android:id="@+id/textView1"
         android:layout_width="fill_parent"
         android:layout_height="45dp"
+        android:background="@drawable/otherclassbackground"
+        android:gravity="center"
         android:text="Runes"
-        android:textAppearance="?android:attr/textAppearanceLarge" android:gravity="center" android:background="@drawable/otherclassbackground"/>
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ListView
         android:id="@+id/abilityRuneList"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent" android:layout_weight="0.5">
+        android:layout_height="fill_parent"
+        android:layout_weight="0.5" >
     </ListView>
-    
+
 </LinearLayout>

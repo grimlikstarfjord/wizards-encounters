@@ -3,15 +3,17 @@ package com.alderangaming.wizardsencounters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -22,13 +24,18 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
-public class Start extends Activity
-{
+public class Start extends Activity {
+	private Dialog hDialog;
+
 	// private OwnedItems ownedItems = null;
 	private Player player = null;
 	private boolean wasAppNavigation = false;
@@ -36,15 +43,18 @@ public class Start extends Activity
 	private ArrayList<Player> savedPlayers;
 	private int selectedPlayerIndex = -1;
 
-	private ProgressDialog progressDialog;
 	private boolean waitingForLoad = false;
+	private int buyGoldChancesLeft = 3;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		waitingForLoad = true;
-		
-		Log.d("applife","onCreate...");
+
+		// setupBillingHandler();
+
+		// BillingHelper.setCompletedHandler(mTransactionHandler);
+
+		Log.d("applife", "onCreate...");
 
 		super.onCreate(savedInstanceState);
 
@@ -52,33 +62,55 @@ public class Start extends Activity
 
 	}
 
-	private class LoadViewTask extends AsyncTask<Void, Integer, Void>
-	{
+	// private void setupBillingHandler() {
+	// /* ANDROID BILLING */
+	// mTransactionHandler = new Handler() {
+	// public void handleMessage(android.os.Message msg) {
+	// try {
+	// Log.i(TAG, "Transaction complete");
+	// Log.i(TAG, "Transaction status: " +
+	// BillingHelper.latestPurchase.purchaseState);
+	// Log.i(TAG, "Item attempted purchase is: " +
+	// BillingHelper.latestPurchase.productId);
+
+	// if (BillingHelper.latestPurchase.isPurchased()) {
+	// Toast.makeText(Start.this, "PURCHASE COMPLETE!", Toast.LENGTH_LONG).show();
+	// OwnedItems.updateGold(1000);
+	// DBHandler.updateGlobalStats(OwnedItems.gold());
+
+	// updateViews();
+	// } else {
+	// Toast.makeText(Start.this, "PURCHASE FAILED!", Toast.LENGTH_LONG).show();
+	// }
+	// } catch (Exception e) {
+	// Toast.makeText(Start.this, "Could not complete transaction.",
+	// Toast.LENGTH_LONG).show();
+	// }
+
+	// };
+	// };
+	// }
+
+	private class LoadViewTask extends AsyncTask<Void, Integer, Void> {
 		// before running code in separate thread
 		@Override
-		protected void onPreExecute()
-		{
-			// Create a new progress dialog
-			progressDialog = ProgressDialog.show(Start.this, "Loading Wizards Encounters...", "", false, false);
+		protected void onPreExecute() {
+
+			setContentView(R.layout.loading);
 		}
 
 		@Override
-		protected Void doInBackground(Void... params)
-		{
-			try
-			{
+		protected Void doInBackground(Void... params) {
+			try {
 				// Get the current thread's token
-				synchronized (this)
-				{
-					if (!DBHandler.isOpen(Start.this))
-					{
-						try
-						{
-							openDB();
-						}
-						catch (Exception e)
-						{
+				synchronized (this) {
+					long startTime = System.currentTimeMillis();
 
+					if (!DBHandler.isOpen(Start.this)) {
+						try {
+							openDB();
+						} catch (Exception e) {
+							Log.d("loading", "failed to openDB: " + e.toString());
 						}
 					}
 
@@ -86,11 +118,19 @@ public class Start extends Activity
 
 					BackgroundManager.setupBackgrounds();
 
-					publishProgress(0);
+					// try to show loading screen for 5 seconds
+					Log.d("loading", "times:  " + startTime + ", " + System.currentTimeMillis());
+					if (System.currentTimeMillis() > 5000 + startTime) {
+						// already waited long enough
+					} else {
+						long waitTime = 5000 - (System.currentTimeMillis() - startTime);
+						if (waitTime < 0)
+							waitTime = 1;
+
+						Thread.sleep(waitTime);
+					}
 				}
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			return null;
@@ -98,20 +138,21 @@ public class Start extends Activity
 
 		// Update the progress
 		@Override
-		protected void onProgressUpdate(Integer... values)
-		{
+		protected void onProgressUpdate(Integer... values) {
 			// set the current progress of the progress dialog
-			progressDialog.setProgress(values[0]);
+
 		}
 
 		// after executing the code in the thread
 		@Override
-		protected void onPostExecute(Void result)
-		{
+		protected void onPostExecute(Void result) {
 			// close the progress dialog
-			progressDialog.dismiss();
+
 			// initialize the View
 			waitingForLoad = false;
+
+			// startService(new Intent(mContext, BillingService.class));
+
 			setContentView(R.layout.mainmenu);
 			setupViews();
 			onStartActions();
@@ -120,73 +161,100 @@ public class Start extends Activity
 	}
 
 	@Override
-	public void onStop()
-	{
+	public void onStop() {
 		super.onStop();
-		
-		Log.d("applife","onStop...");
+
+		Log.d("applife", "onStop...");
 
 		if (!wasAppNavigation)
 			SoundManager.stopAll();
 	}
 
-	public void onStartActions()
-	{
+	public void onStartActions() {
 		wasAppNavigation = false;
 
-		updateViews();
-
-		if (!DBHandler.isOpen(this))
-		{
-			if (openDB())
-			{
+		if (!DBHandler.isOpen(this)) {
+			if (openDB()) {
 				DBHandler.getSoundPrefs(this);
+
+				int impactPref = DBHandler.getImpactPref(getApplicationContext());
+				boolean b = false;
+				if (impactPref == 1)
+					b = true;
+
+				SoundManager.setShowImpact(b);
+
 				loadOwnedItems();
 				loadSavedPlayers();
 			}
-		}
-		else
-		{
+		} else {
 			DBHandler.getSoundPrefs(this);
+			int impactPref = DBHandler.getImpactPref(getApplicationContext());
+			boolean b = false;
+			if (impactPref == 1)
+				b = true;
+
+			SoundManager.setShowImpact(b);
+
 			loadOwnedItems();
 			loadSavedPlayers();
 		}
+
+		updateViews();
+
+		// doDropTest();
+	}
+
+	private void doDropTest() {
+		for (int a = 1; a < 21; a++) {
+			for (int b = 0; b < 6; b++)
+				Helper.getRandomDropsForRound(a, b, getApplicationContext());
+		}
 	}
 
 	@Override
-	public void onResume()
-	{
+	public void onResume() {
 		super.onResume();
-		Log.d("applife","onResume...");
+		Log.d("applife", "onResume...");
 
 	}
 
 	@Override
-	public void onStart()
-	{
+	public void onStart() {
 		super.onStart();
-		
-		Log.d("applife","onStart...");
-		
+
+		/* AMAZON BILLING */
+		// PurchaseObserver purchaseObserver = new PurchaseObserver(this);
+		// PurchasingManager.registerObserver(purchaseObserver);
+
+		Log.d("applife", "onStart...");
+
+		if (DefinitionGlobal.BETA_BUILD) {
+			Toast
+					.makeText(
+							Start.this,
+							"Thanks for trying out the beta version! Please report bugs/suggestions/problems to alderangaming@gmail.com",
+							Toast.LENGTH_LONG)
+					.show();
+		}
+
 		if (waitingForLoad)
 			return;
-		
+
 		else
 			onStartActions();
 	}
 
 	@Override
-	public void onDestroy()
-	{
+	public void onDestroy() {
 		super.onDestroy();
-		
-		Log.d("applife","onDestory...");
+
+		Log.d("applife", "onDestory...");
 		SoundManager.stopAll();
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
+	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
 		menu.add(0, DefinitionGlobal.TUTORIAL, 0, "Tutorial");
@@ -200,10 +268,8 @@ public class Start extends Activity
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId())
-		{
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
 			case DefinitionGlobal.TUTORIAL:
 				showTutorial();
 				return true;
@@ -219,18 +285,19 @@ public class Start extends Activity
 		return false;
 	}
 
-	private void showTutorial()
-	{
+	private void showTutorial() {
+		Intent i = new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerTutorial.class);
 
+		closeDB();
+
+		startActivity(i);
 	}
 
-	private void showAbout()
-	{
+	private void showAbout() {
 		aDialog.show();
 	}
 
-	private void setupAboutDialog()
-	{
+	private void setupAboutDialog() {
 		AlertDialog.Builder aboutDialog = new AlertDialog.Builder(this);
 
 		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -241,23 +308,51 @@ public class Start extends Activity
 		aDialog = aboutDialog.create();
 	}
 
-	private void setupSettingsDialog()
-	{
+	private void showHelp() {
+		hDialog.show();
+	}
+
+	private void setupHelpDialog() {
+		AlertDialog.Builder aboutDialog = new AlertDialog.Builder(this);
+
+		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(R.layout.help, (ViewGroup) findViewById(R.id.helpRoot));
+		TextView helpTextView = (TextView) layout.findViewById(R.id.helpText);
+		Button doneButton = (Button) layout.findViewById(R.id.helpDoneButton);
+		doneButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				try {
+					hDialog.dismiss();
+				} catch (Exception e) {
+					// who cares I have more important crap in my life to deal
+					// with
+				}
+			}
+
+		});
+		helpTextView.setText(R.string.mainmenuHelpText);
+
+		aboutDialog.setView(layout);
+
+		hDialog = aboutDialog.create();
+	}
+
+	private void setupSettingsDialog() {
 		LayoutInflater inflater = getLayoutInflater();
 		final View settingsView = inflater.inflate(R.layout.settings, (ViewGroup) getCurrentFocus());
-		final ToggleButton toggleMusicButton = (ToggleButton) settingsView.findViewById(R.id.toggleMusicButton);
-		final ToggleButton toggleSoundsButton = (ToggleButton) settingsView.findViewById(R.id.toggleSoundsButton);
-		final ToggleButton toggleImpactButton = (ToggleButton) settingsView.findViewById(R.id.toggleImpactButton);
+		final SeekBar seekMusic = (SeekBar) settingsView.findViewById(R.id.seekMusicVolume);
+		final SeekBar seekSounds = (SeekBar) settingsView.findViewById(R.id.seekSoundVolume);
+		toggleImpactButton = (ToggleButton) settingsView.findViewById(R.id.toggleImpactButton);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(Start.this);
 		builder.setMessage("Settings").setCancelable(false)
-			.setPositiveButton("Done", new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int id)
-				{
-					dialog.dismiss();
-				}
-			});
+				.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.dismiss();
+					}
+				});
 
 		builder.setView(settingsView);
 
@@ -265,89 +360,88 @@ public class Start extends Activity
 
 		wasAppNavigation = true;
 
-		toggleMusicButton.setChecked(SoundManager.playingMusic());
-		toggleMusicButton.setOnClickListener(new View.OnClickListener()
-		{
+		seekMusic.setProgress((int) (SoundManager.getMusicVolume() * 100));
+		seekSounds.setProgress((int) (SoundManager.getSoundVolume() * 100));
+
+		seekMusic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
-			public void onClick(View v)
-			{
-				if (toggleMusicButton.isChecked())
-				{
-					SoundManager.setPlayMusic(true);
-				}
-				else
-				{
-					SoundManager.setPlayMusic(false);
-				}
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				SoundManager.setMusicVolume(progress / 100f);
 				DBHandler.updateSoundPrefs(Start.this);
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
 
-		toggleSoundsButton.setChecked(SoundManager.playingSounds());
-		toggleSoundsButton.setOnClickListener(new View.OnClickListener()
-		{
+		seekSounds.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
-			public void onClick(View v)
-			{
-				if (toggleSoundsButton.isChecked())
-				{
-					SoundManager.setPlaySounds(true);
-				}
-				else
-				{
-					SoundManager.setPlaySounds(false);
-				}
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				SoundManager.setSoundVolume(progress / 100f);
 				DBHandler.updateSoundPrefs(Start.this);
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
 
-		int impactPref = DBHandler.getImpactPref(getApplicationContext());
-		boolean b = false;
-		if (impactPref == 1)
-			b = true;
-		toggleImpactButton.setChecked(b);
-
-		toggleImpactButton.setOnClickListener(new View.OnClickListener()
-		{
+		toggleImpactButton.setChecked(SoundManager.showingImpact());
+		toggleImpactButton.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v)
-			{
-				DBHandler.updateImpactPref(Start.this, toggleImpactButton.isChecked());
+			public void onClick(View v) {
+				if (toggleImpactButton.isChecked()) {
+					SoundManager.setShowImpact(true);
+				}
+
+				else {
+					SoundManager.setShowImpact(false);
+				}
+
+				DBHandler.updateImpactPref(Start.this);
 			}
 		});
 	}
 
-	private void showSettings()
-	{
+	private void showSettings() {
 		settingsDialog.show();
 	}
 
-	private boolean openDB()
-	{
+	private boolean openDB() {
 		if (DBHandler.open(this))
 			return (DBHandler.checkTables(this));
 
 		return false;
 	}
 
-	private void reopenDB()
-	{
-		if (!DBHandler.isOpen(this))
-		{
+	private void reopenDB() {
+		if (!DBHandler.isOpen(this)) {
 			DBHandler.open(this);
+			loadOwnedItems();
+			updateViews();
+		} else {
+			loadOwnedItems();
+			updateViews();
 		}
 	}
 
-	private void closeDB()
-	{
+	private void closeDB() {
 		if (!DBHandler.isOpen(this))
 			return;
 
 		DBHandler.close();
 	}
 
-	private void loadOwnedItems()
-	{
+	private void loadOwnedItems() {
 		// ownedItems = new OwnedItems();
 
 		StoreItem[] owned = DBHandler.pullOwnedItems(this);
@@ -358,34 +452,93 @@ public class Start extends Activity
 		OwnedItems.addOwnedItems(Helper.getStartingPlayerClasses(this));
 
 		// runes added to store when class is selected for a new player
-		// TODO weapons and armor should be handled the same way
 	}
 
-	private void updateViews()
-	{
-		hubStoreButton.setEnabled(false);
-		hubStartButton.setEnabled(false);
-		hubInventoryButton.setEnabled(false);
+	private void updateViews() {
+		try {
+			hubStoreButton.setEnabled(true);
+			hubStartButton.setEnabled(false);
+			hubStartButton.setBackgroundResource(R.drawable.buttonstartrounddisabled);
+			hubInventoryButton.setEnabled(false);
+			hubInventoryButton.setBackgroundResource(R.drawable.buttoninventorydisabled);
+			hubCurrentGoldText.setText("Gold: " + OwnedItems.gold());
+
+			if (toggleMusicButton != null)
+				toggleMusicButton.setChecked(SoundManager.playingMusic());
+			if (toggleSoundsButton != null)
+				toggleSoundsButton.setChecked(SoundManager.playingSounds());
+			if (toggleImpactButton != null)
+				toggleImpactButton.setChecked(SoundManager.showingImpact());
+
+		} catch (Exception e) {
+			// views not made yet?? WTF
+			setupViews();
+			updateViews();
+		}
 	}
 
-	private void setupViews()
-	{
+	private void setupViews() {
+		setupHelpDialog();
 		setupSettingsDialog();
 		setupAboutDialog();
 
-		hubStoreButton = (Button) findViewById(R.id.hubStoreButton);
-		hubStoreButton.setEnabled(false);
-		hubStoreButton.setOnClickListener(new OnClickListener()
-		{
+		Button settingsButton = (Button) findViewById(R.id.mainmenuSettingsButton);
+		settingsButton.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onClick(View arg0)
-			{
+			public void onClick(View v) {
+				showSettings();
+			}
+
+		});
+
+		Button helpButton = (Button) findViewById(R.id.mainmenuHelpButton);
+		helpButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				showHelp();
+			}
+
+		});
+
+		hubCurrentGoldText = (TextView) findViewById(R.id.hubCurrentGoldText);
+
+		hubBuyGoldButton = (Button) findViewById(R.id.hubBuyGoldButton);
+		hubBuyGoldButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				if (buyGoldChancesLeft <= 0) {
+					Toast.makeText(Start.this, "No more buy gold chances left.", Toast.LENGTH_SHORT).show();
+					hubBuyGoldButton.setEnabled(false);
+					return;
+				}
+
+				int amount = new Random().nextInt(1000) + 1; // 1..1000
+				OwnedItems.updateGold(amount);
+				buyGoldChancesLeft--;
+				updateViews();
+				Toast.makeText(Start.this, "Gained " + amount + " gold. " + buyGoldChancesLeft + " left.",
+						Toast.LENGTH_SHORT).show();
+
+				if (buyGoldChancesLeft <= 0) {
+					hubBuyGoldButton.setEnabled(false);
+				}
+			}
+		});
+
+		hubStoreButton = (Button) findViewById(R.id.hubStoreButton);
+		hubStoreButton.setEnabled(false);
+		hubStoreButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
 
 				wasAppNavigation = true;
 
-				Intent i =
-					new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerStore.class);
+				Intent i = new Intent(getApplicationContext(),
+						com.alderangaming.wizardsencounters.ControllerStore.class);
 				Bundle b = new Bundle();
 
 				// b.putSerializable("ownedItems", ownedItems);
@@ -401,12 +554,11 @@ public class Start extends Activity
 
 		hubStartButton = (Button) findViewById(R.id.hubStartButton);
 		hubStartButton.setEnabled(false);
-		hubStartButton.setOnClickListener(new OnClickListener()
-		{
+		hubStartButton.setBackgroundResource(R.drawable.buttonstartrounddisabled);
+		hubStartButton.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onClick(View v)
-			{
+			public void onClick(View v) {
 				wasAppNavigation = true;
 
 				SoundManager.stopAllMusic();
@@ -414,11 +566,11 @@ public class Start extends Activity
 				player = savedPlayers.get(selectedPlayerIndex);
 
 				OwnedItems.addDefaultItems(DefinitionClasses.CLASS_PRELOADED_ITEMS[player.playerClass()],
-					getApplicationContext());
-				player.setDefaultEquippedItems(DefinitionClasses.CLASS_PRELOADED_ITEMS[player.playerClass()]);				
+						getApplicationContext());
+				player.setDefaultEquippedItems(DefinitionClasses.CLASS_PRELOADED_ITEMS[player.playerClass()]);
 
-				Intent i =
-					new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerRoundStart.class);
+				Intent i = new Intent(getApplicationContext(),
+						com.alderangaming.wizardsencounters.ControllerRoundStart.class);
 				Bundle b = new Bundle();
 
 				// b.putSerializable("ownedItems", ownedItems);
@@ -433,16 +585,14 @@ public class Start extends Activity
 		});
 
 		Button hubNewButton = (Button) findViewById(R.id.hubNewButton);
-		hubNewButton.setOnClickListener(new OnClickListener()
-		{
+		hubNewButton.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onClick(View v)
-			{
+			public void onClick(View v) {
 				wasAppNavigation = true;
 
-				Intent i =
-					new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerMakeNewChar.class);
+				Intent i = new Intent(getApplicationContext(),
+						com.alderangaming.wizardsencounters.ControllerMakeNewChar.class);
 				Bundle b = new Bundle();
 
 				// b.putSerializable("ownedItems", ownedItems);
@@ -450,9 +600,9 @@ public class Start extends Activity
 				i.putExtras(b);
 
 				Log.d(
-					"playerstore",
-					"Start before intent: getAllClassesInStore: "
-						+ OwnedItems.getAllItemsOfType(DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS).size());
+						"playerstore",
+						"Start before intent: getAllClassesInStore: "
+								+ OwnedItems.getAllItemsOfType(DefinitionGlobal.ITEM_TYPE_PLAYER_CLASS).size());
 
 				closeDB();
 				startActivityForResult(i, 1000);
@@ -462,22 +612,21 @@ public class Start extends Activity
 
 		hubInventoryButton = (Button) findViewById(R.id.hubInventoryButton);
 		hubInventoryButton.setEnabled(false);
-		hubInventoryButton.setOnClickListener(new OnClickListener()
-		{
+		hubInventoryButton.setBackgroundResource(R.drawable.buttoninventorydisabled);
+		hubInventoryButton.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onClick(View v)
-			{
+			public void onClick(View v) {
 				wasAppNavigation = true;
 
 				player = savedPlayers.get(selectedPlayerIndex);
 
 				player.setDefaultEquippedItems(DefinitionClasses.CLASS_PRELOADED_ITEMS[player.playerClass()]);
 				OwnedItems.addDefaultItems(DefinitionClasses.CLASS_PRELOADED_ITEMS[player.playerClass()],
-					getApplicationContext());
+						getApplicationContext());
 
-				Intent i =
-					new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerInventory.class);
+				Intent i = new Intent(getApplicationContext(),
+						com.alderangaming.wizardsencounters.ControllerInventory.class);
 				Bundle b = new Bundle();
 
 				// b.putSerializable("ownedItems", ownedItems);
@@ -496,38 +645,66 @@ public class Start extends Activity
 
 	}
 
-	private void loadSavedPlayers()
-	{
+	private void loadSavedPlayers() {
 		savedPlayers = DBHandler.loadSavedPlayers();
 		if (savedPlayers == null)
 			return;
 
 		List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
 
-		for (int a = 0; a < savedPlayers.size(); a++)
-		{
+		for (int a = 0; a < savedPlayers.size(); a++) {
 			rows.add(Helper.createPlayerMap(savedPlayers.get(a).name(),
-				DefinitionClasses.CLASS_NAMES[savedPlayers.get(a).playerClass()], "Round: "
-					+ savedPlayers.get(a).currentRound(), "Rank: " + savedPlayers.get(a).rank()));
+					DefinitionClasses.CLASS_NAMES[savedPlayers.get(a).playerClass()], "Round: "
+							+ savedPlayers.get(a).currentRound(),
+					"Rank: " + savedPlayers.get(a).rank()));
 		}
 
-		String[] fromKeys = new String[]
-		{ "Name", "Class", "Round", "Rank" };
-		int[] toIds = new int[]
-		{ R.id.playerListName, R.id.playerListClass, R.id.playerListRound, R.id.playerListRank };
+		String[] fromKeys = new String[] { "Name", "Class", "Round", "Rank" };
+		int[] toIds = new int[] { R.id.playerListName, R.id.playerListClass, R.id.playerListRound,
+				R.id.playerListRank };
 
 		savedPlayerList.setAdapter(new SimpleAdapter(this, rows, R.layout.playerlistitem, fromKeys, toIds));
 
 		savedPlayerList.invalidate();
 
-		savedPlayerList.setOnItemClickListener(new OnItemClickListener()
-		{
+		savedPlayerList.setOnItemLongClickListener(new OnItemLongClickListener() {
+			public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+				// show delete? dialog
+
+				AlertDialog.Builder fightEndDialog = new AlertDialog.Builder(Start.this);
+
+				fightEndDialog.setTitle("Kill " + savedPlayers.get(position).name() + "?")
+						.setMessage("You will still own any items obtained by characters killed in this way.")
+						.setCancelable(false).setPositiveButton("Wipe Him Out", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+
+								if (DBHandler.killPlayer(savedPlayers.get(position).playerID()))
+									loadSavedPlayers();
+
+								dialog.cancel();
+								updateViews();
+
+							}
+						}).setNegativeButton("Spare Him", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+
+								dialog.cancel();
+							}
+						});
+
+				AlertDialog alert = fightEndDialog.create();
+				alert.show();
+
+				return true;
+
+			}
+		});
+
+		savedPlayerList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long arg3)
-			{
-				for (int a = 0; a < parent.getChildCount(); a++)
-				{
+			public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
+				for (int a = 0; a < parent.getChildCount(); a++) {
 					parent.getChildAt(a).setBackgroundColor(Color.TRANSPARENT);
 				}
 
@@ -535,21 +712,20 @@ public class Start extends Activity
 
 				selectedPlayerIndex = position;
 				hubStartButton.setEnabled(true);
+				hubStartButton.setBackgroundResource(R.drawable.buttonstartround);
 				hubInventoryButton.setEnabled(true);
+				hubInventoryButton.setBackgroundResource(R.drawable.buttoninventory);
 				hubStoreButton.setEnabled(true);
 			}
 		});
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode)
-		{
-		// return from make new
-			case 1000:
-			{
+		switch (requestCode) {
+			// return from make new
+			case 1000: {
 				reopenDB();
 
 				// loadSavedPlayers();
@@ -557,8 +733,7 @@ public class Start extends Activity
 				break;
 			}
 			// return from inventory
-			case 2000:
-			{
+			case 2000: {
 				reopenDB();
 
 				// loadSavedPlayers();
@@ -567,8 +742,7 @@ public class Start extends Activity
 				break;
 			}
 			// return from combat
-			case 3000:
-			{
+			case 3000: {
 				reopenDB();
 				// loadSavedPlayers();
 				// loadOwnedItems();
@@ -578,8 +752,7 @@ public class Start extends Activity
 				break;
 			}
 			// return from store
-			case 4000:
-			{
+			case 4000: {
 				reopenDB();
 				// loadSavedPlayers();
 				// loadOwnedItems();
@@ -590,10 +763,8 @@ public class Start extends Activity
 	}
 
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event)
-	{
-		if (keyCode == KeyEvent.KEYCODE_BACK)
-		{
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (DBHandler.isOpen(getApplicationContext()))
 				DBHandler.close();
 
@@ -607,7 +778,11 @@ public class Start extends Activity
 	ListView savedPlayerList;
 	Button hubStartButton;
 	Button hubInventoryButton;
+	TextView hubCurrentGoldText;
 	Button hubStoreButton;
+	Button hubBuyGoldButton;
 	AlertDialog settingsDialog;
 	AlertDialog aDialog;
+	ToggleButton toggleMusicButton, toggleSoundsButton, toggleImpactButton;
+
 }
