@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_height="wrap_content"
+	android:layout_width="100dp"
+	android:padding="4dip"
+	android:background="#CC112233"
+>
+
+    <TextView
+        android:id="@+id/attackListName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="attackListName"
+        android:textColor="#FFFFFF"
+        android:textSize="17sp" android:layout_weight="1"/>
+
+    <TextView
+        android:id="@+id/attackListStat1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stat1"
+        android:textColor="#44BBFF"
+        android:textSize="14sp" android:layout_weight="1"/>
+
+	<TextView
+		android:text="stat2"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:id="@+id/attackListStat2"
+		android:textColor="#FFFFAA"
+		android:textSize="14sp" android:layout_weight="1"/>
+
+</LinearLayout>

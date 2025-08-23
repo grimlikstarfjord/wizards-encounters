@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/startFightLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/startFightPlayerBar"
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:background="#44AA44"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/startFightPlayerNameLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="PlayerName"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="19sp" />
+
+        <TextView
+            android:id="@+id/startFightPlayerHpLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:text="30/30 HP"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="19sp" />
+
+        <TextView
+            android:id="@+id/startFightPlayerApLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5/5 AP"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="19sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/progressFight1Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="1"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                 android:id="@+id/progressFight2Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="2"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+            <TextView
+                android:id="@+id/progressFight3Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="3"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/progressFight4Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="4"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/progressFight5Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="5"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/timeline" />
+
+        <TextView
+            android:id="@+id/fightStartInfoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium" android:textColor="#FFFFAA" android:layout_gravity="center" android:gravity="center"/>
+
+        <ImageView
+            android:id="@+id/fightStartImage"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:src="@drawable/hideousaunt" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_weight="0.5"/>
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/timeline" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/progressRound1Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="1"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/progressRound2Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="2"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/progressRound3Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="3"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/progressRound4Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="4"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/progressRound5Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="BOSS"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/startFightMonsterNameLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Insane Wench"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/startFightFightLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Round 4 : 2"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <Button
+            android:id="@+id/startFightBeginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Begin" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="35dp" android:id="@+id/startRoundPlayerBar" android:gravity="center" android:background="#44AA44">
+
+        <TextView
+            android:id="@+id/startRoundPlayerNameLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PlayerName"
+            android:textAppearance="?android:attr/textAppearanceLarge" android:textSize="19sp" android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/startRoundPlayerHpLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30/30 HP"
+            android:textAppearance="?android:attr/textAppearanceLarge" android:textSize="19sp" android:layout_marginRight="10dp"/>
+
+        <TextView
+            android:id="@+id/startRoundPlayerApLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5/5 AP"
+            android:textAppearance="?android:attr/textAppearanceLarge" android:textSize="19sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" android:layout_weight="1" android:gravity="center" android:layout_margin="30dp">
+
+        <TextView
+            android:id="@+id/startRoundRoundLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Round 1"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/startRoundInfoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fight 5 monsters to continue OR 5 Monsters + Boss"
+            android:textAppearance="?android:attr/textAppearanceLarge" android:gravity="center" android:layout_marginTop="40dp"/>
+
+        <TextView
+            android:id="@+id/startRoundInfoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium" android:layout_marginTop="20dp" android:textColor="#FFFFAA" android:gravity="center" android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/startRoundNoButton"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="NO" android:layout_alignParentLeft="true"/>
+
+        <Button
+            android:id="@+id/startRoundGoButton"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Go" android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, MapleActivity!</string>
+    <string name="app_name">Wizards Encounters</string>
+    <string name="dbnamestring">WizardsEncounters.db</string>
+    <string name="dbversion">1</string>
+    <string name="version">V 0.10</string>
+
+</resources>

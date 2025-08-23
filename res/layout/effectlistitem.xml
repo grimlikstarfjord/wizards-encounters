@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_height="fill_parent"
+	android:layout_width="fill_parent"
+	android:padding="4dip"
+	android:background="#CC332211"
+	android:id="@+id/effectListRoot"
+>
+	<RelativeLayout
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+	>
+		
+		<ImageView
+			android:id="@+id/effectListImage"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content" 
+			android:src="@drawable/blessed"/>		
+			
+		<TextView android:text="effectListName" 
+			android:id="@+id/effectListName" 
+			android:textColor="#FFFFFF" 
+			android:layout_marginLeft="10dip" 
+			android:layout_height="wrap_content"
+			 android:layout_width="wrap_content" 
+			 android:textSize="17dip" 
+			android:layout_toRightOf="@id/effectListImage"/>
+		<TextView
+			android:text="effectListTurns"
+			android:id="@+id/effectListTurns"
+			android:layout_marginRight="10dip"
+			android:layout_alignParentRight="true"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="#44BBFF"
+			android:textSize="16dip" />
+	</RelativeLayout>
+	<TextView
+		android:text="effectListDescription"
+		android:layout_marginLeft="10dip"
+		android:layout_marginRight="10dip"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:id="@+id/effectListDescription"
+		android:textColor="#FFFFAA"
+		android:textSize="14dip" />
+</LinearLayout>

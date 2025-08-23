@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" android:gravity="center" android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/roundendTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Round 1 Complete"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/roundEndGoldText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Medium Text"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical" android:layout_gravity="center" android:gravity="center" android:layout_weight="0.7">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/roundEndBackgroundImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/backgroundtreasure" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" android:layout_alignBottom="@id/roundEndBackgroundImage" android:layout_alignTop="@id/roundEndBackgroundImage" android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" android:padding="8dp" android:layout_weight="0.3">
+
+                        <ImageView
+                            android:id="@+id/chest1Image"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp" android:src="@drawable/chest1closed" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_weight="0.5" android:clickable="true"/>
+
+                        <TextView
+                            android:id="@+id/chest1Text"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:text="free"
+                            android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.4" android:gravity="center"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" android:padding="8dp" android:layout_weight="0.3">
+
+                        <ImageView
+                            android:id="@+id/chest2Image"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp" android:src="@drawable/chest2closed" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_weight="0.5" android:clickable="true"/>
+
+                        <TextView
+                            android:id="@+id/chest2Text"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:text="15gp"
+                            android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.4" android:gravity="center"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" android:padding="8dp" android:layout_weight="0.3">
+
+                        <ImageView
+                            android:id="@+id/chest3Image"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp" android:src="@drawable/chest3closed" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_weight="0.5" android:clickable="true"/>
+
+                        <TextView
+                            android:id="@+id/chest3Text"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:text="35gp"
+                            android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.4" android:gravity="center"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" android:layout_weight="0.3">
+
+                        <ImageView
+                            android:id="@+id/chest4Image"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp" android:src="@drawable/chest4closed" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_weight="0.5" android:clickable="true"/>
+
+                        <TextView
+                            android:id="@+id/chest4Text"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:text="80gp"
+                            android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.4" android:gravity="center"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" android:layout_weight="0.3">
+
+                        <ImageView
+                            android:id="@+id/chest5Image"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp" android:src="@drawable/chest5closed" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_weight="0.5" android:clickable="true"/>
+
+                        <TextView
+                            android:id="@+id/chest5Text"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:text="150gp"
+                            android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.4" android:gravity="center"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" android:layout_weight="0.3">
+
+                        <ImageView
+                            android:id="@+id/chest6Image"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp" android:src="@drawable/chest6closed" android:adjustViewBounds="true" android:scaleType="fitCenter" android:layout_weight="0.5" android:clickable="true"/>
+
+                        <TextView
+                            android:id="@+id/chest6Text"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:text="400gp"
+                            android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.4" android:gravity="center"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical" android:layout_weight="0.3" android:padding="5dp" android:gravity="center">
+
+        <TextView
+            android:id="@+id/roundEndText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Congratulations! Select two chests to open. asnd fians foisand foasinf aosnf aosinf aosn fasodifn asoidf noiasdf n"
+            android:padding="10dp" android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/roundEndCheckoutButton"
+            android:layout_width="100dp"
+            android:layout_height="60dp"
+            android:text="Checkout"/>
+
+        <Button
+            android:id="@+id/roundendInventoryButton"
+            android:layout_width="100dp"
+            android:layout_height="60dp"
+            android:text="Inventory" android:layout_centerHorizontal="true"/>
+
+        <Button
+            android:id="@+id/roundEndContinueButton"
+            android:layout_width="100dp"
+            android:layout_height="60dp"
+            android:text="Continue To Round 2" android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:weightSum="1" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#5555AA" >
+
+        <Button
+            android:id="@+id/equipBackButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:text="&lt;" />
+
+        <TextView
+            android:id="@+id/EquipLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.24"
+            android:gravity="center"
+            android:text="Equip Weapon"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <Button
+            android:id="@+id/equipButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:text="Equip" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:background="#333333"
+        android:gravity="center" >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_margin="5dp"
+            android:background="#334400"
+            android:orientation="vertical" android:layout_weight="0.45" android:gravity="center">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Current"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#CCCC00" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:gravity="center_vertical" android:layout_weight="0.7">
+
+                <ImageView
+                    android:id="@+id/curItemImage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/kitanaofriverdale" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.7"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical" android:layout_marginLeft="5dp">
+
+                    <TextView
+                        android:id="@+id/curItemStat1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" android:text="stat1"/>
+
+                    <TextView
+                        android:id="@+id/curItemStat2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" android:text="stat2"/>
+
+                    <TextView
+                        android:id="@+id/curItemStat3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" android:text="stat3"/>
+
+                    <TextView
+                        android:id="@+id/curItemStat4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" android:text="stat4"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/curItemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                android:text="Current Name"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/curItemDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFF00"
+                android:textSize="12sp" android:text="description"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;-"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_margin="5dp"
+            android:background="#330044"
+            android:gravity="center"
+            android:orientation="vertical" android:layout_weight="0.45">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#AAAAFF" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:gravity="center_vertical" android:layout_weight="0.7">
+
+                <ImageView
+                    android:id="@+id/newItemImage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/magisstaff" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.7"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical" android:layout_marginLeft="5dp">
+
+                    <TextView
+                        android:id="@+id/newItemStat1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" android:text="stat1"/>
+
+                    <TextView
+                        android:id="@+id/newItemStat2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" android:text="stat2"/>
+
+                    <TextView
+                        android:id="@+id/newItemStat3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" android:text="stat3"/>
+
+                    <TextView
+                        android:id="@+id/newItemStat4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" android:text="stat4"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/newItemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                android:text="New Name"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/newItemDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFF00"
+                android:textSize="12sp" android:text="description"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/equipListView"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6" >
+    </ListView>
+
+</LinearLayout>

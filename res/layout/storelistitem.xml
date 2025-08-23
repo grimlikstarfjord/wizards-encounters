@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/storeListRoot"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#CC332211"
+    android:orientation="horizontal"
+    android:padding="4dip" >
+
+    <ImageView
+        android:id="@+id/storeListImage"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:layout_weight="0.2"
+        android:adjustViewBounds="true"
+        android:src="@drawable/weapon1" android:layout_gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical" android:gravity="center" android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center" android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/storeListName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6"
+                android:gravity="left|center_vertical"
+                android:text="Super Weapon of An Amazingly Long Name"
+                android:textColor="#CCCCFF"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/storeListLevel"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.2"
+                android:gravity="center"
+                android:text="12"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/storeListCost"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.2"
+                android:gravity="center"
+                android:text="1000"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/storeListDescription"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:gravity="left|center_vertical"
+            android:text="a really long description about something super that does all kinds of amzing things over and over and over again"
+            android:textColor="#FFFFAA"
+            android:textSize="12sp" android:layout_weight="1"/>
+    </LinearLayout>
+
+</LinearLayout>

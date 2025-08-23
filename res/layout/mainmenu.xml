@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" android:id="@+id/hubLayout" android:background="#050510">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical" android:layout_weight="0.2" android:gravity="center" android:layout_marginTop="5dp">
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:src="@drawable/encounterstitle" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/version" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_marginTop="10dp" android:layout_weight="0.6" android:orientation="vertical" android:gravity="center">
+
+        <Button
+            android:id="@+id/hubNewButton"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/buttonnewplayer" />
+
+        <ListView
+            android:id="@+id/hubPlayerList"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content" android:padding="5dp" android:layout_marginTop="10dp" android:background="#111133">
+        </ListView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:background="#333377" android:paddingTop="10dp" android:layout_marginBottom="5dp">
+
+        <Button
+            android:id="@+id/hubInventoryButton"
+            android:layout_width="90dp"
+            android:layout_height="60dp"
+            android:text="Equip"/>
+
+        <Button
+            android:id="@+id/hubStartButton"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:text="Start Round" android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/hubStoreButton"
+            android:layout_width="90dp"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:text="Store" />
+
+    </LinearLayout>
+
+</LinearLayout>

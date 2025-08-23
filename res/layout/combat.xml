@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/combatLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:id="@+id/combatPlayerBar"
+        android:layout_width="fill_parent"
+        android:layout_height="25dp"
+        android:background="#44AA44"
+        android:gravity="center_vertical" android:clickable="true">
+
+        <TextView
+            android:id="@+id/combatPlayerNameLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="PlayerName"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="19sp" android:layout_marginLeft="5dp"/>
+
+        <TextView
+            android:id="@+id/combatPlayerHpLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:text="30/30 HP"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="19sp" android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/combatPlayerApLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5/5 AP"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="19sp" android:layout_marginRight="5dp" android:gravity="center"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="20dp" android:layout_below="@id/combatPlayerBar" android:id="@+id/combatStatsBar" android:background="#335533" android:gravity="center">
+
+        <TextView
+            android:id="@+id/combatExecText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EXEC: 5"
+            android:textAppearance="?android:attr/textAppearanceSmall" android:layout_marginLeft="5dp" android:layout_weight="1" android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/combatReactionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="REAC: 4"
+            android:textAppearance="?android:attr/textAppearanceSmall" android:layout_weight="1" android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/combatKnowledgeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KNOW: 8"
+            android:textAppearance="?android:attr/textAppearanceSmall" android:layout_weight="1" android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/combatMageloreText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MAGE: 3"
+            android:textAppearance="?android:attr/textAppearanceSmall" android:layout_weight="1" android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/combatLuckText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LUCK: 4"
+            android:textAppearance="?android:attr/textAppearanceSmall" android:layout_marginRight="5dp" android:layout_weight="1" android:gravity="center"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/combatStatsBar"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/combatImageLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.7"
+            android:background="@drawable/rollingfoothillsbackground" >
+
+            <LinearLayout
+                android:id="@+id/monsterBar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/monsterinfobar" >
+
+                <TextView
+                    android:id="@+id/combatMonsterName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:text="monsterName"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/combatMonsterHealth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="Wounded"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" android:background="@drawable/monsterinfobar" android:orientation="vertical" android:layout_alignParentBottom="true" android:id="@+id/expandedMonsterBar" android:gravity="center_vertical" android:padding="4dp" android:visibility="invisible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/expandedMonsterName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView" android:layout_weight="1" android:layout_marginLeft="10dp" android:textSize="15sp" android:textColor="#FFFFFF"/>
+
+                    <TextView
+                        android:id="@+id/expandedMonsterHP"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:text="TextView" android:textSize="14sp" android:textColor="#FFFFFF"/>
+
+                    <TextView
+                        android:id="@+id/expandedMonsterAP"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView" android:layout_marginRight="10dp" android:textSize="14sp" android:textColor="#FFFFFF"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/expandedMonsterAbilities"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="list of monster abilities" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:textColor="#4488FF" android:textSize="14sp"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/combatMonsterImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/monsterBar"
+                android:layout_centerInParent="true"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+               android:src="@drawable/hideousaunt"/>
+
+            <TableLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/playerEffectsTable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="49dp"
+                android:clickable="true" >
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/playerEffect1Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/playerEffect8Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/playerEffect2Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/playerEffect9Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/playerEffect3Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/playerEffect10Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/playerEffect4Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/playerEffect11Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/playerEffect5Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/playerEffect12Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/playerEffect6Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/playerEffect13Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/playerEffect7Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/playerEffect14Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+            </TableLayout>
+
+            <TableLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/monsterEffectsTable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="49dp"
+                android:clickable="true" >
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/monsterEffect8Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/monsterEffect1Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/monsterEffect9Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/monsterEffect2Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/monsterEffect10Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/monsterEffect3Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/monsterEffect11Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/monsterEffect4Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/monsterEffect12Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/monsterEffect5Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/monsterEffect13Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/monsterEffect6Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <ImageView
+                        android:id="@+id/monsterEffect14Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+
+                    <ImageView
+                        android:id="@+id/monsterEffect7Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp" />
+                </TableRow>
+            </TableLayout>
+
+            <TextView
+                android:id="@+id/combatMonsterAttackText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="29sp" android:layout_alignTop="@id/combatMonsterImage" android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:id="@+id/combatMonsterAbilityText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:gravity="bottom|center_horizontal"
+                android:maxWidth="160dp"
+                android:textColor="#CC99FF"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/combatPlayerAbilityText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp"
+                android:gravity="center_horizontal"
+                android:maxWidth="170dp"
+                android:textColor="#CC00FF"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <ListView
+                android:id="@+id/combatEffectsList"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true" >
+            </ListView>
+
+            <ImageView
+                android:id="@+id/combatAttackImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/combatMonsterImage"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/weapon1" />
+
+            <TextView
+                android:id="@+id/combatPlayerAttackText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="170dp"
+                android:textColor="#FFFFFF"
+                android:textSize="29sp" android:layout_above="@id/combatAttackImage" android:layout_centerHorizontal="true"/>
+
+            <ImageView
+                android:id="@+id/combatHitImage"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="#FF0000"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp" android:layout_weight="0.5" android:id="@+id/combatBottomLayout">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical" android:layout_weight="0.8">
+
+                <TextView
+                    android:id="@+id/logTextView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:background="@drawable/combatlogback"
+                    android:gravity="bottom"
+                    android:padding="12dp"
+                    android:scrollHorizontally="false"
+                    android:scrollbars="vertical"
+                    android:text="onsdf punasdif nsadufn EASDFN SFN POSUNF PSODFN POSDNF OIDFN OSDNF OSPDH FGNpo nosufng osfng oifng ofng oifng oing sodign psifon spoding potihn [oitnb otenbio t noitmn [oitnh otn on pournv 9834hg 9o3ng 987e9735n " android:layout_weight="0.7"/>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp" android:layout_marginLeft="5dp" android:layout_marginRight="5dp" android:layout_marginBottom="5dp" android:layout_weight="0.3">
+
+                    <ImageButton
+                        android:id="@+id/combatHitButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent" android:adjustViewBounds="true" android:src="@drawable/buttonhitup" android:background="#00000000" android:layout_weight="1" android:scaleType="fitCenter" android:padding="0dp"/>
+
+                    <ImageButton
+                        android:id="@+id/combatAbilityButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent" android:layout_marginLeft="5dp" android:layout_weight="1" android:adjustViewBounds="true" android:scaleType="fitCenter" android:src="@drawable/buttonabilityup" android:background="#00000000" android:padding="0dp"/>
+
+                    <ImageButton
+                        android:id="@+id/combatRunButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent" android:layout_marginLeft="5dp" android:layout_weight="1" android:src="@drawable/buttonfleeup" android:scaleType="fitCenter" android:adjustViewBounds="true" android:background="#00000000" android:padding="0dp"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" android:layout_weight="0.2" android:layout_marginRight="3dp" android:layout_marginBottom="5dp" android:gravity="center">
+
+                <TextView
+                    android:id="@+id/combatItem1Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0/0" android:gravity="center" android:layout_marginTop="6dp" android:layout_gravity="center"/>
+
+                <ImageButton
+                    android:id="@+id/combatItem1Button"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp" android:adjustViewBounds="true" android:background="@drawable/noitembutton" android:scaleType="centerInside" android:padding="6dp" android:layout_weight="0.4"/>
+
+                <TextView
+                    android:id="@+id/combatItem2Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0/0" android:layout_marginTop="6dp" android:gravity="center" android:layout_gravity="center"/>
+
+                <ImageButton
+                    android:id="@+id/combatItem2Button"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp" android:adjustViewBounds="true" android:background="@drawable/noitembutton" android:scaleType="centerInside" android:padding="10dp" android:layout_weight="0.4"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/combatAbilitiesList"
+        android:layout_width="240dip"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginTop="40dip"
+        android:clickable="false"
+        android:fadeScrollbars="false"
+        android:fastScrollEnabled="false" android:layout_alignParentBottom="true">
+    </ListView>
+
+    <ListView
+        android:id="@+id/combatAttackList"
+        android:layout_width="102dp"
+        android:layout_height="wrap_content" android:layout_marginBottom="60dp" android:layout_alignParentBottom="true" android:layout_marginLeft="5dp">
+    </ListView>
+
+    <Button
+        android:id="@+id/dodgeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttondodge" android:visibility="invisible"/>
+
+    <Button
+        android:id="@+id/findObjectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttonfindobject" android:visibility="invisible"/>
+
+</RelativeLayout>

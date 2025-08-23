@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#333388" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/storeTopLayout">
+
+            <Button
+                android:id="@+id/storeLeaveButton"
+                android:layout_width="75dp"
+                android:layout_height="wrap_content"
+                android:text="&lt; Leave" />
+
+            <TextView
+                android:id="@+id/storeCurrentTypeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Weapons"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <Button
+                android:id="@+id/storeNextTypeButton"
+                android:layout_width="105dp"
+                android:layout_height="wrap_content"
+                android:text="Chest Armor &gt;" android:textSize="13sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:gravity="center_vertical" android:id="@+id/storeTopSortLayout" android:background="#774400">
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Sort:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/storeSortNameText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="#CCAA33"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="Name"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/storeSortLevelText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="#CCAA33"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="Level"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/storeSortGoldText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="#CCAA33"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="Price"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/storeToBuyList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#444400" >
+        </ListView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/storeCurrentGoldText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="400gp"
+                android:textAppearance="?android:attr/textAppearanceLarge" android:gravity="center_vertical" android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/storeBuyButton"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Buy" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <SlidingDrawer
+        android:id="@+id/storeDrawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:allowSingleTap="true"
+        android:content="@+id/content"
+        android:handle="@+id/storeDrawerButton"
+        >
+
+        <Button
+            android:id="@+id/storeDrawerButton"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:text="Show Inventory"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#555555" >
+
+                <TextView
+                    android:id="@+id/storeCurrentPlayerText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Hulk&apos;s Inventory"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
+            
+             <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:gravity="center_vertical" android:id="@+id/storeDrawerSortLayout" android:background="#774400">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Sort:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/storeDrawerSortNameText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="#CCAA33"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="Name"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/storeDrawerSortLevelText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="#CCAA33"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="Level"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/storeDrawerSortGoldText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="#CCAA33"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="Price"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+            <ListView
+                android:id="@+id/storeToSellList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#77AA77" >
+            </ListView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:background="#445599">
+
+                <TextView
+                    android:id="@+id/storeCurrentGoldText2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:text="400gp"
+                    android:textAppearance="?android:attr/textAppearanceLarge" android:gravity="center_vertical" android:layout_weight="1"/>
+
+                <Button
+                    android:id="@+id/storeSellButton"
+                    android:layout_width="85dp"
+                    android:layout_height="wrap_content"
+                    android:text="Sell" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </SlidingDrawer>
+
+</FrameLayout>
