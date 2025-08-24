@@ -3,7 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.alderangaming.wizardsencounters"
 	android:installLocation="auto"
-	android:versionName="0.911" android:versionCode="911">
+	android:versionName="0.92" android:versionCode="92">
 	<supports-screens
 		android:anyDensity="true"
 		android:resizeable="true"

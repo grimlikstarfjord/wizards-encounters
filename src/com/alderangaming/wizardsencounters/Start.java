@@ -345,6 +345,7 @@ public class Start extends Activity {
 		final SeekBar seekMusic = (SeekBar) settingsView.findViewById(R.id.seekMusicVolume);
 		final SeekBar seekSounds = (SeekBar) settingsView.findViewById(R.id.seekSoundVolume);
 		toggleImpactButton = (ToggleButton) settingsView.findViewById(R.id.toggleImpactButton);
+		final ToggleButton toggleMusicButton = (ToggleButton) settingsView.findViewById(R.id.toggleMusicButton);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(Start.this);
 		builder.setMessage("Settings").setCancelable(false)
@@ -360,6 +361,7 @@ public class Start extends Activity {
 
 		wasAppNavigation = true;
 
+		toggleMusicButton.setChecked(SoundManager.playingMusic());
 		seekMusic.setProgress((int) (SoundManager.getMusicVolume() * 100));
 		seekSounds.setProgress((int) (SoundManager.getSoundVolume() * 100));
 
@@ -392,6 +394,15 @@ public class Start extends Activity {
 
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
+			}
+		});
+
+		toggleMusicButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				boolean enable = toggleMusicButton.isChecked();
+				SoundManager.setPlayMusic(enable);
+				DBHandler.updateSoundPrefs(Start.this);
 			}
 		});
 

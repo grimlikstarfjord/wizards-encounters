@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -53,6 +54,8 @@ import com.alderangaming.wizardsencounters.vfx.RainEffect;
 import com.alderangaming.wizardsencounters.vfx.FloatingTextEffect;
 import com.alderangaming.wizardsencounters.vfx.DotPulseEffect;
 import com.alderangaming.wizardsencounters.vfx.DotAuraEffect;
+import com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry;
+import com.alderangaming.wizardsencounters.vfx.TorchFireEffect;
 
 public class ControllerCombat extends Activity {
 
@@ -73,6 +76,8 @@ public class ControllerCombat extends Activity {
 	private int turnFlag = 0;
 	private int backgroundImage = -1;
 	private int showImpact = 1;
+
+	private Set<Integer> knownMonsterAbilities;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -138,19 +143,54 @@ public class ControllerCombat extends Activity {
 
 		// Ensure VFX overlay is present (add programmatically once)
 		try {
-			if (vfxOverlay == null) {
-				vfxOverlay = new VfxOverlayView(this);
-				RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+			// randomly enable rain on some maps (25%)
+			boolean enableRain = Helper.randomInt(100) < 25;
+
+			if (ambientOverlay == null) {
+				ambientOverlay = new VfxOverlayView(this);
+				RelativeLayout.LayoutParams lpAmbient = new RelativeLayout.LayoutParams(
 						RelativeLayout.LayoutParams.MATCH_PARENT,
 						RelativeLayout.LayoutParams.MATCH_PARENT);
-				// Fill the entire combat image layout
-				combatLayout.addView(vfxOverlay, lp);
-				// ambient background motes once
-				vfxOverlay.setAmbient(new AmbientMotesEffect());
+				// Insert at index 0 so it's behind monster/UI but above layout background
+				combatLayout.addView(ambientOverlay, 0, lpAmbient);
+				// Only show motes when rain is NOT active
+				if (!enableRain) {
+					ambientOverlay.setAmbient(new AmbientMotesEffect());
+				}
+			}
 
-				// randomly enable rain on some maps (25%)
-				if (Helper.randomInt(100) < 25) {
+			if (vfxOverlay == null) {
+				vfxOverlay = new VfxOverlayView(this);
+				RelativeLayout.LayoutParams lpTop = new RelativeLayout.LayoutParams(
+						RelativeLayout.LayoutParams.MATCH_PARENT,
+						RelativeLayout.LayoutParams.MATCH_PARENT);
+				combatLayout.addView(vfxOverlay, lpTop);
+				vfxOverlay.bringToFront();
+
+				if (enableRain) {
 					vfxOverlay.addEffect(new RainEffect(0x55AACCFF, 0));
+				}
+
+				// Attach torch fire if this background defines anchors
+				try {
+					float density = getResources().getDisplayMetrics().density;
+					java.util.List<com.alderangaming.wizardsencounters.vfx.TorchFireGroup> groups = BackgroundVfxRegistry
+							.getTorchGroups(this, backgroundImage);
+					if (groups != null && !groups.isEmpty()) {
+						for (com.alderangaming.wizardsencounters.vfx.TorchFireGroup g : groups) {
+							vfxOverlay.addEffect(new TorchFireEffect(g.anchors01, 1.0f, density, g.params));
+						}
+					} else {
+						float[][] anchors = BackgroundVfxRegistry.getTorchAnchors(this, backgroundImage);
+						if (anchors != null && anchors.length > 0) {
+							vfxOverlay.addEffect(new TorchFireEffect(
+									anchors,
+									1.0f,
+									density,
+									BackgroundVfxRegistry.getTorchParams(this, backgroundImage)));
+						}
+					}
+				} catch (Exception ignored) {
 				}
 			}
 		} catch (Exception ignored) {
@@ -268,6 +308,7 @@ public class ControllerCombat extends Activity {
 		hitButton = (ImageButton) findViewById(R.id.combatHitButton);
 		abilityButton = (ImageButton) findViewById(R.id.combatAbilityButton);
 		fleeButton = (ImageButton) findViewById(R.id.combatRunButton);
+		final ImageButton infoButton = (ImageButton) findViewById(R.id.combatInfoButton);
 
 		item1Text = (TextView) findViewById(R.id.combatItem1Text);
 		item1Button = (ImageButton) findViewById(R.id.combatItem1Button);
@@ -421,6 +462,16 @@ public class ControllerCombat extends Activity {
 			}
 		});
 
+		View infoBtn = findViewById(R.id.combatInfoButton);
+		if (infoBtn != null) {
+			infoBtn.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					showAbilitiesInfoDialog();
+				}
+			});
+		}
+
 		item1Button.setOnTouchListener(new View.OnTouchListener() {
 
 			@Override
@@ -430,12 +481,12 @@ public class ControllerCombat extends Activity {
 
 				switch (event.getAction()) {
 					case MotionEvent.ACTION_UP:
-						item1Button.setBackgroundResource(R.drawable.itembuttonup);
+						item1Button.setAlpha(1.0f);
 						handleUseItem1Button();
 						break;
 
 					case MotionEvent.ACTION_DOWN:
-						item1Button.setBackgroundResource(R.drawable.itembuttondown);
+						item1Button.setAlpha(0.7f);
 						break;
 				}
 				return true;
@@ -451,12 +502,12 @@ public class ControllerCombat extends Activity {
 
 				switch (event.getAction()) {
 					case MotionEvent.ACTION_UP:
-						item2Button.setBackgroundResource(R.drawable.itembuttonup);
+						item2Button.setAlpha(1.0f);
 						handleUseItem2Button();
 						break;
 
 					case MotionEvent.ACTION_DOWN:
-						item2Button.setBackgroundResource(R.drawable.itembuttondown);
+						item2Button.setAlpha(0.7f);
 						break;
 				}
 				return true;
@@ -708,17 +759,16 @@ public class ControllerCombat extends Activity {
 					+ OwnedItems.getChargesOfItemId(player.equippedItemSlot1())[1]);
 
 			if (OwnedItems.getChargesOfItemId(player.equippedItemSlot1())[0] > 0) {
-				item1Button.setBackgroundResource(R.drawable.itembuttonup);
 				item1Button.setEnabled(true);
-
 			} else {
-				item1Button.setBackgroundResource(R.drawable.nochargesbutton);
+				// show no-charges plate
+				item1Button.setImageResource(R.drawable.nochargesbutton);
 				item1Button.setEnabled(false);
 			}
 		} else {
 			item1Text.setText("0/0");
-			item1Button.setBackgroundResource(R.drawable.noitembutton);
-			item1Button.setImageResource(0);
+			// show no-item plate
+			item1Button.setImageResource(R.drawable.noitembutton);
 			item1Button.setEnabled(false);
 		}
 
@@ -730,17 +780,16 @@ public class ControllerCombat extends Activity {
 					+ OwnedItems.getChargesOfItemId(player.equippedItemSlot2())[1]);
 
 			if (OwnedItems.getChargesOfItemId(player.equippedItemSlot2())[0] > 0) {
-				item2Button.setBackgroundResource(R.drawable.itembuttonup);
 				item2Button.setEnabled(true);
-
 			} else {
-				item2Button.setBackgroundResource(R.drawable.nochargesbutton);
+				// show no-charges plate
+				item2Button.setImageResource(R.drawable.nochargesbutton);
 				item2Button.setEnabled(false);
 			}
 		} else {
 			item2Text.setText("0/0");
-			item2Button.setBackgroundResource(R.drawable.noitembutton);
-			item2Button.setImageResource(0);
+			// show no-item plate
+			item2Button.setImageResource(R.drawable.noitembutton);
 			item2Button.setEnabled(false);
 		}
 	}
@@ -1594,6 +1643,13 @@ public class ControllerCombat extends Activity {
 		ItemRune ability = new ItemRune(DefinitionGlobal.ITEM_TYPE_RUNE_ABILITY, abilityId, getApplicationContext());
 		animateAbility(ability, 1);
 		doGenericAbilityActions(ability, monster, player, 1);
+		// track known monster abilities used in this combat
+		try {
+			if (knownMonsterAbilities == null)
+				knownMonsterAbilities = new java.util.HashSet<Integer>();
+			knownMonsterAbilities.add(abilityId);
+		} catch (Exception ignored) {
+		}
 	}
 
 	private void doPlayerAbility(int abilityId) {
@@ -3505,8 +3561,10 @@ public class ControllerCombat extends Activity {
 				vfxOverlay.addEffect(new RuneCircleEffect(cx, cy,
 						Math.min(monsterImage.getWidth(), monsterImage.getHeight()) * 0.38f, 900, 0xFFAA88FF));
 				vfxOverlay.addEffect(new ImpactShakeEffect(240, 14f));
-				vfxOverlay.pushAmbient(cx, cy, 600f,
-						Math.max(monsterImage.getWidth(), monsterImage.getHeight()) * 0.9f);
+				// stronger ambient push on impact
+				if (ambientOverlay != null)
+					ambientOverlay.pushAmbient(cx, cy, 1200f,
+							Math.max(monsterImage.getWidth(), monsterImage.getHeight()) * 0.9f);
 			}
 		} catch (Exception ignored) {
 		}
@@ -3616,8 +3674,9 @@ public class ControllerCombat extends Activity {
 							ty, 1400,
 							(tryHitResult[1] > 0) ? FloatingTextEffect.Kind.CRIT : FloatingTextEffect.Kind.NORMAL,
 							assignDmgResult[0]));
-					vfxOverlay.pushAmbient(cx, cy, 320f,
-							Math.max(monsterImage.getWidth(), monsterImage.getHeight()) * 0.7f);
+					if (ambientOverlay != null)
+						ambientOverlay.pushAmbient(cx, cy, 700f,
+								Math.max(monsterImage.getWidth(), monsterImage.getHeight()) * 0.7f);
 				}
 			} catch (Exception ignored) {
 			}
@@ -4406,6 +4465,7 @@ public class ControllerCombat extends Activity {
 	ImageView attackImage;
 	ImageView impactImage;
 	VfxOverlayView vfxOverlay;
+	VfxOverlayView ambientOverlay;
 
 	ImageView playerEffect1Image;
 	ImageView playerEffect2Image;
@@ -4516,6 +4576,7 @@ public class ControllerCombat extends Activity {
 		final SeekBar seekSounds = (SeekBar) settingsView.findViewById(R.id.seekSoundVolume);
 		toggleImpactButton = (ToggleButton) settingsView.findViewById(R.id.toggleImpactButton);
 		nextSongButton = (Button) settingsView.findViewById(R.id.nextSongButton);
+		final ToggleButton toggleMusicButton = (ToggleButton) settingsView.findViewById(R.id.toggleMusicButton);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(ControllerCombat.this);
 		builder.setMessage("Settings").setCancelable(false)
@@ -4529,6 +4590,7 @@ public class ControllerCombat extends Activity {
 
 		settingsDialog = builder.create();
 
+		toggleMusicButton.setChecked(SoundManager.playingMusic());
 		if (SoundManager.playingMusic()) {
 			nextSongButton.setEnabled(true);
 		}
@@ -4556,6 +4618,16 @@ public class ControllerCombat extends Activity {
 
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
+			}
+		});
+
+		toggleMusicButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				boolean enable = toggleMusicButton.isChecked();
+				SoundManager.setPlayMusic(enable);
+				nextSongButton.setEnabled(enable);
+				DBHandler.updateSoundPrefs(ControllerCombat.this);
 			}
 		});
 
@@ -4595,6 +4667,90 @@ public class ControllerCombat extends Activity {
 
 	private void showSettings() {
 		settingsDialog.show();
+	}
+
+	private void showAbilitiesInfoDialog() {
+		try {
+			LayoutInflater inflater = getLayoutInflater();
+			View view = inflater.inflate(R.layout.abilities_dialog, null);
+
+			LinearLayout monsterContainer = (LinearLayout) view.findViewById(R.id.monsterAbilitiesContainer);
+			LinearLayout playerContainer = (LinearLayout) view.findViewById(R.id.playerAbilitiesContainer);
+
+			int padding = (int) (getResources().getDisplayMetrics().density * 6f);
+			// Monster: only show abilities that are known (used this combat)
+			if (knownMonsterAbilities != null && knownMonsterAbilities.size() > 0) {
+				for (Integer runeId : knownMonsterAbilities) {
+					monsterContainer.addView(createAbilityRow(runeId, false, padding));
+				}
+			} else {
+				TextView tv = new TextView(this);
+				tv.setText("Unknown (no abilities observed yet)");
+				tv.setTextColor(0xFFAAAAAA);
+				tv.setPadding(0, padding, 0, padding);
+				monsterContainer.addView(tv);
+			}
+
+			// Player: show all equipped abilities
+			for (int i = 0; i < player.getActiveAbilities().length; i++) {
+				int runeId = player.getActiveAbilityByIndex(i);
+				playerContainer.addView(createAbilityRow(runeId, true, padding));
+			}
+
+			AlertDialog.Builder b = new AlertDialog.Builder(ControllerCombat.this);
+			b.setView(view);
+			b.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+			b.create().show();
+		} catch (Exception ignored) {
+		}
+	}
+
+	private View createAbilityRow(int runeId, boolean isPlayer, int paddingPx) {
+		LinearLayout row = new LinearLayout(this);
+		row.setOrientation(LinearLayout.HORIZONTAL);
+		row.setPadding(0, paddingPx, 0, paddingPx);
+
+		ImageView icon = new ImageView(this);
+		try {
+			String imgName = (String) DefinitionRunes.runeData[runeId][DefinitionRunes.RUNE_ANIMATION_IMAGE][0];
+			int resId = getResources().getIdentifier(imgName, "drawable", getPackageName());
+			if (resId != 0) {
+				icon.setImageResource(resId);
+			}
+		} catch (Exception e) {
+		}
+		LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(
+				(int) (getResources().getDisplayMetrics().density * 26f),
+				(int) (getResources().getDisplayMetrics().density * 26f));
+		iconLp.rightMargin = paddingPx;
+		row.addView(icon, iconLp);
+
+		LinearLayout textCol = new LinearLayout(this);
+		textCol.setOrientation(LinearLayout.VERTICAL);
+
+		TextView nameTv = new TextView(this);
+		nameTv.setText((String) DefinitionRunes.runeData[runeId][DefinitionRunes.RUNE_NAMES][0]);
+		nameTv.setTextColor(isPlayer ? 0xFF99CCFF : 0xFFFFDD88);
+		nameTv.setTextSize(16f);
+		nameTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+
+		TextView descTv = new TextView(this);
+		descTv.setText((String) DefinitionRunes.runeData[runeId][DefinitionRunes.RUNE_DESCRIPTION][0]);
+		descTv.setTextColor(0xFFFFFFFF);
+		descTv.setTextSize(14f);
+
+		textCol.addView(nameTv);
+		textCol.addView(descTv);
+
+		row.addView(textCol, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT));
+
+		return row;
 	}
 
 	AlertDialog settingsDialog;

@@ -10,17 +10,18 @@ public class AmbientMotesEffect implements VfxEffect {
     private static class Mote {
         float x;
         float y;
-        float homeX;
-        float homeY;
         float vx;
         float vy;
         float radius;
         int baseColor;
         float alpha;
+        float noiseOffset;
+        float flowPhase;
+        float preferredSpeed;
     }
 
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Random rng = new Random(12345L);
+    private final Random rng = new Random();
     private Mote[] motes;
     private long lastDrawMs = 0L;
     private boolean initialized = false;
@@ -34,21 +35,22 @@ public class AmbientMotesEffect implements VfxEffect {
             return;
         initialized = true;
 
-        int count = Math.max(22, (int) (width * height / 60000f));
+        int count = Math.max(25, (int) (width * height / 60000f));
         motes = new Mote[count];
         for (int i = 0; i < count; i++) {
             Mote m = new Mote();
             m.x = rng.nextFloat() * width;
             m.y = rng.nextFloat() * height;
-            m.homeX = m.x;
-            m.homeY = m.y;
-            float speed = 8f + rng.nextFloat() * 10f; // increase idle drift speed
+            float speed = 5f + rng.nextFloat() * 10f;
             float angle = (float) (rng.nextFloat() * Math.PI * 2);
-            m.vx = (float) Math.cos(angle) * speed * 0.2f;
-            m.vy = (float) Math.sin(angle) * speed * 0.2f;
+            m.vx = (float) Math.cos(angle) * speed;
+            m.vy = (float) Math.sin(angle) * speed;
             m.radius = 2.5f + rng.nextFloat() * 3.5f;
             m.baseColor = 0xFFFFFFCC; // soft warm
             m.alpha = 0.30f + rng.nextFloat() * 0.20f; // more visible
+            m.noiseOffset = rng.nextFloat() * 1000f;
+            m.flowPhase = rng.nextFloat() * (float) (Math.PI * 2);
+            m.preferredSpeed = 8f + rng.nextFloat() * 8f; // px/sec
             motes[i] = m;
         }
     }
@@ -67,8 +69,8 @@ public class AmbientMotesEffect implements VfxEffect {
             float dist = (float) Math.sqrt(Math.max(1e-3f, dist2));
             float falloff = 1f - (dist / radius);
             float impulse = strength * falloff;
-            m.vx += (dx / Math.max(1e-3f, dist)) * impulse * 0.04f;
-            m.vy += (dy / Math.max(1e-3f, dist)) * impulse * 0.04f;
+            m.vx += (dx / Math.max(1e-3f, dist)) * impulse * 0.15f;
+            m.vy += (dy / Math.max(1e-3f, dist)) * impulse * 0.15f;
         }
     }
 
@@ -93,25 +95,50 @@ public class AmbientMotesEffect implements VfxEffect {
         int w = canvasWidth;
         int h = canvasHeight;
 
+        float t = nowMs * 0.001f;
         for (int i = 0; i < motes.length; i++) {
             Mote m = motes[i];
-            // spring back to home subtly
-            float toHomeX = (m.homeX - m.x) * 0.12f;
-            float toHomeY = (m.homeY - m.y) * 0.12f;
-            m.vx += toHomeX * dt;
-            m.vy += toHomeY * dt;
+            // smooth flow field: direction changes slowly over time and space
+            float flowAngle = (float) (Math.sin((m.x + m.noiseOffset) * 0.004 + t * 0.25) * 0.9 +
+                    Math.cos((m.y - m.noiseOffset) * 0.004 + t * 0.21) * 0.6 +
+                    Math.sin(t * 0.17 + m.flowPhase) * 0.4);
+            // project to unit direction
+            float dirX = (float) Math.cos(flowAngle);
+            float dirY = (float) Math.sin(flowAngle);
 
-            // gentle random noise (subtle)
-            m.vx += (rng.nextFloat() - 0.5f) * 0.8f * dt; // stronger noise
-            m.vy += (rng.nextFloat() - 0.5f) * 0.8f * dt;
+            // apply gentle propulsion toward preferred speed
+            float speed = (float) Math.sqrt(m.vx * m.vx + m.vy * m.vy);
+            float targetSpeed = m.preferredSpeed;
+            float speedError = targetSpeed - speed;
+            float accel = 6f; // px/sec^2
+            m.vx += dirX * accel * dt + (rng.nextFloat() - 0.5f) * 1.2f * dt;
+            m.vy += dirY * accel * dt + (rng.nextFloat() - 0.5f) * 1.2f * dt;
 
-            // mild drag
-            m.vx *= 0.998f; // less drag
-            m.vy *= 0.998f;
+            // slight steering to maintain speed around preferred
+            if (speed > 1e-3f) {
+                float scale = Math.min(1f, Math.max(-1f, speedError * 0.08f));
+                m.vx += (m.vx / speed) * scale;
+                m.vy += (m.vy / speed) * scale;
+            }
 
-            // integrate with seconds + subtle global flow
-            m.x += m.vx * dt + 6f * dt; // global drift right
-            m.y += m.vy * dt + 2f * dt; // slight downward drift
+            // dt-aware drag to prevent runaway velocity but never fully stopping
+            float dragPerSec = 0.10f; // 10% loss per second
+            float drag = (float) Math.pow(1.0 - dragPerSec, dt);
+            m.vx *= drag;
+            m.vy *= drag;
+
+            // clamp max speed to avoid outliers on a straight path
+            float maxSpeed = 28f; // px/sec
+            speed = (float) Math.sqrt(m.vx * m.vx + m.vy * m.vy);
+            if (speed > maxSpeed) {
+                float s = maxSpeed / Math.max(1e-3f, speed);
+                m.vx *= s;
+                m.vy *= s;
+            }
+
+            // integrate
+            m.x += m.vx * dt;
+            m.y += m.vy * dt;
 
             // wrap around bounds
             if (m.x < -10)

@@ -39,6 +39,15 @@
             android:enabled="false"
             android:text="Skip >" />
 
+        <ToggleButton
+            android:id="@+id/toggleMusicButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="Music"
+            android:textOff="Off"
+            android:textOn="On" />
+
     </LinearLayout>
 
     <LinearLayout

@@ -16,23 +16,21 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ControllerRoundStart extends Activity
-{
+public class ControllerRoundStart extends Activity {
 	Player player;
 	private String roundInfo = "";
 
 	// OwnedItems ownedItems;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 
 		if (!DBHandler.isOpen(getApplicationContext()))
 			DBHandler.open(getApplicationContext());
-		
-		//stop prev treasure room song if playing
+
+		// stop prev treasure room song if playing
 		SoundManager.stopAllMusic();
 
 		Bundle b = getIntent().getExtras();
@@ -46,11 +44,9 @@ public class ControllerRoundStart extends Activity
 		updateViews();
 	}
 
-	private void setupRound()
-	{
+	private void setupRound() {
 		// regen hp, ap on boss rounds
-		if (DefinitionRounds.ROUND_TYPE[player.currentRound() - 1] == 1)
-		{
+		if (DefinitionRounds.ROUND_TYPE[player.currentRound() - 1] == 1) {
 			roundInfo += System.getProperty("line.separator") + "* HP Recharged *";
 			roundInfo += System.getProperty("line.separator") + "* AP Recharged *";
 			player.setCurrentAP(player.maxAP());
@@ -58,24 +54,20 @@ public class ControllerRoundStart extends Activity
 		}
 		// class type ap regen
 		// start round with full ap flag
-		else if (DefinitionClassType.CLASS_TYPE_AP_REGEN[DefinitionClasses.CLASS_TYPE[player.playerClass()]][4] == 1)
-		{
+		else if (DefinitionClassType.CLASS_TYPE_AP_REGEN[DefinitionClasses.CLASS_TYPE[player.playerClass()]][4] == 1) {
 			player.setCurrentAP(player.maxAP());
 			roundInfo += System.getProperty("line.separator") + "* AP Recharged *";
-			roundInfo +=
-				System.getProperty("line.separator") + "* Your class type ["
+			roundInfo += System.getProperty("line.separator") + "* Your class type ["
 					+ DefinitionClassType.CLASS_TYPE_NAME[DefinitionClasses.CLASS_TYPE[player.playerClass()]]
 					+ "] starts each round will FULL AP *";
 		}
 	}
-	
-	private void updateGoldText()
-	{
+
+	private void updateGoldText() {
 		goldText.setText("Gold: " + OwnedItems.gold());
 	}
 
-	private void updateViews()
-	{
+	private void updateViews() {
 		roundStartInfoText.setText(roundInfo);
 		playerHPView.setText("HP: " + player.currentHP() + "/" + player.maxHP());
 		playerAPView.setText("AP: " + player.currentAP() + "/" + player.maxAP());
@@ -87,8 +79,7 @@ public class ControllerRoundStart extends Activity
 		updateEquippedItemsText();
 	}
 
-	private void updateEquippedItemsText()
-	{
+	private void updateEquippedItemsText() {
 		item1InfoText.setText("No Item in Slot 1");
 		item1CostText.setText("");
 		item1RechargeButton.setBackgroundResource(R.drawable.buttonrechargedisabled);
@@ -99,8 +90,7 @@ public class ControllerRoundStart extends Activity
 		item2RechargeButton.setBackgroundResource(R.drawable.buttonrechargedisabled);
 		item2RechargeButton.setEnabled(false);
 
-		if (player.equippedItemSlot1() >= 0)
-		{
+		if (player.equippedItemSlot1() >= 0) {
 			String itemText = "";
 			itemText += DefinitionItems.itemdata[player.equippedItemSlot1()][DefinitionItems.ITEM_NAME][0].toString();
 			itemText += " ";
@@ -114,15 +104,13 @@ public class ControllerRoundStart extends Activity
 			item1CostText.setText(costText);
 
 			if (OwnedItems.getChargesOfItemId(player.equippedItemSlot1())[0] < OwnedItems.getChargesOfItemId(player
-				.equippedItemSlot1())[1])
-			{
+					.equippedItemSlot1())[1]) {
 				item1RechargeButton.setBackgroundResource(R.drawable.buttonrecharge);
-			item1RechargeButton.setEnabled(true);
+				item1RechargeButton.setEnabled(true);
 			}
 		}
 
-		if (player.equippedItemSlot2() >= 0)
-		{
+		if (player.equippedItemSlot2() >= 0) {
 			String itemText = "";
 			itemText += DefinitionItems.itemdata[player.equippedItemSlot2()][DefinitionItems.ITEM_NAME][0].toString();
 			itemText += " ";
@@ -136,8 +124,7 @@ public class ControllerRoundStart extends Activity
 			item2CostText.setText(costText);
 
 			if (OwnedItems.getChargesOfItemId(player.equippedItemSlot2())[0] < OwnedItems.getChargesOfItemId(player
-				.equippedItemSlot2())[1])
-			{
+					.equippedItemSlot2())[1]) {
 				item2RechargeButton.setBackgroundResource(R.drawable.buttonrecharge);
 				item2RechargeButton.setEnabled(true);
 			}
@@ -145,10 +132,8 @@ public class ControllerRoundStart extends Activity
 
 	}
 
-	private void chargeItem(int itemId)
-	{
-		if (OwnedItems.gold() >= OwnedItems.costToRechargeItem(itemId))
-		{
+	private void chargeItem(int itemId) {
+		if (OwnedItems.gold() >= OwnedItems.costToRechargeItem(itemId)) {
 			SoundManager.playSound(SoundManager.RECHARGESOUND, true);
 			OwnedItems.payForRechargeItem(itemId);
 			OwnedItems.updateGold(-OwnedItems.costToRechargeItem(itemId));
@@ -157,22 +142,18 @@ public class ControllerRoundStart extends Activity
 			showToast("Item gained 1 charge.");
 			updateEquippedItemsText();
 			updateGoldText();
-		}
-		else
-		{
+		} else {
 			showToast("You can't afford to recharge this item.");
 		}
 	}
 
-	private void showToast(String text)
-	{
+	private void showToast(String text) {
 		Toast toast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
 		toast.setGravity(Gravity.CENTER, 0, 0);
 		toast.show();
 	}
 
-	private void setupViews()
-	{
+	private void setupViews() {
 		roundStartInfoText = (TextView) findViewById(R.id.startRoundInfoText);
 		playerNameView = (TextView) findViewById(R.id.startRoundPlayerNameLabel);
 		playerHPView = (TextView) findViewById(R.id.startRoundPlayerHpLabel);
@@ -191,11 +172,9 @@ public class ControllerRoundStart extends Activity
 		item1RechargeButton = (Button) findViewById(R.id.roundstartrechargeitem1);
 		item1RechargeButton.setBackgroundResource(R.drawable.buttonrechargedisabled);
 		item1RechargeButton.setEnabled(false);
-		item1RechargeButton.setOnClickListener(new OnClickListener()
-		{
+		item1RechargeButton.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v)
-			{
+			public void onClick(View v) {
 				chargeItem(player.equippedItemSlot1());
 				item1RechargeButton.setBackgroundResource(R.drawable.buttonrechargedisabled);
 				item1RechargeButton.setEnabled(false);
@@ -205,27 +184,21 @@ public class ControllerRoundStart extends Activity
 		item2RechargeButton = (Button) findViewById(R.id.roundstartrechargeitem2);
 		item2RechargeButton.setEnabled(false);
 		item2RechargeButton.setBackgroundResource(R.drawable.buttonrechargedisabled);
-		item2RechargeButton.setOnClickListener(new OnClickListener()
-		{
+		item2RechargeButton.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v)
-			{
+			public void onClick(View v) {
 				chargeItem(player.equippedItemSlot2());
 				item2RechargeButton.setBackgroundResource(R.drawable.buttonrechargedisabled);
 				item2RechargeButton.setEnabled(false);
 			}
 		});
 
-		
-
 		goButton = (Button) findViewById(R.id.startRoundGoButton);
-		goButton.setOnClickListener(new OnClickListener()
-		{
+		goButton.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onClick(View v)
-			{
-				goButton.setEnabled(false);				
+			public void onClick(View v) {
+				goButton.setEnabled(false);
 				goButton.setVisibility(View.INVISIBLE);
 
 				if (DefinitionRounds.ROUND_TYPE[player.currentRound() - 1] == 1)
@@ -236,13 +209,12 @@ public class ControllerRoundStart extends Activity
 
 				player.setInRound(true);
 
-				if (DBHandler.updatePlayer(player))
-				{
+				if (DBHandler.updatePlayer(player)) {
 					DBHandler.close();
 				}
 
-				Intent i =
-					new Intent(getApplicationContext(), com.alderangaming.wizardsencounters.ControllerFightStart.class);
+				Intent i = new Intent(getApplicationContext(),
+						com.alderangaming.wizardsencounters.ControllerFightStart.class);
 				Bundle b = new Bundle();
 
 				// replenish item charges
@@ -250,7 +222,9 @@ public class ControllerRoundStart extends Activity
 
 				// b.putSerializable("ownedItems", ownedItems);
 				b.putSerializable("player", player);
-				b.putInt("background", BackgroundManager.getNextBackground());
+				// Dev override: allow forcing a specific background via player name token
+				int devBg = BackgroundManager.getDevOverrideBackground(player.name());
+				b.putInt("background", devBg != -1 ? devBg : BackgroundManager.getNextBackground());
 
 				i.putExtras(b);
 
@@ -260,33 +234,25 @@ public class ControllerRoundStart extends Activity
 
 		});
 	}
-	
-	private void exitArena()
-	{
+
+	private void exitArena() {
 		player.setRank(1);
 		player.setCurrentRound(1);
 		player.setCurrentFight(1);
 
-		try
-		{
-			if (DBHandler.isOpen(getApplicationContext()))
-			{
+		try {
+			if (DBHandler.isOpen(getApplicationContext())) {
 				if (DBHandler.updatePlayer(player))
 					DBHandler.close();
-			}
-			else
-			{
-				if (DBHandler.open(getApplicationContext()))
-				{
+			} else {
+				if (DBHandler.open(getApplicationContext())) {
 					if (DBHandler.updatePlayer(player))
 						DBHandler.close();
 				}
 			}
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			Log.d("combat",
-				"failed to save updated player info to DB when exiting via back:" + e.toString());
+					"failed to save updated player info to DB when exiting via back:" + e.toString());
 		}
 
 		Intent resultIntent = new Intent();
@@ -299,15 +265,13 @@ public class ControllerRoundStart extends Activity
 
 		setResult(Activity.RESULT_OK, resultIntent);
 
-		finish();	
+		finish();
 	}
-	
+
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event)
-	{
-		if (keyCode == KeyEvent.KEYCODE_BACK)
-		{
-			
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+
 			SoundManager.playSound(SoundManager.ALERTSOUND, true);
 
 			final Dialog dialog = new Dialog(ControllerRoundStart.this);
@@ -315,31 +279,27 @@ public class ControllerRoundStart extends Activity
 			dialog.setTitle("Exit Arena?");
 			TextView exitArenaTextView = (TextView) dialog.findViewById(R.id.exitArenaDialogTextView);
 			exitArenaTextView
-				.setText("Exiting the Arena will cause this character ("
-					+ player.name()
-					+ ", Rank "
-					+ player.rank()
-					+ ") to lose all progress and gold gained from this Round. They will revert to Round 1, Rank 1! What say you?");
+					.setText("Exiting the Arena will cause this character ("
+							+ player.name()
+							+ ", Rank "
+							+ player.rank()
+							+ ") to lose all progress and gold gained from this Round. They will revert to Round 1, Rank 1! What say you?");
 			Button exitArenaButton = (Button) dialog.findViewById(R.id.exitArenaDialogButton);
 			Button donotexitArenaButton = (Button) dialog.findViewById(R.id.exitArenaDialogCancelButton);
-			exitArenaButton.setOnClickListener(new OnClickListener()
-			{
+			exitArenaButton.setOnClickListener(new OnClickListener() {
 
 				@Override
-				public void onClick(View v)
-				{
-					exitArena();	
+				public void onClick(View v) {
+					exitArena();
 				}
 
 			});
 
-			donotexitArenaButton.setOnClickListener(new OnClickListener()
-			{
+			donotexitArenaButton.setOnClickListener(new OnClickListener() {
 
 				@Override
-				public void onClick(View v)
-				{
-					dialog.cancel();					
+				public void onClick(View v) {
+					dialog.cancel();
 				}
 
 			});
@@ -347,8 +307,6 @@ public class ControllerRoundStart extends Activity
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-
-	
 
 	AlertDialog.Builder alertDialog;
 
@@ -361,7 +319,7 @@ public class ControllerRoundStart extends Activity
 	TextView itemsEquippedText, item1InfoText, item2InfoText, item1CostText, item2CostText;
 	TextView goldText;
 	Button item1RechargeButton, item2RechargeButton;
-	
+
 	Button goButton;
 
 }

@@ -15,8 +15,8 @@ public class SoundManager {
 	private static boolean playSounds = true;
 	private static boolean playMusic = true;
 	private static boolean showingImpact = true;
-	private static float musicVolume = 0.5f; // 0.0 - 1.0 default 50%
-	private static float soundVolume = 0.5f; // 0.0 - 1.0 default 50%
+	private static float musicVolume = 0.3f; // 0.0 - 1.0 default 50%
+	private static float soundVolume = 1.0f; // 0.0 - 1.0 default 50%
 
 	private static ArrayList<Integer> musicResources = new ArrayList<Integer>();
 	private static ArrayList<Integer> musicTypes = new ArrayList<Integer>();

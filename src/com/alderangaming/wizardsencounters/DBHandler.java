@@ -630,7 +630,7 @@ public class DBHandler {
 
 	private static boolean updateTableGlobalStats() {
 		String command = "INSERT INTO GlobalStats (Gold, PlayMusic, PlaySounds, Impact, MusicVolume, SoundVolume) VALUES ('"
-				+ DefinitionGlobal.DEFAULT_STARTING_GOLD + "', 1, 1, 1, 0.5, 0.5);";
+				+ DefinitionGlobal.DEFAULT_STARTING_GOLD + "', 1, 1, 1, 0.3, 1);";
 
 		try {
 			db.execSQL(command, new String[] {});
