@@ -122,6 +122,20 @@ public class ControllerCombat extends Activity {
 
 		impactImage = (ImageView) findViewById(R.id.combatImpactImage);
 
+		// settings button on combat screen
+		try {
+			ImageButton settingsBtn = (ImageButton) findViewById(R.id.combatSettingsButton);
+			if (settingsBtn != null) {
+				settingsBtn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						showSettings();
+					}
+				});
+			}
+		} catch (Exception ignored) {
+		}
+
 		// Ensure VFX overlay is present (add programmatically once)
 		try {
 			if (vfxOverlay == null) {
@@ -559,25 +573,27 @@ public class ControllerCombat extends Activity {
 		try {
 			if (lastPlayerHP != player.currentHP()) {
 				flashWhite(playerHPView);
-				if (player.currentHP() < 15) {
-					// extra low-HP pulse on the label background
-					playerHPView.setBackgroundColor(0x55FFFFFF);
-					playerHPView.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								playerHPView.setBackgroundDrawable(null);
-							} catch (Exception ignored) {
-							}
-						}
-					}, 200);
-				}
 				lastPlayerHP = player.currentHP();
 			}
 
 			if (lastPlayerAP != player.currentAP()) {
 				flashWhite(playerAPView);
 				lastPlayerAP = player.currentAP();
+			}
+
+			if (player.currentHP() < 15 && !lowHpPulseActive) {
+				lowHpPulseActive = true;
+				playerHPView.post(new Runnable() {
+					@Override
+					public void run() {
+						if (player.currentHP() >= 15) {
+							lowHpPulseActive = false;
+							return;
+						}
+						flashWhite(playerHPView);
+						playerHPView.postDelayed(this, 700);
+					}
+				});
 			}
 		} catch (Exception ignored) {
 		}
@@ -1211,6 +1227,11 @@ public class ControllerCombat extends Activity {
 		// new DodgeEvent created before this was called
 		dodgeButton.setEnabled(false);
 		dodgeButton.setVisibility(View.INVISIBLE);
+		try {
+			if (dodgeWanderRunnable != null)
+				dodgeWanderHandler.removeCallbacks(dodgeWanderRunnable);
+		} catch (Exception ignored) {
+		}
 
 		if (waitingForDodge == true && randomDodgeID == dodgeEvent.dodgeID) {
 			SoundManager.playSound(SoundManager.SOUND_TYPE_DODGE, true);
@@ -3720,9 +3741,79 @@ public class ControllerCombat extends Activity {
 
 			disableCombatButtons();
 
-			dodgeButton.setLayoutParams(Helper.getRandomButtonLayout(combatLayout));
+			// Position near the monster's center (with small jitter)
+			try {
+				int mx = monsterImage.getLeft() + (monsterImage.getWidth() / 2);
+				int my = monsterImage.getTop() + (monsterImage.getHeight() / 2);
+				int jitterX = Helper.randomInt(81) - 40; // -40..40
+				int jitterY = Helper.randomInt(81) - 40;
+				int btnW = dodgeButton.getWidth();
+				int btnH = dodgeButton.getHeight();
+				if (btnW <= 0)
+					btnW = 80;
+				if (btnH <= 0)
+					btnH = 80;
+				android.widget.RelativeLayout.LayoutParams startLpPos = new android.widget.RelativeLayout.LayoutParams(
+						android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT,
+						android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT);
+				startLpPos.leftMargin = Math.max(0,
+						Math.min(combatLayout.getWidth() - btnW, mx + jitterX - (btnW / 2)));
+				startLpPos.topMargin = Math.max(0,
+						Math.min(combatLayout.getHeight() - btnH, my + jitterY - (btnH / 2)));
+				dodgeButton.setLayoutParams(startLpPos);
+			} catch (Exception ignored) {
+				// fallback to random placement if any metrics missing
+				dodgeButton.setLayoutParams(Helper.getRandomButtonLayout(combatLayout));
+			}
 			dodgeButton.setEnabled(true);
 			dodgeButton.setVisibility(View.VISIBLE);
+			try {
+				if (dodgeWanderRunnable != null)
+					dodgeWanderHandler.removeCallbacks(dodgeWanderRunnable);
+				android.widget.RelativeLayout.LayoutParams startLp = (android.widget.RelativeLayout.LayoutParams) dodgeButton
+						.getLayoutParams();
+				final int originX = startLp.leftMargin + (dodgeButton.getWidth() / 2);
+				final int originY = startLp.topMargin + (dodgeButton.getHeight() / 2);
+				final long startMs = android.os.SystemClock.uptimeMillis();
+				dodgeWanderRunnable = new Runnable() {
+					@Override
+					public void run() {
+						if (dodgeButton.getVisibility() != View.VISIBLE)
+							return;
+						long now = android.os.SystemClock.uptimeMillis();
+						float t = (now - startMs) / 1000f; // seconds since appear
+						if (t >= 3.0f) {
+							dodgeButton.setEnabled(false);
+							dodgeButton.setVisibility(View.INVISIBLE);
+							try {
+								if (dodgeWanderRunnable != null)
+									dodgeWanderHandler.removeCallbacks(dodgeWanderRunnable);
+							} catch (Exception ignored) {
+							}
+							return;
+						}
+						float angle = t * 4.2f; // radians/sec
+						float radius = 250f + t * 220f; // expand outward from origin
+						int targetX = (int) (originX + Math.cos(angle) * radius) - dodgeButton.getWidth() / 2;
+						int targetY = (int) (originY + Math.sin(angle) * radius) - dodgeButton.getHeight() / 2;
+						targetX = Math.max(0, Math.min(combatLayout.getWidth() - dodgeButton.getWidth(), targetX));
+						targetY = Math.max(0, Math.min(combatLayout.getHeight() - dodgeButton.getHeight(), targetY));
+						android.widget.RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) dodgeButton
+								.getLayoutParams();
+						android.view.animation.TranslateAnimation ta = new android.view.animation.TranslateAnimation(0,
+								targetX - lp.leftMargin, 0, targetY - lp.topMargin);
+						ta.setDuration(10);
+						ta.setFillAfter(false);
+						dodgeButton.startAnimation(ta);
+						lp.leftMargin = targetX;
+						lp.topMargin = targetY;
+						dodgeButton.setLayoutParams(lp);
+						dodgeWanderHandler.postDelayed(this, 10);
+					}
+				};
+				dodgeWanderHandler.postDelayed(dodgeWanderRunnable, 10);
+			} catch (Exception ignored) {
+			}
 
 			dodgeEvent.dodgeID = Helper.randomInt(5000);
 			randomDodgeID = dodgeEvent.dodgeID;
@@ -4032,6 +4123,11 @@ public class ControllerCombat extends Activity {
 			else {
 				dodgeButton.setEnabled(false);
 				dodgeButton.setVisibility(View.INVISIBLE);
+				try {
+					if (dodgeWanderRunnable != null)
+						dodgeWanderHandler.removeCallbacks(dodgeWanderRunnable);
+				} catch (Exception ignored) {
+				}
 				waitingForDodge = false;
 
 				dealPlayerHitDamage(new int[] { dodgeEvent.damage, dodgeEvent.critSuccess, dodgeEvent.stunSuccess });
@@ -4260,6 +4356,9 @@ public class ControllerCombat extends Activity {
 	private Handler advanceTurnHandler = new Handler();
 	private Handler explosionWaitHandler = new Handler();
 	private Handler animateMonsterHandler = new Handler();
+	private Handler dodgeWanderHandler = new Handler();
+	private Runnable dodgeWanderRunnable;
+	private boolean lowHpPulseActive = false;
 
 	private class DodgeEvent {
 		int dodgeID = 0;

@@ -42,13 +42,13 @@ public class AmbientMotesEffect implements VfxEffect {
             m.y = rng.nextFloat() * height;
             m.homeX = m.x;
             m.homeY = m.y;
-            float speed = 3f + rng.nextFloat() * 5f; // px/s idle drift (slower)
+            float speed = 8f + rng.nextFloat() * 10f; // increase idle drift speed
             float angle = (float) (rng.nextFloat() * Math.PI * 2);
-            m.vx = (float) Math.cos(angle) * speed * 0.15f;
-            m.vy = (float) Math.sin(angle) * speed * 0.15f;
+            m.vx = (float) Math.cos(angle) * speed * 0.2f;
+            m.vy = (float) Math.sin(angle) * speed * 0.2f;
             m.radius = 2.5f + rng.nextFloat() * 3.5f;
             m.baseColor = 0xFFFFFFCC; // soft warm
-            m.alpha = 0.22f + rng.nextFloat() * 0.28f;
+            m.alpha = 0.30f + rng.nextFloat() * 0.20f; // more visible
             motes[i] = m;
         }
     }
@@ -102,16 +102,16 @@ public class AmbientMotesEffect implements VfxEffect {
             m.vy += toHomeY * dt;
 
             // gentle random noise (subtle)
-            m.vx += (rng.nextFloat() - 0.5f) * 0.4f * dt;
-            m.vy += (rng.nextFloat() - 0.5f) * 0.4f * dt;
+            m.vx += (rng.nextFloat() - 0.5f) * 0.8f * dt; // stronger noise
+            m.vy += (rng.nextFloat() - 0.5f) * 0.8f * dt;
 
             // mild drag
-            m.vx *= 0.996f;
-            m.vy *= 0.996f;
+            m.vx *= 0.998f; // less drag
+            m.vy *= 0.998f;
 
-            // integrate with seconds
-            m.x += m.vx * dt;
-            m.y += m.vy * dt;
+            // integrate with seconds + subtle global flow
+            m.x += m.vx * dt + 6f * dt; // global drift right
+            m.y += m.vy * dt + 2f * dt; // slight downward drift
 
             // wrap around bounds
             if (m.x < -10)

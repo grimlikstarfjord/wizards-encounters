@@ -11,13 +11,23 @@
         android:background="@drawable/topbackgroundcombat"
         android:gravity="center_vertical" android:clickable="true">
 
+        <ImageButton
+            android:id="@+id/combatSettingsButton"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:background="#00000000"
+            android:src="@android:drawable/ic_menu_preferences"
+            android:scaleType="centerInside" />
+
         <TextView
             android:id="@+id/combatPlayerNameLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="PlayerName"
-            android:textSize="16sp" android:layout_marginLeft="10dp" android:textColor="#FFFFFF"/>
+            android:textSize="16sp" android:textColor="#FFFFFF"/>
 
         <TextView
             android:id="@+id/combatPlayerApLabel"
@@ -610,5 +620,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/buttondodge" android:visibility="invisible"/>
+
+    
 
 </RelativeLayout>
