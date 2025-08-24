@@ -4,7 +4,7 @@
     <string name="app_name">Wizards Encounters</string>
     <string name="dbnamestring">WizardsEncounters.db</string>
     <string name="dbversion">1</string>
-    <string name="version">V 2025 0.92</string>
+    <string name="version">V 2025 0.921</string>
     <string name="endgametext">Congratulations! You have completed all of the Rounds in this Version of Wizards Encounters. The items earned by this character are added to your Inventory, he has leveled up, and is set back to Round 1. Remember, each class has unique equipment, attacks, and abilities!</string>
    
     <string name="abilitiesHelpText">This screen is used to specify which abilities this character will enter combat with. Below, you see a list of owned Ability Runes.  These are abilities that you can equip on the currently selected character. To equip a rune, click on it and it will be added to the equipped list. You may unequip an active rune in the same way.  Each character may have a maxumum of 8 runes equipped at any time.</string>

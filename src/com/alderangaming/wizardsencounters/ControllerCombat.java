@@ -143,8 +143,10 @@ public class ControllerCombat extends Activity {
 
 		// Ensure VFX overlay is present (add programmatically once)
 		try {
-			// randomly enable rain on some maps (25%)
-			boolean enableRain = Helper.randomInt(100) < 25;
+			// Per-background rain probability
+			float rainProb = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry.getRainProbability(this,
+					backgroundImage);
+			boolean enableRain = Helper.randomInt(10000) < (int) (rainProb * 10000f);
 
 			if (ambientOverlay == null) {
 				ambientOverlay = new VfxOverlayView(this);
@@ -153,8 +155,9 @@ public class ControllerCombat extends Activity {
 						RelativeLayout.LayoutParams.MATCH_PARENT);
 				// Insert at index 0 so it's behind monster/UI but above layout background
 				combatLayout.addView(ambientOverlay, 0, lpAmbient);
-				// Only show motes when rain is NOT active
-				if (!enableRain) {
+				// Show motes only if allowed for this background and not raining
+				if (!enableRain && com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry.isMotesEnabled(this,
+						backgroundImage)) {
 					ambientOverlay.setAmbient(new AmbientMotesEffect());
 				}
 			}
@@ -164,8 +167,8 @@ public class ControllerCombat extends Activity {
 				RelativeLayout.LayoutParams lpTop = new RelativeLayout.LayoutParams(
 						RelativeLayout.LayoutParams.MATCH_PARENT,
 						RelativeLayout.LayoutParams.MATCH_PARENT);
-				combatLayout.addView(vfxOverlay, lpTop);
-				vfxOverlay.bringToFront();
+				// Insert at index 0 so all effects render behind monster/UI
+				combatLayout.addView(vfxOverlay, 0, lpTop);
 
 				if (enableRain) {
 					vfxOverlay.addEffect(new RainEffect(0x55AACCFF, 0));
@@ -188,6 +191,33 @@ public class ControllerCombat extends Activity {
 									1.0f,
 									density,
 									BackgroundVfxRegistry.getTorchParams(this, backgroundImage)));
+						}
+					}
+
+					// Attach fog if configured for this background
+					com.alderangaming.wizardsencounters.vfx.FogParams fog = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
+							.getFogParams(this, backgroundImage);
+					if (fog != null) {
+						vfxOverlay.addEffect(new com.alderangaming.wizardsencounters.vfx.FogEffect(fog, density));
+					}
+
+					// Attach thermal gas if configured
+					java.util.List<com.alderangaming.wizardsencounters.vfx.ThermalGasGroup> gasGroups = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
+							.getThermalGasGroups(this, backgroundImage);
+					if (gasGroups != null && !gasGroups.isEmpty()) {
+						for (com.alderangaming.wizardsencounters.vfx.ThermalGasGroup gg : gasGroups) {
+							vfxOverlay.addEffect(new com.alderangaming.wizardsencounters.vfx.ThermalGasEffect(
+									gg.anchors01, gg.params, density));
+						}
+					}
+
+					// Attach bubbling hot springs if configured
+					java.util.List<com.alderangaming.wizardsencounters.vfx.HotSpringBubbleGroup> bubbleGroups = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
+							.getHotSpringBubbleGroups(this, backgroundImage);
+					if (bubbleGroups != null && !bubbleGroups.isEmpty()) {
+						for (com.alderangaming.wizardsencounters.vfx.HotSpringBubbleGroup bg : bubbleGroups) {
+							vfxOverlay.addEffect(new com.alderangaming.wizardsencounters.vfx.HotSpringBubbleEffect(
+									bg.anchors01, bg.params, density));
 						}
 					}
 				} catch (Exception ignored) {
