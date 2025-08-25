@@ -187,10 +187,17 @@
                 android:scaleType="fitCenter"
                android:src="@drawable/hideousaunt"/>
 
+            <!-- Keep overlay images after the placeholder monster so they render above the rig -->
             <ImageView
                 android:id="@+id/combatImpactImage"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:layout_alignRight="@id/combatMonsterImage" android:layout_alignLeft="@id/combatMonsterImage" android:layout_alignBottom="@id/combatMonsterImage" android:layout_alignTop="@id/combatMonsterImage" android:adjustViewBounds="true" android:scaleType="centerInside"/>
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@id/combatMonsterImage"
+                android:layout_alignLeft="@id/combatMonsterImage"
+                android:layout_alignBottom="@id/combatMonsterImage"
+                android:layout_alignTop="@id/combatMonsterImage"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"/>
 
             <TableLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -466,8 +473,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@id/combatMonsterImage"
-                android:layout_centerHorizontal="true"
-                />
+                android:layout_centerHorizontal="true" />
 
             <TextView
                 android:id="@+id/combatPlayerAttackText"

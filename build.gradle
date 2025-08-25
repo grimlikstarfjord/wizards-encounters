@@ -70,27 +70,23 @@ android {
             if (keystorePropertiesFile.exists()) {
                 signingConfig signingConfigs.release
             }
-            applicationVariants.all { variant ->
-                variant.outputs.all { output ->
-                    def vName = variant.versionName
-                    def vCode = variant.versionCode
-                    def baseName = "WizardsEncounters-${variant.buildType.name}-v${vName}(${vCode})"
-                    outputFileName = baseName + ".apk"
-                }
-            }
         }
         debug {
             // default debug signing
-            applicationVariants.all { variant ->
-                if (variant.buildType.name == "debug") {
-                    variant.outputs.all { output ->
-                        def vName = variant.versionName
-                        def vCode = variant.versionCode
-                        def baseName = "WizardsEncounters-${variant.buildType.name}-v${vName}(${vCode})"
-                        outputFileName = baseName + ".apk"
-                    }
-                }
-            }
+        }
+    }
+
+    // Name APKs using versionName/versionCode from AndroidManifest.xml
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def manifestFile = file('AndroidManifest.xml')
+            def text = manifestFile.getText('UTF-8')
+            def mName = (text =~ /android:versionName\s*=\s*"([^"]+)"/)
+            def mCode = (text =~ /android:versionCode\s*=\s*"(\d+)"/)
+            def vName = mName.find() ? mName.group(1) : variant.versionName
+            def vCode = mCode.find() ? Integer.parseInt(mCode.group(1)) : variant.versionCode
+            def baseName = "WizardsEncounters-${variant.buildType.name}-v${vName}(${vCode})"
+            outputFileName = baseName + ".apk"
         }
     }
 }

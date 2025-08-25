@@ -167,16 +167,43 @@ public class ControllerCombat extends Activity {
 				RelativeLayout.LayoutParams lpTop = new RelativeLayout.LayoutParams(
 						RelativeLayout.LayoutParams.MATCH_PARENT,
 						RelativeLayout.LayoutParams.MATCH_PARENT);
-				// Insert at index 0 so all effects render behind monster/UI
-				combatLayout.addView(vfxOverlay, 0, lpTop);
+				// Place overlay directly above the image layout so effects render in front of
+				// the monster rig
+				int imgIdx = combatLayout.indexOfChild((View) findViewById(R.id.combatImageLayout));
+				if (imgIdx < 0)
+					imgIdx = 0;
+				combatLayout.addView(vfxOverlay, imgIdx + 1, lpTop);
 
 				if (enableRain) {
 					vfxOverlay.addEffect(new RainEffect(0x55AACCFF, 0));
 				}
 
+				// Density for dp scaling used by effects added below
+				float density = getResources().getDisplayMetrics().density;
+
+				// Torch bloom should render behind flames; add bloom first
+				com.alderangaming.wizardsencounters.vfx.TorchBloomParams bparamsEarly = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
+						.getTorchBloomParams(this, backgroundImage);
+				if (bparamsEarly != null) {
+					float[][] torchAnchorsEarly = BackgroundVfxRegistry.getTorchAnchors(this, backgroundImage);
+					java.util.List<com.alderangaming.wizardsencounters.vfx.TorchFireGroup> tgEarly = BackgroundVfxRegistry
+							.getTorchGroups(this, backgroundImage);
+					if (tgEarly != null && !tgEarly.isEmpty()) {
+						for (com.alderangaming.wizardsencounters.vfx.TorchFireGroup g : tgEarly) {
+							vfxOverlay
+									.addEffect(new com.alderangaming.wizardsencounters.vfx.TorchBloomEffect(g.anchors01,
+											bparamsEarly, density));
+						}
+					} else if (torchAnchorsEarly != null) {
+						vfxOverlay.addEffect(
+								new com.alderangaming.wizardsencounters.vfx.TorchBloomEffect(torchAnchorsEarly,
+										bparamsEarly, density));
+					}
+				}
+
 				// Attach torch fire if this background defines anchors
 				try {
-					float density = getResources().getDisplayMetrics().density;
+					/* density defined above */
 					java.util.List<com.alderangaming.wizardsencounters.vfx.TorchFireGroup> groups = BackgroundVfxRegistry
 							.getTorchGroups(this, backgroundImage);
 					if (groups != null && !groups.isEmpty()) {
@@ -211,6 +238,39 @@ public class ControllerCombat extends Activity {
 						}
 					}
 
+					// Fireflies
+					float[][] fireflyAnchors = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
+							.getFireflyAnchors(this, backgroundImage);
+					if (fireflyAnchors != null) {
+						com.alderangaming.wizardsencounters.vfx.FireflyParams fparams = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
+								.getFireflyParams(this, backgroundImage);
+						vfxOverlay.addEffect(new com.alderangaming.wizardsencounters.vfx.FireflyEffect(fireflyAnchors,
+								fparams, density));
+					}
+
+					// Leaves
+					com.alderangaming.wizardsencounters.vfx.LeavesParams lparams = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
+							.getLeavesParams(this, backgroundImage);
+					if (lparams != null) {
+						vfxOverlay
+								.addEffect(new com.alderangaming.wizardsencounters.vfx.LeavesEffect(lparams, density));
+					}
+
+					// Snow
+					com.alderangaming.wizardsencounters.vfx.SnowParams sparams = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
+							.getSnowParams(this, backgroundImage);
+					if (sparams != null) {
+						vfxOverlay.addEffect(new com.alderangaming.wizardsencounters.vfx.SnowEffect(sparams, density));
+					}
+
+					// Ground fog layers
+					com.alderangaming.wizardsencounters.vfx.GroundFogParams gparams = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
+							.getGroundFogParams(this, backgroundImage);
+					if (gparams != null) {
+						vfxOverlay.addEffect(
+								new com.alderangaming.wizardsencounters.vfx.GroundFogEffect(gparams, density));
+					}
+
 					// Attach bubbling hot springs if configured
 					java.util.List<com.alderangaming.wizardsencounters.vfx.HotSpringBubbleGroup> bubbleGroups = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
 							.getHotSpringBubbleGroups(this, backgroundImage);
@@ -219,6 +279,14 @@ public class ControllerCombat extends Activity {
 							vfxOverlay.addEffect(new com.alderangaming.wizardsencounters.vfx.HotSpringBubbleEffect(
 									bg.anchors01, bg.params, density));
 						}
+					}
+
+					// Birds/bats flocks
+					com.alderangaming.wizardsencounters.vfx.FlyingFlockParams flock = com.alderangaming.wizardsencounters.vfx.BackgroundVfxRegistry
+							.getFlockParams(this, backgroundImage);
+					if (flock != null) {
+						vfxOverlay.addEffect(
+								new com.alderangaming.wizardsencounters.vfx.FlyingFlockEffect(flock, density));
 					}
 				} catch (Exception ignored) {
 				}
@@ -353,6 +421,121 @@ public class ControllerCombat extends Activity {
 
 		monsterImage = (ImageView) findViewById(R.id.combatMonsterImage);
 		monsterImage.setImageResource(monster.imageResource());
+
+		// Rig-based rendering: if a MonsterRig is registered for this monster, build
+		// and use it
+		try {
+			com.alderangaming.wizardsencounters.vfx.MonsterRig rig = com.alderangaming.wizardsencounters.vfx.MonsterRigRegistry
+					.get(monster.monsterID());
+			if (rig != null) {
+				com.alderangaming.wizardsencounters.vfx.MonsterRigRenderer.BuiltRigView rigView = com.alderangaming.wizardsencounters.vfx.MonsterRigRenderer
+						.build(this, rig);
+				if (rigView != null && rigView.container != null) {
+					android.widget.RelativeLayout imageLayout = (android.widget.RelativeLayout) findViewById(
+							R.id.combatImageLayout);
+					// Ensure ancestors do not clip the rig container
+					imageLayout.setClipChildren(false);
+					imageLayout.setClipToPadding(false);
+					android.widget.RelativeLayout.LayoutParams lp = new android.widget.RelativeLayout.LayoutParams(
+							android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+							android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+					lp.addRule(android.widget.RelativeLayout.ABOVE, R.id.monsterBar);
+					lp.addRule(android.widget.RelativeLayout.CENTER_IN_PARENT, 1);
+					rigView.container.setLayoutParams(lp);
+					int monsterIndex = imageLayout.indexOfChild(monsterImage);
+					if (monsterIndex < 0)
+						monsterIndex = 0;
+					// Insert the rig just above the placeholder image so all overlay views
+					// defined later in XML remain on top
+					imageLayout.addView(rigView.container, monsterIndex + 1);
+					// Store the built rig view on the container for future animation hooks
+					rigView.container.setTag(rigView);
+					// Cache container for anchor/animation
+					this.monsterRigContainer = rigView.container;
+					// Ensure overlay stays above the rig for damage text/ability effects
+					try {
+						if (vfxOverlay != null)
+							vfxOverlay.bringToFront();
+					} catch (Exception ignored) {
+					}
+
+					// Apply per-monster render tuning to the rig container (scale/offset)
+					try {
+						com.alderangaming.wizardsencounters.vfx.MonsterRenderParams mparams = com.alderangaming.wizardsencounters.vfx.MonsterRenderRegistry
+								.get(monster.monsterID());
+						float d = getResources().getDisplayMetrics().density;
+						rigView.container.setScaleX(mparams.scaleX);
+						rigView.container.setScaleY(mparams.scaleY);
+						rigView.container.setTranslationX(mparams.offsetXDp * d);
+						// Nudge the rig lower so the monster sits closer to the bottom of the image
+						// area
+						float bottomBiasDp = 96f;
+						rigView.container.setTranslationY((mparams.offsetYDp + bottomBiasDp) * d);
+					} catch (Exception ignored) {
+					}
+
+					// Keep the single-image placeholder to preserve effect alignment rules
+					monsterImage.setVisibility(android.view.View.INVISIBLE);
+
+					// Simple idle part animations
+					android.widget.ImageView headView = rigView.partByType.get(
+							com.alderangaming.wizardsencounters.vfx.MonsterRig.PartType.HEAD);
+					if (headView != null) {
+						android.view.animation.Animation a = com.alderangaming.wizardsencounters.vfx.MonsterRigRenderer
+								.rotatePart(headView, -5f, 5f, 600);
+						if (a != null) {
+							a.setRepeatMode(android.view.animation.Animation.REVERSE);
+							a.setRepeatCount(android.view.animation.Animation.INFINITE);
+						}
+					}
+
+					android.widget.FrameLayout armLNode = rigView.nodeByType.get(
+							com.alderangaming.wizardsencounters.vfx.MonsterRig.PartType.ARM_LEFT);
+					if (armLNode != null) {
+						android.view.animation.Animation a = com.alderangaming.wizardsencounters.vfx.MonsterRigRenderer
+								.rotateNode(armLNode, -8f, 10f, 800);
+						if (a != null) {
+							a.setRepeatMode(android.view.animation.Animation.REVERSE);
+							a.setRepeatCount(android.view.animation.Animation.INFINITE);
+						}
+					}
+
+					android.widget.FrameLayout armRNode = rigView.nodeByType.get(
+							com.alderangaming.wizardsencounters.vfx.MonsterRig.PartType.ARM_RIGHT);
+					if (armRNode != null) {
+						android.view.animation.Animation a = com.alderangaming.wizardsencounters.vfx.MonsterRigRenderer
+								.rotateNode(armRNode, 10f, -8f, 820);
+						if (a != null) {
+							a.setRepeatMode(android.view.animation.Animation.REVERSE);
+							a.setRepeatCount(android.view.animation.Animation.INFINITE);
+						}
+					}
+
+					android.widget.ImageView shoeR = rigView.partByType.get(
+							com.alderangaming.wizardsencounters.vfx.MonsterRig.PartType.SHOE_RIGHT);
+					if (shoeR != null) {
+						android.view.animation.Animation a = com.alderangaming.wizardsencounters.vfx.MonsterRigRenderer
+								.rotatePart(shoeR, -3f, 3f, 900);
+						if (a != null) {
+							a.setRepeatMode(android.view.animation.Animation.REVERSE);
+							a.setRepeatCount(android.view.animation.Animation.INFINITE);
+						}
+					}
+				}
+			}
+		} catch (Exception ignored) {
+		}
+		// Apply per-monster render scaling/offsets
+		try {
+			com.alderangaming.wizardsencounters.vfx.MonsterRenderParams mparams = com.alderangaming.wizardsencounters.vfx.MonsterRenderRegistry
+					.get(monster.monsterID());
+			monsterImage.setScaleX(mparams.scaleX);
+			monsterImage.setScaleY(mparams.scaleY);
+			float d = getResources().getDisplayMetrics().density;
+			monsterImage.setTranslationX(mparams.offsetXDp * d);
+			monsterImage.setTranslationY(mparams.offsetYDp * d);
+		} catch (Exception ignored) {
+		}
 
 		attackImage = (ImageView) findViewById(R.id.combatAttackImage);
 		attackImage.setImageResource(0);
@@ -3635,8 +3818,52 @@ public class ControllerCombat extends Activity {
 
 			});
 
-		if (a != null)
-			monsterImage.startAnimation(a);
+		if (a != null) {
+			boolean hasRig = (monsterRigContainer != null && monsterRigContainer.getParent() != null);
+			if (!hasRig) {
+				// No rig; animate placeholder as before
+				monsterImage.startAnimation(a);
+			}
+			// Also animate rig container if present so layered parts move with legacy
+			// animations
+			try {
+				android.widget.RelativeLayout imgLayout = (android.widget.RelativeLayout) findViewById(
+						R.id.combatImageLayout);
+				if (imgLayout != null) {
+					imgLayout.setClipChildren(false);
+					imgLayout.setClipToPadding(false);
+				}
+				android.view.View rigContainerCandidate = (monsterRigContainer != null) ? monsterRigContainer : null;
+				if (rigContainerCandidate instanceof android.widget.FrameLayout
+						&& rigContainerCandidate.getParent() != null) {
+					((android.widget.FrameLayout) rigContainerCandidate).setClipChildren(false);
+					((android.widget.FrameLayout) rigContainerCandidate).setClipToPadding(false);
+					// Play a bespoke charge animation if lunge
+					if (animationId == Animator.MONSTER_LUNGE) {
+						// Try to fetch the built rig view from a tag set earlier
+						Object tag = rigContainerCandidate.getTag();
+						if (tag instanceof com.alderangaming.wizardsencounters.vfx.MonsterRigRenderer.BuiltRigView) {
+							com.alderangaming.wizardsencounters.vfx.MonsterRigRenderer.playChargeAnimation(
+									(com.alderangaming.wizardsencounters.vfx.MonsterRigRenderer.BuiltRigView) tag,
+									700);
+						} else {
+							rigContainerCandidate.startAnimation(a);
+						}
+					} else {
+						// For non-lunge moves, add a small downward bias so head never clips the top
+						android.view.animation.AnimationSet set = new android.view.animation.AnimationSet(true);
+						set.addAnimation(a);
+						android.view.animation.TranslateAnimation bias = new android.view.animation.TranslateAnimation(
+								0, 0, 0,
+								getResources().getDisplayMetrics().density * 32f);
+						bias.setDuration(a.getDuration());
+						set.addAnimation(bias);
+						rigContainerCandidate.startAnimation(set);
+					}
+				}
+			} catch (Exception ignored) {
+			}
+		}
 
 	}
 
@@ -3787,13 +4014,16 @@ public class ControllerCombat extends Activity {
 			target.updateHP(amt);
 
 			if (sourceFlag == 0) {
-				// Floating ability damage over monster
+				// Monster -> player damage text: fly from monster center toward player bar,
+				// zooming in
 				try {
-					if (vfxOverlay != null && monsterImage != null) {
+					if (vfxOverlay != null && monsterImage != null && playerBar != null) {
 						float cx = monsterImage.getLeft() + monsterImage.getWidth() * 0.5f;
-						float cy = monsterImage.getTop() + monsterImage.getHeight() * 0.4f;
-						vfxOverlay.addEffect(new FloatingTextEffect("" + (-amt), cx, cy, 1200,
-								FloatingTextEffect.Kind.NORMAL, -amt));
+						float cy = monsterImage.getTop() + monsterImage.getHeight() * 0.5f;
+						float tx = playerBar.getLeft() + playerBar.getWidth() * 0.5f;
+						float ty = playerBar.getTop() + playerBar.getHeight() * 0.6f;
+						vfxOverlay.addEffect(new FloatingTextEffect("" + (-amt), cx, cy, tx, ty, 1200,
+								FloatingTextEffect.Kind.PLAYER_DAMAGE, -amt));
 					}
 				} catch (Exception ignored) {
 				}
@@ -4496,6 +4726,7 @@ public class ControllerCombat extends Activity {
 	ImageView impactImage;
 	VfxOverlayView vfxOverlay;
 	VfxOverlayView ambientOverlay;
+	android.widget.FrameLayout monsterRigContainer;
 
 	ImageView playerEffect1Image;
 	ImageView playerEffect2Image;
